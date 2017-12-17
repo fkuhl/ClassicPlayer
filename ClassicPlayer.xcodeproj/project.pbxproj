@@ -40,6 +40,7 @@
 		2733A6211FE5FDE100E1EE77 /* ClassicPlayerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ClassicPlayerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2733A6251FE5FDE100E1EE77 /* ClassicPlayerUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassicPlayerUITests.swift; sourceTree = "<group>"; };
 		2733A6271FE5FDE100E1EE77 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		2733A6301FE5FE8600E1EE77 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,6 +90,7 @@
 				2733A6191FE5FDE000E1EE77 /* LaunchScreen.storyboard */,
 				2733A61C1FE5FDE000E1EE77 /* Info.plist */,
 				2733A60D1FE5FDE000E1EE77 /* ClassicPlayer.xcdatamodeld */,
+				2733A6301FE5FE8600E1EE77 /* README.md */,
 			);
 			path = ClassicPlayer;
 			sourceTree = "<group>";
