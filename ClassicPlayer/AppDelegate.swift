@@ -8,6 +8,7 @@
 
 import UIKit
 import CoreData
+import MediaPlayer
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDelegate {
@@ -25,7 +26,151 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         let masterNavigationController = splitViewController.viewControllers[0] as! UINavigationController
         let controller = masterNavigationController.topViewController as! MasterViewController
         controller.managedObjectContext = self.persistentContainer.viewContext
+        
+        self.persistentContainer.performBackgroundTask { context in
+            self.loadFromMedia(into: context)
+        }
+
         return true
+    }
+    
+    private func loadFromMedia(into context: NSManagedObjectContext) {
+        //        let albumInteresting: Set = [MPMediaItemPropertyComposer, MPMediaItemPropertyAlbumArtist,
+        //                                     MPMediaItemPropertyAlbumTitle,MPMediaItemPropertyAlbumTrackCount, MPMediaItemPropertyGenre ]
+        //        let itemInteresting: Set = [MPMediaItemPropertyComposer, MPMediaItemPropertyArtist,
+        //                                     MPMediaItemPropertyTitle, MPMediaItemPropertyGenre ]
+        do {
+            var discCount = 0, pieceCount = 0
+            let mediaStuff = MPMediaQuery.albums()
+            if mediaStuff.collections == nil {
+                throw NSError(domain: "me", code: 1776, userInfo: ["a" : "something bombed"])
+            }
+            //I presume this is all the "songs"
+            for mediaCollection in mediaStuff.collections! {
+                let items = mediaCollection.items
+                print("disc: \(items[0].value(forProperty: MPMediaItemPropertyComposer) ?? "<anon>"): "
+                    + "\(items[0].value(forProperty: MPMediaItemPropertyAlbumTitle) ?? "<no title>")"
+                    + " | \(items[0].value(forProperty: MPMediaItemPropertyAlbumArtist) ?? "<no artist>") ")
+                //                items[0].enumerateValues(forProperties: albumInteresting) {
+                //                    key, val, wtf in
+                //                    print("key: \(key) val:\(String(describing:val)) ")
+                //                }
+                //                print(" val:\(String(describing:mediaCollection.count)) ")
+                for /*item*/ _ in mediaCollection.items {
+                    //print("  \(item.composer ?? "<anon>"): \(item.title ?? "<no title>") | \(item.artist ?? "<no artist>")")
+                    //                    item.enumerateValues(forProperties: itemInteresting) {
+                    //                        key, val, wtf in
+                    //                        print("   key: \(key) val:\(String(describing:val)) ")
+                    //                    }
+                }
+                let disc = NSEntityDescription.insertNewObject(forEntityName: "Disc", into: context) as! Disc
+                //Someday we may purpose "artist" as a composite field containing ensemble, director, soloists
+                disc.composer = items[0].value(forProperty: MPMediaItemPropertyComposer) as? String
+                disc.director = ""
+                disc.ensemble = items[0].value(forProperty: MPMediaItemPropertyAlbumArtist) as? String
+                disc.filedUnder = "iTunes"
+                disc.labelAndNumber = ""
+                disc.length = ""
+                disc.soloists = ""
+                disc.title = items[0].value(forProperty: MPMediaItemPropertyAlbumTitle) as? String
+                //let trackCount = items[0].value(forProperty: MPMediaItemPropertyAlbumTrackCount)
+                //print("track ct: \(String(describing: trackCount))")
+                //disc.trackCount = Int16( as? Int)
+                if (items[0].value(forProperty: MPMediaItemPropertyGenre) as? String) != "Classical" {
+                    loadSongs(for: disc, from: items, into: context)
+                    pieceCount += items.count
+                } else {
+                    pieceCount += loadAndCountPieces(for: disc, from: items, into: context)
+                }
+                discCount += 1
+            }
+            print("found \(discCount) discs, \(pieceCount) pieces")
+            try context.save()
+            print("saved \(discCount) discs and \(pieceCount) pieces")
+        } catch { // note, by default catch catches any error into a local variable called error
+            let nserror = error as NSError //because JSONDecoder.decode and context.save both use NSError
+            fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
+        }
+    }
+    
+    private func loadSongs(for disc: Disc, from collection: [MPMediaItem], into context: NSManagedObjectContext) {
+        for mediaItem in collection {
+            _ = addPiece(from: mediaItem, entitled: mediaItem.title ?? "", to: disc, into: context)
+        }
+    }
+    
+    private func loadAndCountPieces(for disc: Disc, from collection: [MPMediaItem], into context: NSManagedObjectContext) -> Int {
+        if collection.count < 1 { return 0 }
+        if collection.count < 2 {
+            _ = addPiece(from: collection[0], entitled: collection[0].title ?? "", to: disc, into: context)
+            return 1
+        }
+        var piecesAdded = 0
+        var movementsAdded = 0
+        var i = 0
+        repeat {
+            if i == collection.count - 1 {
+                //last item; could add as piece with no movements
+                _ = addPiece(from: collection[i], entitled: collection[i].title ?? "", to: disc, into: context)
+                piecesAdded += 1
+                i += 1
+            } else {
+                let commonPrefix = sharedPrefix(collection[i].title ?? "", collection[i + 1].title ?? "")
+                if commonPrefix.count < (collection[i].title ?? "").count / 2 {
+                    //negligible common prefix: count as piece with no movements
+                    _ = addPiece(from: collection[i], entitled: collection[i].title ?? "", to: disc, into: context)
+                    piecesAdded += 1
+                    i += 1
+                } else {
+                    //at least two movements: record piece, then first two movements
+                    let piece = addPiece(from: collection[i], entitled: commonPrefix, to: disc, into: context)
+                    piecesAdded += 1
+                    print("  piece: \(commonPrefix)   disc: \(disc.title ?? "")")
+                    let mov1 = NSEntityDescription.insertNewObject(forEntityName: "Movement", into: context) as! Movement
+                    mov1.title = collection[i].title ?? "" //TODO fix this to be non-prefix
+                    piece.addToMovements(mov1)
+                    print("    movt: \(mov1.title ?? "")")
+                    let mov2 = NSEntityDescription.insertNewObject(forEntityName: "Movement", into: context) as! Movement
+                    mov2.title = collection[i + 1].title ?? "" //TODO fix this to be non-prefix
+                    piece.addToMovements(mov2)
+                    print("    movt: \(mov2.title ?? "")")
+                    movementsAdded += 2
+                    //see what other movement you can find
+                    i += 2
+                    while i < collection.count && sharedPrefix(commonPrefix, collection[i].title ?? "") == commonPrefix {
+                        let mov = NSEntityDescription.insertNewObject(forEntityName: "Movement", into: context) as! Movement
+                        mov.title = collection[i].title ?? "" //TODO fix this to be non-prefix
+                        piece.addToMovements(mov)
+                        print("    movt: \(mov.title ?? "")")
+                        movementsAdded += 1
+                        i += 1
+                    }
+                }
+            }
+        } while i < collection.count
+        return piecesAdded
+    }
+    
+    private func sharedPrefix(_ a: String, _ b: String) -> String {
+        let shorter = (a.count < b.count) ? a : b
+        for index in shorter.indices {
+            if a[index] != b[index] {
+                return String(shorter[..<index])
+            }
+        }
+        return shorter
+    }
+
+    private func addPiece(from mediaItem: MPMediaItem, entitled title: String, to disc: Disc, into context: NSManagedObjectContext) -> Piece {
+        let piece = NSEntityDescription.insertNewObject(forEntityName: "Piece", into: context) as! Piece
+        piece.composer = mediaItem.composer ?? ""
+        piece.director = ""
+        piece.ensemble = mediaItem.artist ?? ""
+        piece.soloists = ""
+        piece.title = title
+        piece.disc = disc
+        disc.addToPieces(piece)
+        return piece
     }
 
     func applicationWillResignActive(_ application: UIApplication) {
@@ -90,6 +235,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
             }
         })
         return container
+    }()
+    
+    lazy var context: NSManagedObjectContext = {
+        return persistentContainer.viewContext
     }()
 
     // MARK: - Core Data Saving support

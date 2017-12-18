@@ -1,9 +1,81 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="1" systemVersion="11A491" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
-    <entity name="Event" representedClassName="Event" codeGenerationType="class">
-        <attribute name="timestamp" optional="YES" attributeType="Date"/>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="13772" systemVersion="17C88" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="Disc" representedClassName="Disc">
+        <attribute name="composer" optional="YES" attributeType="String">
+            <userInfo/>
+        </attribute>
+        <attribute name="director" optional="YES" attributeType="String">
+            <userInfo/>
+        </attribute>
+        <attribute name="ensemble" optional="YES" attributeType="String">
+            <userInfo/>
+        </attribute>
+        <attribute name="filedUnder" attributeType="String">
+            <userInfo/>
+        </attribute>
+        <attribute name="labelAndNumber" optional="YES" attributeType="String">
+            <userInfo/>
+        </attribute>
+        <attribute name="length" optional="YES" attributeType="String">
+            <userInfo/>
+        </attribute>
+        <attribute name="soloists" optional="YES" attributeType="String">
+            <userInfo/>
+        </attribute>
+        <attribute name="title" attributeType="String">
+            <userInfo/>
+        </attribute>
+        <attribute name="trackCount" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES">
+            <userInfo/>
+        </attribute>
+        <relationship name="pieces" optional="YES" toMany="YES" minCount="1" deletionRule="Nullify" destinationEntity="Piece" inverseName="disc" inverseEntity="Piece">
+            <userInfo/>
+        </relationship>
+        <fetchIndex name="byPiecesIndex">
+            <fetchIndexElement property="pieces" type="Binary" order="ascending"/>
+        </fetchIndex>
+        <userInfo>
+            <entry key="com.apple.syncservices.IdentityProperties" value=""/>
+        </userInfo>
+    </entity>
+    <entity name="Event" representedClassName="Event" syncable="YES" codeGenerationType="class">
+        <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+    </entity>
+    <entity name="Movement" representedClassName="Movement" syncable="YES">
+        <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="piece" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Piece" inverseName="movements" inverseEntity="Piece" syncable="YES"/>
+    </entity>
+    <entity name="Piece" representedClassName="Piece">
+        <attribute name="composer" attributeType="String">
+            <userInfo/>
+        </attribute>
+        <attribute name="director" optional="YES" attributeType="String">
+            <userInfo/>
+        </attribute>
+        <attribute name="ensemble" optional="YES" attributeType="String">
+            <userInfo/>
+        </attribute>
+        <attribute name="soloists" optional="YES" attributeType="String">
+            <userInfo/>
+        </attribute>
+        <attribute name="title" attributeType="String">
+            <userInfo/>
+        </attribute>
+        <relationship name="disc" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="Disc" inverseName="pieces" inverseEntity="Disc">
+            <userInfo/>
+        </relationship>
+        <relationship name="movements" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="Movement" inverseName="piece" inverseEntity="Movement" syncable="YES"/>
+        <fetchIndex name="byDiscIndex">
+            <fetchIndexElement property="disc" type="Binary" order="ascending"/>
+        </fetchIndex>
+        <userInfo>
+            <entry key="com.apple.syncservices.IdentityProperties" value=""/>
+        </userInfo>
     </entity>
     <elements>
-        <element name="Event" positionX="261" positionY="189" width="128" height="60"/>
+        <element name="Disc" positionX="108" positionY="117" width="128" height="193"/>
+        <element name="Movement" positionX="529" positionY="126" width="128" height="73"/>
+        <element name="Piece" positionX="342" positionY="123" width="128" height="148"/>
+        <element name="Event" positionX="315" positionY="198" width="128" height="60"/>
     </elements>
 </model>
