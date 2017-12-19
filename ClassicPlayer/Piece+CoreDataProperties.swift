@@ -1,8 +1,8 @@
 //
 //  Piece+CoreDataProperties.swift
-//  CDBase
+//  ClassicPlayer
 //
-//  Created by Frederick Kuhl on 9/29/17.
+//  Created by Frederick Kuhl on 12/19/17.
 //  Copyright © 2017 TyndaleSoft LLC. All rights reserved.
 //
 //
@@ -22,7 +22,9 @@ extension Piece {
     @NSManaged public var ensemble: String?
     @NSManaged public var soloists: String?
     @NSManaged public var title: String?
-    @NSManaged public var disc: Disc?
+    @NSManaged public var albumID: String?
+    @NSManaged public var trackID: String?
+    @NSManaged public var album: Album?
     @NSManaged public var movements: NSOrderedSet?
 
 }

@@ -7,12 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		271C3DE91FE832850039308D /* Movement+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 271C3DE31FE832850039308D /* Movement+CoreDataClass.swift */; };
-		271C3DEA1FE832850039308D /* Disc+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 271C3DE41FE832850039308D /* Disc+CoreDataClass.swift */; };
-		271C3DEB1FE832850039308D /* Movement+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 271C3DE51FE832850039308D /* Movement+CoreDataProperties.swift */; };
-		271C3DEC1FE832850039308D /* Piece+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 271C3DE61FE832850039308D /* Piece+CoreDataProperties.swift */; };
-		271C3DED1FE832850039308D /* Disc+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 271C3DE71FE832850039308D /* Disc+CoreDataProperties.swift */; };
-		271C3DEE1FE832850039308D /* Piece+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 271C3DE81FE832850039308D /* Piece+CoreDataClass.swift */; };
 		2733A60C1FE5FDE000E1EE77 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2733A60B1FE5FDE000E1EE77 /* AppDelegate.swift */; };
 		2733A60F1FE5FDE000E1EE77 /* ClassicPlayer.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2733A60D1FE5FDE000E1EE77 /* ClassicPlayer.xcdatamodeld */; };
 		2733A6111FE5FDE000E1EE77 /* MasterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2733A6101FE5FDE000E1EE77 /* MasterViewController.swift */; };
@@ -21,6 +15,12 @@
 		2733A6181FE5FDE000E1EE77 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2733A6171FE5FDE000E1EE77 /* Assets.xcassets */; };
 		2733A61B1FE5FDE000E1EE77 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2733A6191FE5FDE000E1EE77 /* LaunchScreen.storyboard */; };
 		2733A6261FE5FDE100E1EE77 /* ClassicPlayerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2733A6251FE5FDE100E1EE77 /* ClassicPlayerUITests.swift */; };
+		2755D72F1FE9629C006F49AE /* Piece+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2755D7291FE9629C006F49AE /* Piece+CoreDataClass.swift */; };
+		2755D7301FE9629C006F49AE /* Piece+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2755D72A1FE9629C006F49AE /* Piece+CoreDataProperties.swift */; };
+		2755D7311FE9629C006F49AE /* Album+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2755D72B1FE9629C006F49AE /* Album+CoreDataClass.swift */; };
+		2755D7321FE9629C006F49AE /* Album+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2755D72C1FE9629C006F49AE /* Album+CoreDataProperties.swift */; };
+		2755D7331FE9629C006F49AE /* Movement+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2755D72D1FE9629C006F49AE /* Movement+CoreDataClass.swift */; };
+		2755D7341FE9629C006F49AE /* Movement+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2755D72E1FE9629C006F49AE /* Movement+CoreDataProperties.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -34,12 +34,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		271C3DE31FE832850039308D /* Movement+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Movement+CoreDataClass.swift"; sourceTree = "<group>"; };
-		271C3DE41FE832850039308D /* Disc+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Disc+CoreDataClass.swift"; sourceTree = "<group>"; };
-		271C3DE51FE832850039308D /* Movement+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Movement+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		271C3DE61FE832850039308D /* Piece+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Piece+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		271C3DE71FE832850039308D /* Disc+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Disc+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		271C3DE81FE832850039308D /* Piece+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Piece+CoreDataClass.swift"; sourceTree = "<group>"; };
 		2733A6081FE5FDE000E1EE77 /* ClassicPlayer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClassicPlayer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2733A60B1FE5FDE000E1EE77 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		2733A60E1FE5FDE000E1EE77 /* ClassicPlayer.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ClassicPlayer.xcdatamodel; sourceTree = "<group>"; };
@@ -53,6 +47,12 @@
 		2733A6251FE5FDE100E1EE77 /* ClassicPlayerUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassicPlayerUITests.swift; sourceTree = "<group>"; };
 		2733A6271FE5FDE100E1EE77 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2733A6301FE5FE8600E1EE77 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		2755D7291FE9629C006F49AE /* Piece+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Piece+CoreDataClass.swift"; path = "ClassicPlayer/Piece+CoreDataClass.swift"; sourceTree = "<group>"; };
+		2755D72A1FE9629C006F49AE /* Piece+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Piece+CoreDataProperties.swift"; path = "ClassicPlayer/Piece+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		2755D72B1FE9629C006F49AE /* Album+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Album+CoreDataClass.swift"; path = "ClassicPlayer/Album+CoreDataClass.swift"; sourceTree = "<group>"; };
+		2755D72C1FE9629C006F49AE /* Album+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Album+CoreDataProperties.swift"; path = "ClassicPlayer/Album+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		2755D72D1FE9629C006F49AE /* Movement+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Movement+CoreDataClass.swift"; path = "ClassicPlayer/Movement+CoreDataClass.swift"; sourceTree = "<group>"; };
+		2755D72E1FE9629C006F49AE /* Movement+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Movement+CoreDataProperties.swift"; path = "ClassicPlayer/Movement+CoreDataProperties.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,6 +76,12 @@
 		2733A5FF1FE5FDE000E1EE77 = {
 			isa = PBXGroup;
 			children = (
+				2755D7291FE9629C006F49AE /* Piece+CoreDataClass.swift */,
+				2755D72A1FE9629C006F49AE /* Piece+CoreDataProperties.swift */,
+				2755D72B1FE9629C006F49AE /* Album+CoreDataClass.swift */,
+				2755D72C1FE9629C006F49AE /* Album+CoreDataProperties.swift */,
+				2755D72D1FE9629C006F49AE /* Movement+CoreDataClass.swift */,
+				2755D72E1FE9629C006F49AE /* Movement+CoreDataProperties.swift */,
 				2733A60A1FE5FDE000E1EE77 /* ClassicPlayer */,
 				2733A6241FE5FDE100E1EE77 /* ClassicPlayerUITests */,
 				2733A6091FE5FDE000E1EE77 /* Products */,
@@ -94,12 +100,6 @@
 		2733A60A1FE5FDE000E1EE77 /* ClassicPlayer */ = {
 			isa = PBXGroup;
 			children = (
-				271C3DE41FE832850039308D /* Disc+CoreDataClass.swift */,
-				271C3DE71FE832850039308D /* Disc+CoreDataProperties.swift */,
-				271C3DE31FE832850039308D /* Movement+CoreDataClass.swift */,
-				271C3DE51FE832850039308D /* Movement+CoreDataProperties.swift */,
-				271C3DE81FE832850039308D /* Piece+CoreDataClass.swift */,
-				271C3DE61FE832850039308D /* Piece+CoreDataProperties.swift */,
 				2733A60B1FE5FDE000E1EE77 /* AppDelegate.swift */,
 				2733A6101FE5FDE000E1EE77 /* MasterViewController.swift */,
 				2733A6121FE5FDE000E1EE77 /* DetailViewController.swift */,
@@ -225,15 +225,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				271C3DEE1FE832850039308D /* Piece+CoreDataClass.swift in Sources */,
+				2755D7341FE9629C006F49AE /* Movement+CoreDataProperties.swift in Sources */,
+				2755D72F1FE9629C006F49AE /* Piece+CoreDataClass.swift in Sources */,
 				2733A60C1FE5FDE000E1EE77 /* AppDelegate.swift in Sources */,
 				2733A60F1FE5FDE000E1EE77 /* ClassicPlayer.xcdatamodeld in Sources */,
-				271C3DEC1FE832850039308D /* Piece+CoreDataProperties.swift in Sources */,
-				271C3DEA1FE832850039308D /* Disc+CoreDataClass.swift in Sources */,
-				271C3DED1FE832850039308D /* Disc+CoreDataProperties.swift in Sources */,
-				271C3DEB1FE832850039308D /* Movement+CoreDataProperties.swift in Sources */,
 				2733A6111FE5FDE000E1EE77 /* MasterViewController.swift in Sources */,
-				271C3DE91FE832850039308D /* Movement+CoreDataClass.swift in Sources */,
+				2755D7301FE9629C006F49AE /* Piece+CoreDataProperties.swift in Sources */,
+				2755D7321FE9629C006F49AE /* Album+CoreDataProperties.swift in Sources */,
+				2755D7311FE9629C006F49AE /* Album+CoreDataClass.swift in Sources */,
+				2755D7331FE9629C006F49AE /* Movement+CoreDataClass.swift in Sources */,
 				2733A6131FE5FDE000E1EE77 /* DetailViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

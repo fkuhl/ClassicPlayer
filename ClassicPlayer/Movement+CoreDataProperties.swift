@@ -1,8 +1,8 @@
 //
 //  Movement+CoreDataProperties.swift
-//  CDBase
+//  ClassicPlayer
 //
-//  Created by Frederick Kuhl on 9/27/17.
+//  Created by Frederick Kuhl on 12/19/17.
 //  Copyright © 2017 TyndaleSoft LLC. All rights reserved.
 //
 //
@@ -18,6 +18,7 @@ extension Movement {
     }
 
     @NSManaged public var title: String?
+    @NSManaged public var trackID: String?
     @NSManaged public var piece: Piece?
 
 }

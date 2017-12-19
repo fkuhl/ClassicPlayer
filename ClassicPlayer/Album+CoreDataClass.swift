@@ -1,5 +1,5 @@
 //
-//  Piece+CoreDataClass.swift
+//  Album+CoreDataClass.swift
 //  ClassicPlayer
 //
 //  Created by Frederick Kuhl on 12/19/17.
@@ -10,7 +10,7 @@
 import Foundation
 import CoreData
 
-@objc(Piece)
-public class Piece: NSManagedObject {
+@objc(Album)
+public class Album: NSManagedObject {
 
 }
