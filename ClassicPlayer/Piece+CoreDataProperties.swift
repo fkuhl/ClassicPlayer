@@ -24,6 +24,7 @@ extension Piece {
     @NSManaged public var title: String?
     @NSManaged public var albumID: String?
     @NSManaged public var trackID: String?
+    @NSManaged public var genre: String?
     @NSManaged public var album: Album?
     @NSManaged public var movements: NSOrderedSet?
 

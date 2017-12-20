@@ -44,6 +44,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
             for mediaCollection in mediaStuff.collections! {
                 let items = mediaCollection.items
                 print("Album: \(items[0].value(forProperty: MPMediaItemPropertyComposer) ?? "<anon>"): "
+                    + "\(items[0].value(forProperty: MPMediaItemPropertyAlbumTrackCount) ?? "") "
                     + "\(items[0].value(forProperty: MPMediaItemPropertyAlbumTitle) ?? "<no title>")"
                     + " | \(items[0].value(forProperty: MPMediaItemPropertyAlbumArtist) ?? "<no artist>") ")
                 let album = NSEntityDescription.insertNewObject(forEntityName: "Album", into: context) as! Album
@@ -72,14 +73,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     
     private func loadSongs(for album: Album, from collection: [MPMediaItem], into context: NSManagedObjectContext) {
         for mediaItem in collection {
-            _ = addPiece(from: mediaItem, entitled: mediaItem.title ?? "", to: album, into: context)
+            _ = storePiece(from: mediaItem, entitled: mediaItem.title ?? "", to: album, into: context)
         }
     }
     
     private func loadAndCountPieces(for album: Album, from collection: [MPMediaItem], into context: NSManagedObjectContext) -> Int {
         if collection.count < 1 { return 0 }
         if collection.count < 2 {
-            _ = addPiece(from: collection[0], entitled: collection[0].title ?? "", to: album, into: context)
+            _ = storePiece(from: collection[0], entitled: collection[0].title ?? "", to: album, into: context)
              return 1
         }
         var piecesAdded = 0
@@ -88,39 +89,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         repeat {
             if i == collection.count - 1 {
                 //last item; could add as piece with no movements
-                _ = addPiece(from: collection[i], entitled: collection[i].title ?? "", to: album, into: context)
+                _ = storePiece(from: collection[i], entitled: collection[i].title ?? "", to: album, into: context)
                 piecesAdded += 1
                 i += 1
             } else {
                 let commonPrefix = sharedPrefix(collection[i].title ?? "", collection[i + 1].title ?? "")
-                if commonPrefix.count < (collection[i].title ?? "").count / 2 {
+                if commonPrefix.count < 7 {
                     //negligible common prefix: count as piece with no movements
-                    _ = addPiece(from: collection[i], entitled: collection[i].title ?? "", to: album, into: context)
+                    _ = storePiece(from: collection[i], entitled: collection[i].title ?? "", to: album, into: context)
                    piecesAdded += 1
                     i += 1
                 } else {
                     //at least two movements: record piece, then first two movements
-                    let piece = addPiece(from: collection[i], entitled: commonPrefix, to: album, into: context)
+                    let pieceTitle = shortenPrefix(commonPrefix)
+                    let piece = storePiece(from: collection[i], entitled: pieceTitle, to: album, into: context)
                     piecesAdded += 1
-                    let mov1 = NSEntityDescription.insertNewObject(forEntityName: "Movement", into: context) as! Movement
-                    mov1.title = collection[i].title ?? "" //TODO fix this to be non-prefix
-                    mov1.trackID = String(collection[i].persistentID)
-                    piece.addToMovements(mov1)
-                    print("    movt: \(mov1.title ?? "")")
-                    let mov2 = NSEntityDescription.insertNewObject(forEntityName: "Movement", into: context) as! Movement
-                    mov2.title = collection[i + 1].title ?? "" //TODO fix this to be non-prefix
-                    mov2.trackID = String(collection[i + 1].persistentID)
-                   piece.addToMovements(mov2)
-                    print("    movt: \(mov2.title ?? "")")
+                    storeMovement(from: collection[i], for: piece, into: context)
+                    storeMovement(from: collection[i + 1], for: piece, into: context)
                     movementsAdded += 2
                     //see what other movement you can find
                     i += 2
                     while i < collection.count && sharedPrefix(commonPrefix, collection[i].title ?? "") == commonPrefix {
-                        let mov = NSEntityDescription.insertNewObject(forEntityName: "Movement", into: context) as! Movement
-                        mov.title = collection[i].title ?? "" //TODO fix this to be non-prefix
-                        mov.trackID = String(collection[i].persistentID)
-                        piece.addToMovements(mov)
-                        print("    movt: \(mov.title ?? "")")
+                        storeMovement(from: collection[i], for: piece, into: context)
                         movementsAdded += 1
                         i += 1
                     }
@@ -130,23 +120,45 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         return piecesAdded
     }
     
+    private func storeMovement(from item: MPMediaItem, for piece: Piece, into context: NSManagedObjectContext) {
+        let songTitle = item.title!
+        let movementTitleIndex = songTitle.index(songTitle.startIndex, offsetBy: piece.title!.count)
+        let movementTitle = String(songTitle.suffix(from: movementTitleIndex))
+        let mov = NSEntityDescription.insertNewObject(forEntityName: "Movement", into: context) as! Movement
+        mov.title = movementTitle
+        mov.trackID = String(item.persistentID)
+        piece.addToMovements(mov)
+        print("    \(mov.title ?? "")")
+    }
+    
     private func sharedPrefix(_ a: String, _ b: String) -> String {
         let shorter = (a.count < b.count) ? a : b
         for index in shorter.indices {
-            if a[index] != b[index] {
+            if a[index] != b[index] || a[index] == ":" || a[index] == "-" {
                 return String(shorter[..<index])
             }
         }
         return shorter
     }
+    
+    private func shortenPrefix(_ starter: String) -> String {
+        var index = starter.index(before: starter.endIndex)
+        while starter[index] == ":" || starter[index] == "," || starter[index] == "-" || starter[index] == " " { //check end?
+            index = starter.index(before: index)
+        }
+        index = starter.index(after: index)
+        return String(starter[..<index])
+    }
 
-    private func addPiece(from mediaItem: MPMediaItem, entitled title: String, to album: Album, into context: NSManagedObjectContext) -> Piece {
-        print("  \(mediaItem.composer ?? "<anon>"): \(mediaItem.title ?? "<sine nomine>")   album: \(album.title ?? "<none>")")
+    private func storePiece(from mediaItem: MPMediaItem, entitled title: String, to album: Album, into context: NSManagedObjectContext) -> Piece {
+        let genreMark = (mediaItem.genre == "Classical") ? "!" : ""
+        print("  \(genreMark)|\(mediaItem.composer ?? "<anon>")| \(title)")
         let piece = NSEntityDescription.insertNewObject(forEntityName: "Piece", into: context) as! Piece
         piece.albumID = String(mediaItem.albumPersistentID) //estupido: persistentIDs are UInt64
         piece.composer = mediaItem.composer ?? ""
         piece.director = ""
         piece.ensemble = mediaItem.artist ?? ""
+        piece.genre = mediaItem.genre ?? ""
         piece.soloists = ""
         piece.title = title
         piece.album = album
