@@ -2,6 +2,7 @@
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="13772" systemVersion="17C88" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="Album" representedClassName="Album">
         <attribute name="albumID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="artist" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="trackCount" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES">
             <userInfo/>
@@ -55,7 +56,7 @@
         </userInfo>
     </entity>
     <elements>
-        <element name="Album" positionX="108" positionY="117" width="128" height="105"/>
+        <element name="Album" positionX="108" positionY="117" width="128" height="120"/>
         <element name="Event" positionX="315" positionY="198" width="128" height="60"/>
         <element name="Movement" positionX="529" positionY="126" width="128" height="90"/>
         <element name="Piece" positionX="342" positionY="123" width="128" height="195"/>

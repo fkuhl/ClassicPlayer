@@ -12,9 +12,16 @@ import MediaPlayer
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDelegate {
+    private static let showParses = false
+    private static let separator: Character = "|"
+    private static let workColonDashMovement = try! NSRegularExpression(pattern: "\\s*([^-:])(?::| - )(.*)", options: [])
+    private static let workNrMovement = try! NSRegularExpression(pattern: "\\s*([^-]+) ([1-9][0-9]*\\. .+)", options: [])
+     private static let workRomMovement = try! NSRegularExpression(pattern: "\\s*([^-]+) ((?:I|II|III|IV|V|VI|VII|VIII|IX|X|XI|XII|XIII|XIV|XV|XVI|XVII|XVIII|XIX|XX)\\. .+)", options: [])
+    private static let parseExpressions = [workColonDashMovement, workNrMovement, workRomMovement]
+    private static let parseNames = ["colon or dash", "arabic numeral", "roman numeral"]
+    private static let parseTemplate = "$1\(AppDelegate.separator)$2"
 
     var window: UIWindow?
-
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
@@ -43,22 +50,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
             }
             for mediaCollection in mediaStuff.collections! {
                 let items = mediaCollection.items
-                print("Album: \(items[0].value(forProperty: MPMediaItemPropertyComposer) ?? "<anon>"): "
-                    + "\(items[0].value(forProperty: MPMediaItemPropertyAlbumTrackCount) ?? "") "
-                    + "\(items[0].value(forProperty: MPMediaItemPropertyAlbumTitle) ?? "<no title>")"
-                    + " | \(items[0].value(forProperty: MPMediaItemPropertyAlbumArtist) ?? "<no artist>") ")
+                if items[0].genre == "Classical" {
+                    print("Album: \(items[0].value(forProperty: MPMediaItemPropertyComposer) ?? "<anon>"): "
+                        + "\(items[0].value(forProperty: MPMediaItemPropertyAlbumTrackCount) ?? "") "
+                        + "\(items[0].value(forProperty: MPMediaItemPropertyAlbumTitle) ?? "<no title>")"
+                        + " | \(items[0].value(forProperty: MPMediaItemPropertyAlbumArtist) ?? "<no artist>") ")
+                }
                 let album = NSEntityDescription.insertNewObject(forEntityName: "Album", into: context) as! Album
                 //Someday we may purpose "artist" as a composite field containing ensemble, director, soloists
+                album.artist = items[0].value(forProperty: MPMediaItemPropertyAlbumArtist) as? String
                 album.title = items[0].value(forProperty: MPMediaItemPropertyAlbumTitle) as? String
                 let trackCount = items[0].value(forProperty: MPMediaItemPropertyAlbumTrackCount)
                 //print("track ct: \(String(describing: trackCount))")
                 album.trackCount = Int16(trackCount as! Int)
                 album.albumID = items[0].value(forProperty: MPMediaItemPropertyAlbumPersistentID) as? String
-                if (items[0].value(forProperty: MPMediaItemPropertyGenre) as? String) != "Classical" {
+                if (items[0].value(forProperty: MPMediaItemPropertyGenre) as? String) == "Classical" {
+                    pieceCount += loadAndCountPieces(for: album, from: items, into: context)
+                } else {
                     loadSongs(for: album, from: items, into: context)
                     pieceCount += items.count
-                } else {
-                    pieceCount += loadAndCountPieces(for: album, from: items, into: context)
                 }
                 albumCount += 1
             }
@@ -77,82 +87,130 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         }
     }
     
+    private enum LoadingState {
+        case beginPiece
+        case continuePiece
+    }
+    
     private func loadAndCountPieces(for album: Album, from collection: [MPMediaItem], into context: NSManagedObjectContext) -> Int {
         if collection.count < 1 { return 0 }
         if collection.count < 2 {
             _ = storePiece(from: collection[0], entitled: collection[0].title ?? "", to: album, into: context)
-             return 1
+            return 1
         }
         var piecesAdded = 0
         var movementsAdded = 0
+        var state = LoadingState.beginPiece
         var i = 0
+        var piece: Piece?
         repeat {
-            if i == collection.count - 1 {
-                //last item; could add as piece with no movements
-                _ = storePiece(from: collection[i], entitled: collection[i].title ?? "", to: album, into: context)
+            let unwrappedTitle = collection[i].title ?? ""
+            let parsed = checkParses(in: unwrappedTitle)
+            switch state {
+            case .beginPiece:
+                let pieceTitle = parsed?.pieceTitle ?? unwrappedTitle
+                piece = storePiece(from: collection[i], entitled: pieceTitle, to: album, into: context)
                 piecesAdded += 1
-                i += 1
-            } else {
-                let commonPrefix = sharedPrefix(collection[i].title ?? "", collection[i + 1].title ?? "")
-                if commonPrefix.count < 7 {
-                    //negligible common prefix: count as piece with no movements
-                    _ = storePiece(from: collection[i], entitled: collection[i].title ?? "", to: album, into: context)
-                   piecesAdded += 1
+                if i + 1 >= collection.count {
+                    //no more songs to be movements
                     i += 1
-                } else {
+                    continue
+                }
+                let nextParsed = checkParses(in: collection[i + 1].title ?? "")
+                if nextParsed != nil && pieceTitle == nextParsed!.pieceTitle {
                     //at least two movements: record piece, then first two movements
-                    let pieceTitle = shortenPrefix(commonPrefix)
-                    let piece = storePiece(from: collection[i], entitled: pieceTitle, to: album, into: context)
-                    piecesAdded += 1
-                    storeMovement(from: collection[i], for: piece, into: context)
-                    storeMovement(from: collection[i + 1], for: piece, into: context)
+                    storeMovement(from: collection[i],     named: parsed!.movementTitle,     for: piece!, into: context)
+                    storeMovement(from: collection[i + 1], named: nextParsed!.movementTitle, for: piece!, into: context)
                     movementsAdded += 2
                     //see what other movement you can find
                     i += 2
-                    while i < collection.count && sharedPrefix(commonPrefix, collection[i].title ?? "") == commonPrefix {
-                        storeMovement(from: collection[i], for: piece, into: context)
-                        movementsAdded += 1
-                        i += 1
-                    }
+                    state = .continuePiece
+                } else {
+                    //next is different piece
+                    i += 1
+                    state = .beginPiece
+                }
+            case .continuePiece:
+                if i >= collection.count { continue }
+                if parsed != nil && piece!.title == parsed!.pieceTitle {
+                    storeMovement(from: collection[i], named: parsed!.movementTitle, for: piece!, into: context)
+                    movementsAdded += 1
+                    i += 1
+                } else {
+                    state = .beginPiece //don't increment i
                 }
             }
         } while i < collection.count
         return piecesAdded
     }
     
+    private func checkParses(in raw: String)-> (pieceTitle: String, movementTitle: String)? {
+        for i in 0..<AppDelegate.parseExpressions.count {
+            let transformed = AppDelegate.parseExpressions[i].stringByReplacingMatches(
+                in: raw,
+                options: [],
+                range: NSRange(raw.startIndex..., in: raw),
+                withTemplate: AppDelegate.parseTemplate)
+            let components = transformed.split(separator: AppDelegate.separator, maxSplits: 6, omittingEmptySubsequences: false)
+            if components.count == 2 {
+                if AppDelegate.showParses { print("raw:\(raw) passed \(AppDelegate.parseNames[i])") }
+                return (pieceTitle: String(components[0]), movementTitle: String(components[1]))
+            } else {
+                if AppDelegate.showParses { print("raw:\(raw) failed \(AppDelegate.parseNames[i])") }
+            }
+        }
+        return nil
+    }
+
+
     private func storeMovement(from item: MPMediaItem, for piece: Piece, into context: NSManagedObjectContext) {
         let songTitle = item.title!
-        let movementTitleIndex = songTitle.index(songTitle.startIndex, offsetBy: piece.title!.count)
-        let movementTitle = String(songTitle.suffix(from: movementTitleIndex))
+        let movementTitle: String
+        if piece.title!.count < songTitle.count { //guard against erroneous parse
+            let movementTitleIndex = songTitle.index(songTitle.startIndex, offsetBy: piece.title!.count)
+            movementTitle = String(songTitle.suffix(from: movementTitleIndex))
+        } else {
+            movementTitle = ""
+        }
         let mov = NSEntityDescription.insertNewObject(forEntityName: "Movement", into: context) as! Movement
         mov.title = movementTitle
         mov.trackID = String(item.persistentID)
         piece.addToMovements(mov)
         print("    \(mov.title ?? "")")
     }
-    
-    private func sharedPrefix(_ a: String, _ b: String) -> String {
-        let shorter = (a.count < b.count) ? a : b
-        for index in shorter.indices {
-            if a[index] != b[index] || a[index] == ":" || a[index] == "-" {
-                return String(shorter[..<index])
-            }
-        }
-        return shorter
-    }
-    
-    private func shortenPrefix(_ starter: String) -> String {
-        var index = starter.index(before: starter.endIndex)
-        while starter[index] == ":" || starter[index] == "," || starter[index] == "-" || starter[index] == " " { //check end?
-            index = starter.index(before: index)
-        }
-        index = starter.index(after: index)
-        return String(starter[..<index])
+
+    private func storeMovement(from item: MPMediaItem, named: String, for piece: Piece, into context: NSManagedObjectContext) {
+         let mov = NSEntityDescription.insertNewObject(forEntityName: "Movement", into: context) as! Movement
+        mov.title = named
+        mov.trackID = String(item.persistentID)
+        piece.addToMovements(mov)
+        print("    \(mov.title ?? "")")
     }
 
+//    private func sharedPrefix(_ a: String, _ b: String) -> String {
+//        let shorter = (a.count < b.count) ? a : b
+//        for index in shorter.indices {
+//            if a[index] != b[index] /*|| a[index] == ":" || a[index] == "-"*/ {
+//                return String(shorter[..<index])
+//            }
+//        }
+//        return shorter
+//    }
+    
+//    private func shortenPrefix(_ starter: String) -> String {
+//        var index = starter.index(before: starter.endIndex)
+//        while starter[index] == ":" || starter[index] == "," || starter[index] == "-" || starter[index] == " " { //check end?
+//            index = starter.index(before: index)
+//        }
+//        index = starter.index(after: index)
+//        return String(starter[..<index])
+//    }
+
     private func storePiece(from mediaItem: MPMediaItem, entitled title: String, to album: Album, into context: NSManagedObjectContext) -> Piece {
-        let genreMark = (mediaItem.genre == "Classical") ? "!" : ""
-        print("  \(genreMark)|\(mediaItem.composer ?? "<anon>")| \(title)")
+        if mediaItem.genre == "Classical" {
+            let genreMark = (mediaItem.genre == "Classical") ? "!" : ""
+            print("  \(genreMark)|\(mediaItem.composer ?? "<anon>")| \(title)")
+        }
         let piece = NSEntityDescription.insertNewObject(forEntityName: "Piece", into: context) as! Piece
         piece.albumID = String(mediaItem.albumPersistentID) //estupido: persistentIDs are UInt64
         piece.composer = mediaItem.composer ?? ""
