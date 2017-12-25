@@ -9,8 +9,6 @@
 /* Begin PBXBuildFile section */
 		2733A60C1FE5FDE000E1EE77 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2733A60B1FE5FDE000E1EE77 /* AppDelegate.swift */; };
 		2733A60F1FE5FDE000E1EE77 /* ClassicPlayer.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2733A60D1FE5FDE000E1EE77 /* ClassicPlayer.xcdatamodeld */; };
-		2733A6111FE5FDE000E1EE77 /* MasterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2733A6101FE5FDE000E1EE77 /* MasterViewController.swift */; };
-		2733A6131FE5FDE000E1EE77 /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2733A6121FE5FDE000E1EE77 /* DetailViewController.swift */; };
 		2733A6161FE5FDE000E1EE77 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2733A6141FE5FDE000E1EE77 /* Main.storyboard */; };
 		2733A6181FE5FDE000E1EE77 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2733A6171FE5FDE000E1EE77 /* Assets.xcassets */; };
 		2733A61B1FE5FDE000E1EE77 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2733A6191FE5FDE000E1EE77 /* LaunchScreen.storyboard */; };
@@ -37,8 +35,6 @@
 		2733A6081FE5FDE000E1EE77 /* ClassicPlayer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClassicPlayer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2733A60B1FE5FDE000E1EE77 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		2733A60E1FE5FDE000E1EE77 /* ClassicPlayer.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ClassicPlayer.xcdatamodel; sourceTree = "<group>"; };
-		2733A6101FE5FDE000E1EE77 /* MasterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MasterViewController.swift; sourceTree = "<group>"; };
-		2733A6121FE5FDE000E1EE77 /* DetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; };
 		2733A6151FE5FDE000E1EE77 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		2733A6171FE5FDE000E1EE77 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2733A61A1FE5FDE000E1EE77 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -101,8 +97,6 @@
 			isa = PBXGroup;
 			children = (
 				2733A60B1FE5FDE000E1EE77 /* AppDelegate.swift */,
-				2733A6101FE5FDE000E1EE77 /* MasterViewController.swift */,
-				2733A6121FE5FDE000E1EE77 /* DetailViewController.swift */,
 				2733A6141FE5FDE000E1EE77 /* Main.storyboard */,
 				2733A6171FE5FDE000E1EE77 /* Assets.xcassets */,
 				2733A6191FE5FDE000E1EE77 /* LaunchScreen.storyboard */,
@@ -229,12 +223,10 @@
 				2755D72F1FE9629C006F49AE /* Piece+CoreDataClass.swift in Sources */,
 				2733A60C1FE5FDE000E1EE77 /* AppDelegate.swift in Sources */,
 				2733A60F1FE5FDE000E1EE77 /* ClassicPlayer.xcdatamodeld in Sources */,
-				2733A6111FE5FDE000E1EE77 /* MasterViewController.swift in Sources */,
 				2755D7301FE9629C006F49AE /* Piece+CoreDataProperties.swift in Sources */,
 				2755D7321FE9629C006F49AE /* Album+CoreDataProperties.swift in Sources */,
 				2755D7311FE9629C006F49AE /* Album+CoreDataClass.swift in Sources */,
 				2755D7331FE9629C006F49AE /* Movement+CoreDataClass.swift in Sources */,
-				2733A6131FE5FDE000E1EE77 /* DetailViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
