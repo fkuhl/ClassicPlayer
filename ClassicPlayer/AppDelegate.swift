@@ -14,10 +14,23 @@ import MediaPlayer
 class AppDelegate: UIResponder, UIApplicationDelegate {
     private static let showParses = false
     private static let separator: Character = "|"
+    private static let composerColonWorkDashMovement = try! NSRegularExpression(pattern: "[A-Z][a-z]+:\\s*([^-]+) - (.+)", options: [])
+    private static let composerColonWorkNrMovement =
+        try! NSRegularExpression(pattern: "[A-Z][a-z]+:\\s*([^-]+) ([1-9][0-9]*\\. .+)", options: [])
+    private static let composerColonWorkRomMovement = try! NSRegularExpression(pattern:
+        "[A-Z][a-z]+:\\s*([^-]+) ((?:I|II|III|IV|V|VI|VII|VIII|IX|X|XI|XII|XIII|XIV|XV|XVI|XVII|XVIII|XIX|XX)\\. .+)", options: [])
     private static let workColonDashMovement = try! NSRegularExpression(pattern: "\\s*([^-:])(?::| - )(.*)", options: [])
     private static let workNrMovement = try! NSRegularExpression(pattern: "\\s*([^-]+) ([1-9][0-9]*\\. .+)", options: [])
-     private static let workRomMovement = try! NSRegularExpression(pattern: "\\s*([^-]+) ((?:I|II|III|IV|V|VI|VII|VIII|IX|X|XI|XII|XIII|XIV|XV|XVI|XVII|XVIII|XIX|XX)\\. .+)", options: [])
-    private static let parseExpressions = [workColonDashMovement, workNrMovement, workRomMovement]
+     private static let workRomMovement = try! NSRegularExpression(pattern:
+        "\\s*([^-]+) ((?:I|II|III|IV|V|VI|VII|VIII|IX|X|XI|XII|XIII|XIV|XV|XVI|XVII|XVIII|XIX|XX)\\. .+)", options: [])
+    private static let parseExpressions = [
+        composerColonWorkDashMovement,
+        composerColonWorkNrMovement,
+        composerColonWorkRomMovement,
+        workColonDashMovement,
+        workNrMovement,
+        workRomMovement
+    ]
     private static let parseNames = ["colon or dash", "arabic numeral", "roman numeral"]
     private static let parseTemplate = "$1\(AppDelegate.separator)$2"
 
