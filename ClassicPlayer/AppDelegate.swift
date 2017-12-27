@@ -37,13 +37,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
-        
-        self.persistentContainer.performBackgroundTask { context in
-            self.loadFromMedia(into: context)
+        //You can check permission; if you don't have it, the user muct go to settings, so end
+        switch MPMediaLibrary.authorizationStatus() {
+        case .authorized:
+            self.persistentContainer.performBackgroundTask { context in
+                self.loadFromMedia(into: context)
+            }
+        default:
+            MPMediaLibrary.requestAuthorization { status in
+                switch status {
+                case .authorized:
+                    //TODO This occurs if app wasn't installed: app asks for permission. When it gets it, the media are read, but UI isn't updated, because ComposersVC has already appeared.
+                   self.persistentContainer.performBackgroundTask { context in
+                        self.loadFromMedia(into: context)
+                    }
+                default:
+                    //TODO App is installed, but user (apparently) revoked permission. Need to ask again?›
+                    print("no permission")
+                    exit(1)
+                }
+            }
         }
-
-        return true
+         return true
     }
     
     private func loadFromMedia(into context: NSManagedObjectContext) {
@@ -185,7 +200,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     private func storeMovement(from item: MPMediaItem, named: String, for piece: Piece, into context: NSManagedObjectContext) {
-         let mov = NSEntityDescription.insertNewObject(forEntityName: "Movement", into: context) as! Movement
+        let mov = NSEntityDescription.insertNewObject(forEntityName: "Movement", into: context) as! Movement
         mov.title = named
         mov.trackID = String(item.persistentID)
         piece.addToMovements(mov)
@@ -215,6 +230,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if mediaItem.genre == "Classical" {
             let genreMark = (mediaItem.genre == "Classical") ? "!" : ""
             print("  \(genreMark)|\(mediaItem.composer ?? "<anon>")| \(title)")
+        }
+        if title == "Tevot" {
+            print("Tevot album\(String(mediaItem.albumPersistentID)) track \(String(mediaItem.persistentID))")
         }
         let piece = NSEntityDescription.insertNewObject(forEntityName: "Piece", into: context) as! Piece
         piece.albumID = String(mediaItem.albumPersistentID) //estupido: persistentIDs are UInt64
