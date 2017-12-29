@@ -8,6 +8,13 @@
 
 import UIKit
 import CoreData
+import MediaPlayer
+
+class PieceTableViewCell: UITableViewCell {
+    @IBOutlet weak var artwork: UIImageView!
+    @IBOutlet weak var pieceTitle: UILabel!
+    @IBOutlet weak var pieceArtist: UILabel!
+}
 
 class PiecesFromComposerViewController: UIViewController, NSFetchedResultsControllerDelegate, UITableViewDelegate, UITableViewDataSource {
     @IBOutlet weak var tableView: UITableView!
@@ -48,12 +55,12 @@ class PiecesFromComposerViewController: UIViewController, NSFetchedResultsContro
         do {
             pieceObjects = try context.fetch(request)
 //            print("fetch returned \(pieceObjects!.count) pieces for \(selectedComposer ?? "")")
-//            if let po = pieceObjects {
-//                for pieceObject in po {
-//                    print("  piece \(pieceObject["title"]) with \(pieceObject["ensemble"]) " +
-//                        "album \(pieceObject["albumID"]) track \(pieceObject["trackID"]))")
-//                }
-//            }
+            if let po = pieceObjects {
+                for pieceObject in po {
+                    print("  piece \(pieceObject["title"]) with \(pieceObject["ensemble"]) " +
+                        "album \(pieceObject["albumID"]) track \(pieceObject["trackID"]))")
+                }
+            }
             tableView.reloadData()
         }
         catch {
@@ -67,19 +74,37 @@ class PiecesFromComposerViewController: UIViewController, NSFetchedResultsContro
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "Piece", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "Piece", for: indexPath) as! PieceTableViewCell
         let pieceEntry = pieceObjects![indexPath.row]
-        cell.textLabel?.text = pieceEntry["title"] as? String
-        cell.detailTextLabel?.text = pieceEntry["ensemble"] as? String
+        cell.pieceTitle?.text = pieceEntry["title"] as? String
+        cell.pieceArtist?.text = pieceEntry["ensemble"] as? String
         //TODO how to set image? Maybe need custom cell I can set
-        //cell.imageView = artworkFor(album: pieceEntry["albumID"])
+        let id = pieceEntry["albumID"] as? String
+        if let realID = id {
+            cell.artwork.image = artworkFor(album: realID)
+        }
         return cell
     }
     
-    private func artworkFor(album: String) -> UIImageView? {
-        //do MPMediaQuery to retrieve artwork
-        //TODO
-        return nil
+    private func artworkFor(album: String) -> UIImage? {
+        let query = MPMediaQuery.albums()
+        let idVal = UInt64(album, radix: 16)
+        let predicate = MPMediaPropertyPredicate(value: idVal, forProperty: MPMediaItemPropertyAlbumPersistentID)
+        query.filterPredicates = Set([ predicate ])
+        if query.collections == nil {
+            print("album query produced nil")
+            return nil
+        }
+        let results = query.collections!
+        if results.count < 1 {
+            print("album query had no hits")
+            return nil
+        }
+        if results.count > 1 { print("album query had \(results.count) hits") }
+        let result = results[0].items[0]
+        let propertyVal = result.value(forProperty: MPMediaItemPropertyArtwork)
+        let artwork = propertyVal as? MPMediaItemArtwork
+        return artwork?.image(at: CGSize(width: 30, height: 30))
     }
     
 //    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

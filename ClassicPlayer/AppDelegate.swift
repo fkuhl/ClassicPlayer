@@ -83,7 +83,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 let trackCount = items[0].value(forProperty: MPMediaItemPropertyAlbumTrackCount)
                 //print("track ct: \(String(describing: trackCount))")
                 album.trackCount = Int16(trackCount as! Int)
-                album.albumID = items[0].value(forProperty: MPMediaItemPropertyAlbumPersistentID) as? String
+                let propVal = items[0].value(forProperty: MPMediaItemPropertyAlbumPersistentID)
+                let numVal = propVal as? NSNumber
+                album.albumID = String(describing: numVal)
                 if (items[0].value(forProperty: MPMediaItemPropertyGenre) as? String) == "Classical" {
                     pieceCount += loadAndCountPieces(for: album, from: items, into: context)
                 } else {
@@ -194,7 +196,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         let mov = NSEntityDescription.insertNewObject(forEntityName: "Movement", into: context) as! Movement
         mov.title = movementTitle
-        mov.trackID = String(item.persistentID)
+        mov.trackID = String(item.persistentID, radix: 16, uppercase: false)
         piece.addToMovements(mov)
         print("    \(mov.title ?? "")")
     }
@@ -202,7 +204,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     private func storeMovement(from item: MPMediaItem, named: String, for piece: Piece, into context: NSManagedObjectContext) {
         let mov = NSEntityDescription.insertNewObject(forEntityName: "Movement", into: context) as! Movement
         mov.title = named
-        mov.trackID = String(item.persistentID)
+        mov.trackID = String(item.persistentID, radix: 16, uppercase: false)
         piece.addToMovements(mov)
         print("    \(mov.title ?? "")")
     }
@@ -235,7 +237,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             print("Tevot album\(String(mediaItem.albumPersistentID)) track \(String(mediaItem.persistentID))")
         }
         let piece = NSEntityDescription.insertNewObject(forEntityName: "Piece", into: context) as! Piece
-        piece.albumID = String(mediaItem.albumPersistentID) //estupido: persistentIDs are UInt64
+        piece.albumID = String(mediaItem.albumPersistentID, radix: 16, uppercase: false) //estupido: persistentIDs are UInt64
         piece.composer = mediaItem.composer ?? ""
         piece.director = ""
         piece.ensemble = mediaItem.artist ?? ""
@@ -243,7 +245,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         piece.soloists = ""
         piece.title = title
         piece.album = album
-        piece.trackID = String(mediaItem.persistentID)
+        piece.trackID = String(mediaItem.persistentID, radix: 16, uppercase: false)
         album.addToPieces(piece)
         return piece
     }
