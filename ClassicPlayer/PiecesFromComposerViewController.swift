@@ -11,6 +11,7 @@ import CoreData
 import MediaPlayer
 
 class PieceTableViewCell: UITableViewCell {
+    @IBOutlet weak var artAndLabelsStack: UIStackView!
     @IBOutlet weak var artwork: UIImageView!
     @IBOutlet weak var pieceTitle: UILabel!
     @IBOutlet weak var pieceArtist: UILabel!
@@ -26,8 +27,8 @@ class PiecesFromComposerViewController: UIViewController, NSFetchedResultsContro
         super.viewDidLoad()
         self.tableView.delegate = self
         self.tableView.dataSource = self
-//        self.tableView.rowHeight = UITableViewAutomaticDimension
-//        self.tableView.estimatedRowHeight = 72.0
+        self.tableView.rowHeight = UITableViewAutomaticDimension
+        self.tableView.estimatedRowHeight = 72.0
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -82,19 +83,31 @@ class PiecesFromComposerViewController: UIViewController, NSFetchedResultsContro
         cell.pieceArtist?.text = pieceEntry["ensemble"] as? String
         let id = pieceEntry["albumID"] as? String
         if let realID = id {
-            cell.artwork.image = artworkFor(album: realID)
+            let returnedArtwork = artworkFor(album: realID)
+            if returnedArtwork != nil {
+                cell.artwork.image = returnedArtwork
+                cell.artwork.isOpaque = true
+                cell.artwork.alpha = 1.0
+           } else {
+                cell.artwork.image = UIImage(named: "1706-music-note", in: nil, compatibleWith: nil)
+                cell.artwork.isOpaque = false
+                cell.artwork.alpha = 0.3
+            }
         }
-//        if UIApplication.shared.preferredContentSizeCategory > .extraExtraLarge {
-//
-//        } else {
-//
-//        }
+        if UIApplication.shared.preferredContentSizeCategory > .extraExtraLarge {
+            cell.artAndLabelsStack.axis = .vertical
+            cell.artAndLabelsStack.alignment = .leading
+        } else {
+            cell.artAndLabelsStack.axis = .horizontal
+            cell.artAndLabelsStack.alignment = .top
+        }
         return cell
     }
     
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return max(CGFloat(72.0), UIFontMetrics.default.scaledValue(for: 72.0))
-    }
+    //superseded by UITableViewAutomaticDimension--see viewDidLoad
+//    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+//        return max(CGFloat(72.0), UIFontMetrics.default.scaledValue(for: 72.0))
+//    }
     
     private func artworkFor(album: String) -> UIImage? {
         let query = MPMediaQuery.albums()
