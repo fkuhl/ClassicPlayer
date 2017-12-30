@@ -26,6 +26,8 @@ class PiecesFromComposerViewController: UIViewController, NSFetchedResultsContro
         super.viewDidLoad()
         self.tableView.delegate = self
         self.tableView.dataSource = self
+//        self.tableView.rowHeight = UITableViewAutomaticDimension
+//        self.tableView.estimatedRowHeight = 72.0
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -55,12 +57,12 @@ class PiecesFromComposerViewController: UIViewController, NSFetchedResultsContro
         do {
             pieceObjects = try context.fetch(request)
 //            print("fetch returned \(pieceObjects!.count) pieces for \(selectedComposer ?? "")")
-            if let po = pieceObjects {
-                for pieceObject in po {
-                    print("  piece \(pieceObject["title"]) with \(pieceObject["ensemble"]) " +
-                        "album \(pieceObject["albumID"]) track \(pieceObject["trackID"]))")
-                }
-            }
+//            if let po = pieceObjects {
+//                for pieceObject in po {
+//                    print("  piece \(pieceObject["title"]) with \(pieceObject["ensemble"]) " +
+//                        "album \(pieceObject["albumID"]) track \(pieceObject["trackID"]))")
+//                }
+//            }
             tableView.reloadData()
         }
         catch {
@@ -78,12 +80,20 @@ class PiecesFromComposerViewController: UIViewController, NSFetchedResultsContro
         let pieceEntry = pieceObjects![indexPath.row]
         cell.pieceTitle?.text = pieceEntry["title"] as? String
         cell.pieceArtist?.text = pieceEntry["ensemble"] as? String
-        //TODO how to set image? Maybe need custom cell I can set
         let id = pieceEntry["albumID"] as? String
         if let realID = id {
             cell.artwork.image = artworkFor(album: realID)
         }
+//        if UIApplication.shared.preferredContentSizeCategory > .extraExtraLarge {
+//
+//        } else {
+//
+//        }
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return max(CGFloat(72.0), UIFontMetrics.default.scaledValue(for: 72.0))
     }
     
     private func artworkFor(album: String) -> UIImage? {
@@ -104,7 +114,7 @@ class PiecesFromComposerViewController: UIViewController, NSFetchedResultsContro
         let result = results[0].items[0]
         let propertyVal = result.value(forProperty: MPMediaItemPropertyArtwork)
         let artwork = propertyVal as? MPMediaItemArtwork
-        return artwork?.image(at: CGSize(width: 30, height: 30))
+        return artwork?.image(at: CGSize(width: 20, height: 20))
     }
     
 //    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

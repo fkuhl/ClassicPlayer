@@ -6,7 +6,6 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
-        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -92,37 +91,48 @@
                                 <rect key="frame" x="0.0" y="116" width="375" height="502"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="Piece" id="NVt-Ac-M8y" customClass="PieceTableViewCell" customModule="ClassicPlayer" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="28" width="375" height="44"/>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="Piece" rowHeight="72" id="NVt-Ac-M8y" customClass="PieceTableViewCell" customModule="ClassicPlayer" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="28" width="375" height="72"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="NVt-Ac-M8y" id="BEP-Br-dVv">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="71.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gBX-98-cb1">
-                                                    <rect key="frame" x="345" y="0.0" width="30" height="43.5"/>
-                                                </imageView>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="pieceTitle" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RiB-Bm-e0L">
-                                                    <rect key="frame" x="15" y="0.0" width="82.5" height="24"/>
-                                                    <fontDescription key="fontDescription" style="UICTFontTextStyleTitle3"/>
-                                                    <nil key="textColor"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="pieceArtist" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="g3i-Ec-eiS">
-                                                    <rect key="frame" x="15" y="25" width="61.5" height="14.5"/>
-                                                    <fontDescription key="fontDescription" style="UICTFontTextStyleCaption1"/>
-                                                    <nil key="textColor"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
+                                                <stackView opaque="NO" contentMode="scaleToFill" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="Z3W-aa-CnD">
+                                                    <rect key="frame" x="4" y="0.0" width="367" height="67.5"/>
+                                                    <subviews>
+                                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="gBX-98-cb1">
+                                                            <rect key="frame" x="0.0" y="0.0" width="68" height="67.5"/>
+                                                            <constraints>
+                                                                <constraint firstAttribute="width" constant="68" id="OtL-zC-AHW"/>
+                                                                <constraint firstAttribute="height" constant="68" id="WAn-q1-AEc"/>
+                                                            </constraints>
+                                                        </imageView>
+                                                        <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="fwx-nk-9FD">
+                                                            <rect key="frame" x="72" y="0.0" width="295" height="67.5"/>
+                                                            <subviews>
+                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" text="pieceTitle" textAlignment="natural" lineBreakMode="middleTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RiB-Bm-e0L">
+                                                                    <rect key="frame" x="0.0" y="0.0" width="295" height="53"/>
+                                                                    <fontDescription key="fontDescription" style="UICTFontTextStyleSubhead"/>
+                                                                    <nil key="textColor"/>
+                                                                    <nil key="highlightedColor"/>
+                                                                </label>
+                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="pieceArtist" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="g3i-Ec-eiS">
+                                                                    <rect key="frame" x="0.0" y="53" width="295" height="14.5"/>
+                                                                    <fontDescription key="fontDescription" style="UICTFontTextStyleCaption1"/>
+                                                                    <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                                    <nil key="highlightedColor"/>
+                                                                </label>
+                                                            </subviews>
+                                                        </stackView>
+                                                    </subviews>
+                                                </stackView>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstItem="RiB-Bm-e0L" firstAttribute="leading" secondItem="BEP-Br-dVv" secondAttribute="leadingMargin" id="1Sd-20-Xdr"/>
-                                                <constraint firstItem="g3i-Ec-eiS" firstAttribute="leading" secondItem="BEP-Br-dVv" secondAttribute="leadingMargin" id="BtN-qD-hGV"/>
-                                                <constraint firstAttribute="trailing" secondItem="gBX-98-cb1" secondAttribute="trailing" id="NYM-8U-I7e"/>
-                                                <constraint firstItem="gBX-98-cb1" firstAttribute="top" secondItem="BEP-Br-dVv" secondAttribute="top" id="Rae-zm-5oS"/>
-                                                <constraint firstAttribute="bottom" secondItem="gBX-98-cb1" secondAttribute="bottom" id="Rh8-ST-Wab"/>
-                                                <constraint firstItem="g3i-Ec-eiS" firstAttribute="top" secondItem="RiB-Bm-e0L" secondAttribute="bottom" constant="1" id="jKe-hy-vgU"/>
-                                                <constraint firstItem="RiB-Bm-e0L" firstAttribute="top" secondItem="BEP-Br-dVv" secondAttribute="topMargin" constant="-11" id="lr5-rV-1sX"/>
+                                                <constraint firstAttribute="bottom" secondItem="Z3W-aa-CnD" secondAttribute="bottom" constant="4" id="ZcW-qy-ukp"/>
+                                                <constraint firstItem="Z3W-aa-CnD" firstAttribute="top" secondItem="BEP-Br-dVv" secondAttribute="top" id="aEV-r4-KlZ"/>
+                                                <constraint firstAttribute="trailing" secondItem="Z3W-aa-CnD" secondAttribute="trailing" constant="4" id="h0z-8R-B2f"/>
+                                                <constraint firstItem="Z3W-aa-CnD" firstAttribute="leading" secondItem="BEP-Br-dVv" secondAttribute="leading" constant="4" id="z5d-Rm-M7A"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                         <connections>
