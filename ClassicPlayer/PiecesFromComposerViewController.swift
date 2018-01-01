@@ -21,7 +21,7 @@ class PiecesFromComposerViewController: UIViewController, NSFetchedResultsContro
     @IBOutlet weak var tableView: UITableView!
     var selectedComposer: String?
     private var tableIsLoaded = false
-    private var pieceObjects: [NSDictionary]?
+    private var pieceObjects: [Piece]?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -47,12 +47,12 @@ class PiecesFromComposerViewController: UIViewController, NSFetchedResultsContro
     private func updateUI() {
         self.title = selectedComposer
         let context:NSManagedObjectContext! = (UIApplication.shared.delegate as! AppDelegate).context
-        let request = NSFetchRequest<NSDictionary>()
+        let request = NSFetchRequest<Piece>()
         request.entity = NSEntityDescription.entity(forEntityName: "Piece", in:context)
         request.predicate = NSPredicate(format: "composer == %@", selectedComposer!)
-        request.resultType = .dictionaryResultType
+        request.resultType = .managedObjectResultType
         request.returnsDistinctResults = true
-        request.propertiesToFetch = [ "title", "albumID", "trackID", "ensemble" ]
+//        request.propertiesToFetch = [ "title", "albumID", "trackID", "ensemble" ]
         request.sortDescriptors = [ NSSortDescriptor(key: "title", ascending: true) ]
         
         do {
@@ -79,9 +79,9 @@ class PiecesFromComposerViewController: UIViewController, NSFetchedResultsContro
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Piece", for: indexPath) as! PieceTableViewCell
         let pieceEntry = pieceObjects![indexPath.row]
-        cell.pieceTitle?.text = pieceEntry["title"] as? String
-        cell.pieceArtist?.text = pieceEntry["ensemble"] as? String
-        let id = pieceEntry["albumID"] as? String
+        cell.pieceTitle?.text = pieceEntry.title
+        cell.pieceArtist?.text = pieceEntry.ensemble
+        let id = pieceEntry.albumID
         if let realID = id {
             let returnedArtwork = artworkFor(album: realID)
             if returnedArtwork != nil {

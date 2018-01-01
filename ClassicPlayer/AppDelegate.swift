@@ -41,7 +41,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         switch MPMediaLibrary.authorizationStatus() {
         case .authorized:
             self.persistentContainer.performBackgroundTask { context in
-                self.loadFromMedia(into: context)
+                self.clearAndLoad(into: context)
             }
         default:
             MPMediaLibrary.requestAuthorization { status in
@@ -49,7 +49,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 case .authorized:
                     //TODO This occurs if app wasn't installed: app asks for permission. When it gets it, the media are read, but UI isn't updated, because ComposersVC has already appeared.
                    self.persistentContainer.performBackgroundTask { context in
-                        self.loadFromMedia(into: context)
+                        self.clearAndLoad(into: context)
                     }
                 default:
                     //TODO App is installed, but user (apparently) revoked permission. Need to ask again?›
@@ -59,6 +59,42 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
          return true
+    }
+    
+    private func clearAndLoad(into context: NSManagedObjectContext) {
+        do {
+            let request: NSFetchRequest<NSFetchRequestResult> = NSFetchRequest<Movement>() as! NSFetchRequest<NSFetchRequestResult>
+            request.entity = NSEntityDescription.entity(forEntityName: "Movement", in:context)
+            var deleteRequest = NSBatchDeleteRequest(fetchRequest: request)
+            request.predicate = NSPredicate(format: "title MATCHES %@", ".*")
+            deleteRequest.resultType = .resultTypeCount
+            var deleteResult = try context.execute(deleteRequest) as? NSBatchDeleteResult
+            print("deleted \(deleteResult?.result ?? "<nil>") Movements")
+            
+            request.entity = NSEntityDescription.entity(forEntityName: "Piece", in:context)
+            deleteRequest = NSBatchDeleteRequest(fetchRequest: request)
+            request.predicate = NSPredicate(format: "title MATCHES %@", ".*")
+            deleteRequest.resultType = .resultTypeCount
+            deleteResult = try context.execute(deleteRequest) as? NSBatchDeleteResult
+            print("deleted \(deleteResult?.result ?? "<nil>") Pieces")
+            
+            request.entity = NSEntityDescription.entity(forEntityName: "Album", in:context)
+            deleteRequest = NSBatchDeleteRequest(fetchRequest: request)
+            request.predicate = NSPredicate(format: "title MATCHES %@", ".*")
+            deleteRequest.resultType = .resultTypeCount
+            deleteResult = try context.execute(deleteRequest) as? NSBatchDeleteResult
+            print("deleted \(deleteResult?.result ?? "<nil>") Albums")
+            
+            try context.save()
+
+            self.loadFromMedia(into: context)
+            
+            try context.save()
+            //TODO notify first view to reload, now that data available
+        } catch {
+            let nserror = error as NSError
+            fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
+        }
     }
     
     private func loadFromMedia(into context: NSManagedObjectContext) {
@@ -208,25 +244,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         piece.addToMovements(mov)
         print("    \(mov.title ?? "")")
     }
-
-//    private func sharedPrefix(_ a: String, _ b: String) -> String {
-//        let shorter = (a.count < b.count) ? a : b
-//        for index in shorter.indices {
-//            if a[index] != b[index] /*|| a[index] == ":" || a[index] == "-"*/ {
-//                return String(shorter[..<index])
-//            }
-//        }
-//        return shorter
-//    }
-    
-//    private func shortenPrefix(_ starter: String) -> String {
-//        var index = starter.index(before: starter.endIndex)
-//        while starter[index] == ":" || starter[index] == "," || starter[index] == "-" || starter[index] == " " { //check end?
-//            index = starter.index(before: index)
-//        }
-//        index = starter.index(after: index)
-//        return String(starter[..<index])
-//    }
 
     private func storePiece(from mediaItem: MPMediaItem, entitled title: String, to album: Album, into context: NSManagedObjectContext) -> Piece {
         if mediaItem.genre == "Classical" {
