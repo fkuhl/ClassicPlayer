@@ -10,6 +10,10 @@ import UIKit
 import CoreData
 import MediaPlayer
 
+extension Notification.Name {
+    static let dataAvailable = Notification.Name("DataAvailable")
+}
+
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     private static let showParses = false
@@ -63,38 +67,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     private func clearAndLoad(into context: NSManagedObjectContext) {
         do {
-            let request: NSFetchRequest<NSFetchRequestResult> = NSFetchRequest<Movement>() as! NSFetchRequest<NSFetchRequestResult>
-            request.entity = NSEntityDescription.entity(forEntityName: "Movement", in:context)
-            var deleteRequest = NSBatchDeleteRequest(fetchRequest: request)
-            request.predicate = NSPredicate(format: "title MATCHES %@", ".*")
-            deleteRequest.resultType = .resultTypeCount
-            var deleteResult = try context.execute(deleteRequest) as? NSBatchDeleteResult
-            print("deleted \(deleteResult?.result ?? "<nil>") Movements")
-            
-            request.entity = NSEntityDescription.entity(forEntityName: "Piece", in:context)
-            deleteRequest = NSBatchDeleteRequest(fetchRequest: request)
-            request.predicate = NSPredicate(format: "title MATCHES %@", ".*")
-            deleteRequest.resultType = .resultTypeCount
-            deleteResult = try context.execute(deleteRequest) as? NSBatchDeleteResult
-            print("deleted \(deleteResult?.result ?? "<nil>") Pieces")
-            
-            request.entity = NSEntityDescription.entity(forEntityName: "Album", in:context)
-            deleteRequest = NSBatchDeleteRequest(fetchRequest: request)
-            request.predicate = NSPredicate(format: "title MATCHES %@", ".*")
-            deleteRequest.resultType = .resultTypeCount
-            deleteResult = try context.execute(deleteRequest) as? NSBatchDeleteResult
-            print("deleted \(deleteResult?.result ?? "<nil>") Albums")
-            
+            try clearEntities(ofType: "Movement", from: context)
+            try clearEntities(ofType: "Piece", from: context)
+            try clearEntities(ofType: "Album", from: context)
             try context.save()
-
             self.loadFromMedia(into: context)
-            
             try context.save()
-            //TODO notify first view to reload, now that data available
+            NotificationCenter.default.post(Notification(name: .dataAvailable))
         } catch {
             let nserror = error as NSError
             fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
         }
+    }
+    
+    private func clearEntities(ofType type: String, from context: NSManagedObjectContext) throws {
+        let request: NSFetchRequest<NSFetchRequestResult> = NSFetchRequest<NSFetchRequestResult>()
+        request.entity = NSEntityDescription.entity(forEntityName: type, in:context)
+        let deleteRequest = NSBatchDeleteRequest(fetchRequest: request)
+        request.predicate = NSPredicate(format: "title MATCHES %@", ".*")
+        deleteRequest.resultType = .resultTypeCount
+        let deleteResult = try context.execute(deleteRequest) as? NSBatchDeleteResult
+        print("deleted \(deleteResult?.result ?? "<nil>") \(type)")
     }
     
     private func loadFromMedia(into context: NSManagedObjectContext) {

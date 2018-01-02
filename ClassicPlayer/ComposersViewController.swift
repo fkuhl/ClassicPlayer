@@ -23,26 +23,34 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
         super.viewDidLoad()
         self.tableView.delegate = self
         self.tableView.dataSource = self
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(updateUI),
+                                               name: .dataAvailable,
+                                               object: nil)
     }
     
+    @objc
     private func updateUI() {
-        let context:NSManagedObjectContext! = (UIApplication.shared.delegate as! AppDelegate).context
-        let request = NSFetchRequest<NSDictionary>()
-        request.entity = NSEntityDescription.entity(forEntityName: "Piece", in:context)
-        request.resultType = .dictionaryResultType
-        request.returnsDistinctResults = true
-        request.propertiesToFetch = [ "composer" ]
-        request.sortDescriptors = [ NSSortDescriptor(key: "composer", ascending: true) ]
-        
-        do {
-            composerObjects = try context.fetch(request)
-            print("fetch returned \(composerObjects!.count) composer things")
-            computeSections()
-            tableView.reloadData()
-       }
-        catch {
-            let nserror = error as NSError
-            fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
+        DispatchQueue.main.async { //This is getting called off the thread that handles notifications
+            let context:NSManagedObjectContext! = (UIApplication.shared.delegate as! AppDelegate).context
+            let request = NSFetchRequest<NSDictionary>()
+            request.entity = NSEntityDescription.entity(forEntityName: "Piece", in:context!)
+            request.resultType = .dictionaryResultType
+            request.returnsDistinctResults = true
+            request.propertiesToFetch = [ "composer" ]
+            request.sortDescriptors = [ NSSortDescriptor(key: "composer", ascending: true) ]
+            do {
+                self.composerObjects = try context!.fetch(request)
+                print("fetch returned \(self.composerObjects!.count) composer things")
+                self.computeSections()
+                DispatchQueue.main.async {
+                    self.tableView.reloadData()
+                }
+            }
+            catch {
+                let nserror = error as NSError
+                fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
+            }
         }
     }
     
@@ -97,7 +105,8 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Composer", for: indexPath)
         let composerEntry = composerObjects![indexPath.section * sectionSize + indexPath.row]
-        cell.textLabel?.text = composerEntry["composer"] as? String
+        let reportedComposer = composerEntry["composer"] as? String
+        cell.textLabel?.text = (reportedComposer == "") ? "<blank>" : reportedComposer
         return cell
     }
     
