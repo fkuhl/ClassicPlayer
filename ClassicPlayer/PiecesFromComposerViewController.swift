@@ -126,13 +126,14 @@ class PiecesFromComposerViewController: UIViewController, NSFetchedResultsContro
         return artwork?.image(at: CGSize(width: 20, height: 20))
     }
     
-//    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-//        if segue.identifier == "ComposerSelected" {
-//            let secondViewController = segue.destination as! PiecesFromComposerViewController
-//            if let selected = tableView?.indexPathForSelectedRow {
-//                secondViewController.selectedComposer =
-//                    composerObjects![selected.section * sectionSize + selected.row]["composer"] as? String
-//            }
-//        }
-//    }
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "PieceSelected" {
+            let secondViewController = segue.destination as! PieceViewController
+            if let selected = tableView?.indexPathForSelectedRow {
+                secondViewController.selectedPiece =
+                    pieces![selected.row]
+            }
+        }
+    }
+
 }

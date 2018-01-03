@@ -102,16 +102,16 @@
 		2733A60A1FE5FDE000E1EE77 /* ClassicPlayer */ = {
 			isa = PBXGroup;
 			children = (
-				27FCDEDB1FF2D220001D81CE /* ComposersViewController.swift */,
 				2733A60B1FE5FDE000E1EE77 /* AppDelegate.swift */,
+				2733A6171FE5FDE000E1EE77 /* Assets.xcassets */,
+				2733A60D1FE5FDE000E1EE77 /* ClassicPlayer.xcdatamodeld */,
+				27FCDEDB1FF2D220001D81CE /* ComposersViewController.swift */,
+				2733A61C1FE5FDE000E1EE77 /* Info.plist */,
+				2733A6191FE5FDE000E1EE77 /* LaunchScreen.storyboard */,
 				2733A6141FE5FDE000E1EE77 /* Main.storyboard */,
 				27FCDED71FF2B0BB001D81CE /* PiecesFromComposerViewController.swift */,
-				2733A6171FE5FDE000E1EE77 /* Assets.xcassets */,
-				2733A6191FE5FDE000E1EE77 /* LaunchScreen.storyboard */,
-				2733A61C1FE5FDE000E1EE77 /* Info.plist */,
-				2733A60D1FE5FDE000E1EE77 /* ClassicPlayer.xcdatamodeld */,
-				2733A6301FE5FE8600E1EE77 /* README.md */,
 				27FCDEDD1FF2D8D6001D81CE /* PieceViewController.swift */,
+				2733A6301FE5FE8600E1EE77 /* README.md */,
 			);
 			path = ClassicPlayer;
 			sourceTree = "<group>";

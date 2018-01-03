@@ -140,6 +140,7 @@
                                             <outlet property="artwork" destination="gBX-98-cb1" id="062-qR-IJp"/>
                                             <outlet property="pieceArtist" destination="g3i-Ec-eiS" id="lwH-W0-Zp0"/>
                                             <outlet property="pieceTitle" destination="RiB-Bm-e0L" id="pjq-7Y-1lC"/>
+                                            <segue destination="M8t-0W-tjS" kind="show" identifier="PieceSelected" id="bh3-nG-NX4"/>
                                         </connections>
                                     </tableViewCell>
                                 </prototypes>
@@ -169,13 +170,38 @@
                     <view key="view" contentMode="scaleToFill" id="Xqd-Up-lwm">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="gj7-CD-Ytp">
+                                <rect key="frame" x="0.0" y="554" width="375" height="64"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="64" id="mWX-fu-Bs4"/>
+                                </constraints>
+                                <connections>
+                                    <segue destination="lUG-gc-0lH" kind="embed" id="obt-4U-61W"/>
+                                </connections>
+                            </containerView>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="ywQ-hv-IID">
+                                <rect key="frame" x="0.0" y="116" width="120" height="120"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="120" id="7Po-DM-mV4"/>
+                                    <constraint firstAttribute="width" constant="120" id="hP0-ia-4uX"/>
+                                </constraints>
+                            </imageView>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="9mL-UO-o8d" firstAttribute="trailing" secondItem="gj7-CD-Ytp" secondAttribute="trailing" id="3zG-O8-aVA"/>
+                            <constraint firstItem="9mL-UO-o8d" firstAttribute="bottom" secondItem="gj7-CD-Ytp" secondAttribute="bottom" id="ENf-NE-wo2"/>
+                            <constraint firstItem="ywQ-hv-IID" firstAttribute="leading" secondItem="9mL-UO-o8d" secondAttribute="leading" id="gBZ-pE-Bcl"/>
+                            <constraint firstItem="ywQ-hv-IID" firstAttribute="top" secondItem="9mL-UO-o8d" secondAttribute="top" id="mhc-7w-nq7"/>
+                            <constraint firstItem="gj7-CD-Ytp" firstAttribute="leading" secondItem="9mL-UO-o8d" secondAttribute="leading" id="qju-c2-XJy"/>
+                        </constraints>
                         <viewLayoutGuide key="safeArea" id="9mL-UO-o8d"/>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="j0C-Zi-dRz" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1698" y="-2538"/>
+            <point key="canvasLocation" x="-1698.4000000000001" y="-2538.08095952024"/>
         </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="2lK-nf-aks">
@@ -282,6 +308,20 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="OOy-xZ-ISa" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-3835.1999999999998" y="-2537.6311844077964"/>
+        </scene>
+        <!--Player View Controller-->
+        <scene sceneID="64D-lZ-jz6">
+            <objects>
+                <viewController id="lUG-gc-0lH" customClass="AVPlayerViewController" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="j9j-ox-G9F">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="64"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="KfR-0h-UQw" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-982" y="-2539"/>
         </scene>
     </scenes>
     <resources>
