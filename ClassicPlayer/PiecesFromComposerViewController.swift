@@ -21,7 +21,7 @@ class PiecesFromComposerViewController: UIViewController, NSFetchedResultsContro
     @IBOutlet weak var tableView: UITableView!
     var selectedComposer: String?
     private var tableIsLoaded = false
-    private var pieceObjects: [Piece]?
+    private var pieces: [Piece]?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -43,7 +43,7 @@ class PiecesFromComposerViewController: UIViewController, NSFetchedResultsContro
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-
+    
     private func updateUI() {
         self.title = selectedComposer
         let context:NSManagedObjectContext! = (UIApplication.shared.delegate as! AppDelegate).context
@@ -56,14 +56,7 @@ class PiecesFromComposerViewController: UIViewController, NSFetchedResultsContro
         request.sortDescriptors = [ NSSortDescriptor(key: "title", ascending: true) ]
         
         do {
-            pieceObjects = try context.fetch(request)
-//            print("fetch returned \(pieceObjects!.count) pieces for \(selectedComposer ?? "")")
-//            if let po = pieceObjects {
-//                for pieceObject in po {
-//                    print("  piece \(pieceObject["title"]) with \(pieceObject["ensemble"]) " +
-//                        "album \(pieceObject["albumID"]) track \(pieceObject["trackID"]))")
-//                }
-//            }
+            pieces = try context.fetch(request)
             tableView.reloadData()
         }
         catch {
@@ -73,12 +66,12 @@ class PiecesFromComposerViewController: UIViewController, NSFetchedResultsContro
     }
     
     func tableView(_: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return pieceObjects?.count ?? 0
+        return pieces?.count ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Piece", for: indexPath) as! PieceTableViewCell
-        let pieceEntry = pieceObjects![indexPath.row]
+        let pieceEntry = pieces![indexPath.row]
         cell.pieceTitle?.text = pieceEntry.title
         cell.pieceArtist?.text = pieceEntry.ensemble
         let id = pieceEntry.albumID
@@ -94,12 +87,15 @@ class PiecesFromComposerViewController: UIViewController, NSFetchedResultsContro
                 cell.artwork.alpha = 0.3
             }
         }
+        //Priority lowered on artwork height to prevent unsatisfiable constraint.
         if UIApplication.shared.preferredContentSizeCategory > .extraExtraLarge {
             cell.artAndLabelsStack.axis = .vertical
             cell.artAndLabelsStack.alignment = .leading
         } else {
             cell.artAndLabelsStack.axis = .horizontal
             cell.artAndLabelsStack.alignment = .top
+            //Content hugging priority lowered on text fields so they expand across the cell.
+            cell.artAndLabelsStack.distribution = .fill
         }
         return cell
     }

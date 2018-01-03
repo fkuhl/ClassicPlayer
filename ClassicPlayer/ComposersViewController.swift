@@ -41,7 +41,7 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
             request.sortDescriptors = [ NSSortDescriptor(key: "composer", ascending: true) ]
             do {
                 self.composerObjects = try context!.fetch(request)
-                print("fetch returned \(self.composerObjects!.count) composer things")
+                //print("fetch returned \(self.composerObjects!.count) composer things")
                 self.computeSections()
                 DispatchQueue.main.async {
                     self.tableView.reloadData()
@@ -77,7 +77,6 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        print("on VWA")
         if !tableIsLoaded {
             updateUI()
             tableIsLoaded = true
@@ -106,7 +105,7 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
         let cell = tableView.dequeueReusableCell(withIdentifier: "Composer", for: indexPath)
         let composerEntry = composerObjects![indexPath.section * sectionSize + indexPath.row]
         let reportedComposer = composerEntry["composer"] as? String
-        cell.textLabel?.text = (reportedComposer == "") ? "<blank>" : reportedComposer
+        cell.textLabel?.text = (reportedComposer == "") ? "[no composer listed]" : reportedComposer
         return cell
     }
     
