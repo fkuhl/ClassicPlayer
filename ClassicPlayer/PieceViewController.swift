@@ -9,18 +9,27 @@
 import UIKit
 import AVFoundation
 
-class PieceViewController: UIViewController {
+class MovementTableViewCell: UITableViewCell {
+    @IBOutlet weak var movementTitle: UILabel!
+}
+
+class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     @IBOutlet weak var artAndLabelsStack: UIStackView!
     @IBOutlet weak var artwork: UIImageView!
     @IBOutlet weak var composer: UILabel!
     @IBOutlet weak var pieceTitle: UILabel!
     @IBOutlet weak var artist: UILabel!
+    @IBOutlet weak var movementTable: UITableView!
     var selectedPiece: Piece?
     var player: AVPlayer?
+    var movements: NSOrderedSet?
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        player = AVPlayer()
+        self.movementTable.delegate = self
+        self.movementTable.dataSource = self
+        self.movementTable.rowHeight = UITableViewAutomaticDimension
+        self.movementTable.estimatedRowHeight = 64.0
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -28,6 +37,7 @@ class PieceViewController: UIViewController {
         self.composer.text = selectedPiece?.composer
         self.pieceTitle.text = selectedPiece?.title
         self.artist.text = selectedPiece?.ensemble
+        self.movements = selectedPiece?.movements
         let id = selectedPiece?.albumID
         if let realID = id {
             let returnedArtwork = AppDelegate.artworkFor(album: realID)
@@ -51,5 +61,16 @@ class PieceViewController: UIViewController {
             //Content hugging priority lowered on text fields so they expand across the cell.
             self.artAndLabelsStack.distribution = .fill
         }
+    }
+    
+    func tableView(_: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return movements?.count ?? 0
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "Movement", for: indexPath) as! MovementTableViewCell
+        let movementEntry = movements![indexPath.row]
+        cell.movementTitle?.text = (movementEntry as? Movement)?.title
+        return cell
     }
 }
