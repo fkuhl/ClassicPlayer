@@ -19,6 +19,7 @@
 		2755D7321FE9629C006F49AE /* Album+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2755D72C1FE9629C006F49AE /* Album+CoreDataProperties.swift */; };
 		2755D7331FE9629C006F49AE /* Movement+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2755D72D1FE9629C006F49AE /* Movement+CoreDataClass.swift */; };
 		2755D7341FE9629C006F49AE /* Movement+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2755D72E1FE9629C006F49AE /* Movement+CoreDataProperties.swift */; };
+		275D8F341FFFFDDA00F403A8 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 275D8F331FFFFDDA00F403A8 /* AVFoundation.framework */; };
 		27FCDED81FF2B0BB001D81CE /* PiecesFromComposerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27FCDED71FF2B0BB001D81CE /* PiecesFromComposerViewController.swift */; };
 		27FCDEDC1FF2D220001D81CE /* ComposersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27FCDEDB1FF2D220001D81CE /* ComposersViewController.swift */; };
 		27FCDEDE1FF2D8D6001D81CE /* PieceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27FCDEDD1FF2D8D6001D81CE /* PieceViewController.swift */; };
@@ -52,6 +53,7 @@
 		2755D72C1FE9629C006F49AE /* Album+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Album+CoreDataProperties.swift"; path = "ClassicPlayer/Album+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		2755D72D1FE9629C006F49AE /* Movement+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Movement+CoreDataClass.swift"; path = "ClassicPlayer/Movement+CoreDataClass.swift"; sourceTree = "<group>"; };
 		2755D72E1FE9629C006F49AE /* Movement+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Movement+CoreDataProperties.swift"; path = "ClassicPlayer/Movement+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		275D8F331FFFFDDA00F403A8 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		27FCDED71FF2B0BB001D81CE /* PiecesFromComposerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PiecesFromComposerViewController.swift; sourceTree = "<group>"; };
 		27FCDEDB1FF2D220001D81CE /* ComposersViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComposersViewController.swift; sourceTree = "<group>"; };
 		27FCDEDD1FF2D8D6001D81CE /* PieceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PieceViewController.swift; sourceTree = "<group>"; };
@@ -62,6 +64,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				275D8F341FFFFDDA00F403A8 /* AVFoundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -87,6 +90,7 @@
 				2733A60A1FE5FDE000E1EE77 /* ClassicPlayer */,
 				2733A6241FE5FDE100E1EE77 /* ClassicPlayerUITests */,
 				2733A6091FE5FDE000E1EE77 /* Products */,
+				275D8F321FFFFDDA00F403A8 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -123,6 +127,14 @@
 				2733A6271FE5FDE100E1EE77 /* Info.plist */,
 			);
 			path = ClassicPlayerUITests;
+			sourceTree = "<group>";
+		};
+		275D8F321FFFFDDA00F403A8 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				275D8F331FFFFDDA00F403A8 /* AVFoundation.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

@@ -76,7 +76,7 @@ class PiecesFromComposerViewController: UIViewController, NSFetchedResultsContro
         cell.pieceArtist?.text = pieceEntry.ensemble
         let id = pieceEntry.albumID
         if let realID = id {
-            let returnedArtwork = artworkFor(album: realID)
+            let returnedArtwork = AppDelegate.artworkFor(album: realID)
             if returnedArtwork != nil {
                 cell.artwork.image = returnedArtwork
                 cell.artwork.isOpaque = true
@@ -105,33 +105,11 @@ class PiecesFromComposerViewController: UIViewController, NSFetchedResultsContro
 //        return max(CGFloat(72.0), UIFontMetrics.default.scaledValue(for: 72.0))
 //    }
     
-    private func artworkFor(album: String) -> UIImage? {
-        let query = MPMediaQuery.albums()
-        let idVal = UInt64(album, radix: 16)
-        let predicate = MPMediaPropertyPredicate(value: idVal, forProperty: MPMediaItemPropertyAlbumPersistentID)
-        query.filterPredicates = Set([ predicate ])
-        if query.collections == nil {
-            print("album query produced nil")
-            return nil
-        }
-        let results = query.collections!
-        if results.count < 1 {
-            print("album query had no hits")
-            return nil
-        }
-        if results.count > 1 { print("album query had \(results.count) hits") }
-        let result = results[0].items[0]
-        let propertyVal = result.value(forProperty: MPMediaItemPropertyArtwork)
-        let artwork = propertyVal as? MPMediaItemArtwork
-        return artwork?.image(at: CGSize(width: 20, height: 20))
-    }
-    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "PieceSelected" {
             let secondViewController = segue.destination as! PieceViewController
             if let selected = tableView?.indexPathForSelectedRow {
-                secondViewController.selectedPiece =
-                    pieces![selected.row]
+                secondViewController.selectedPiece = pieces![selected.row]
             }
         }
     }

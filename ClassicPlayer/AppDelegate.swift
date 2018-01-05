@@ -259,6 +259,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         album.addToPieces(piece)
         return piece
     }
+    
+    static func artworkFor(album: String) -> UIImage? {
+        let query = MPMediaQuery.albums()
+        let idVal = UInt64(album, radix: 16)
+        let predicate = MPMediaPropertyPredicate(value: idVal, forProperty: MPMediaItemPropertyAlbumPersistentID)
+        query.filterPredicates = Set([ predicate ])
+        if query.collections == nil {
+            print("album query produced nil")
+            return nil
+        }
+        let results = query.collections!
+        if results.count < 1 {
+            print("album query had no hits")
+            return nil
+        }
+        if results.count > 1 { print("album query had \(results.count) hits") }
+        let result = results[0].items[0]
+        let propertyVal = result.value(forProperty: MPMediaItemPropertyArtwork)
+        let artwork = propertyVal as? MPMediaItemArtwork
+        return artwork?.image(at: CGSize(width: 20, height: 20))
+    }
 
     func applicationWillResignActive(_ application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
