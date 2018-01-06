@@ -8,6 +8,7 @@
 
 import UIKit
 import AVFoundation
+import AVKit
 
 class MovementTableViewCell: UITableViewCell {
     @IBOutlet weak var movementTitle: UILabel!
@@ -72,5 +73,15 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
         let movementEntry = movements![indexPath.row]
         cell.movementTitle?.text = (movementEntry as? Movement)?.title
         return cell
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "PlayTracks" {
+            let destination = segue.destination as! AVPlayerViewController
+//            guard let url = URL(string: "https://devimages-cdn.apple.com/samplecode/avfoundationMedia/AVFoundationQueuePlayer_HLS2/master.m3u8") else {
+//                return
+//            }
+            destination.player = AVPlayer(url: (selectedPiece?.trackURL)!)
+        }
     }
 }

@@ -44,6 +44,7 @@
             <userInfo/>
         </attribute>
         <attribute name="trackID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="trackURL" optional="YES" attributeType="URI" syncable="YES"/>
         <relationship name="album" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="Album" inverseName="pieces" inverseEntity="Album">
             <userInfo/>
         </relationship>
@@ -59,6 +60,6 @@
         <element name="Album" positionX="108" positionY="117" width="128" height="120"/>
         <element name="Event" positionX="315" positionY="198" width="128" height="60"/>
         <element name="Movement" positionX="529" positionY="126" width="128" height="90"/>
-        <element name="Piece" positionX="342" positionY="123" width="128" height="195"/>
+        <element name="Piece" positionX="342" positionY="123" width="128" height="210"/>
     </elements>
 </model>

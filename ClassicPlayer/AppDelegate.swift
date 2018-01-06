@@ -256,6 +256,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         piece.title = title
         piece.album = album
         piece.trackID = String(mediaItem.persistentID, radix: 16, uppercase: false)
+        piece.trackURL = mediaItem.assetURL
         album.addToPieces(piece)
         return piece
     }
