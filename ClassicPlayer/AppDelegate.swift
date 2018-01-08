@@ -234,6 +234,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let mov = NSEntityDescription.insertNewObject(forEntityName: "Movement", into: context) as! Movement
         mov.title = named
         mov.trackID = String(item.persistentID, radix: 16, uppercase: false)
+        mov.trackURL = item.assetURL
         piece.addToMovements(mov)
         print("    \(mov.title ?? "")")
     }

@@ -35,6 +35,7 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        self.title = selectedPiece?.title
         self.composer.text = selectedPiece?.composer
         self.pieceTitle.text = selectedPiece?.title
         self.artist.text = selectedPiece?.ensemble
@@ -62,6 +63,11 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
             //Content hugging priority lowered on text fields so they expand across the cell.
             self.artAndLabelsStack.distribution = .fill
         }
+        if (selectedPiece?.movements) != nil && (selectedPiece?.movements)!.count > 0 {
+            movementTable?.isHidden = false
+        } else {
+            movementTable?.isHidden = true
+        }
     }
     
     func tableView(_: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -78,10 +84,15 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "PlayTracks" {
             let destination = segue.destination as! AVPlayerViewController
-//            guard let url = URL(string: "https://devimages-cdn.apple.com/samplecode/avfoundationMedia/AVFoundationQueuePlayer_HLS2/master.m3u8") else {
-//                return
-//            }
-            destination.player = AVPlayer(url: (selectedPiece?.trackURL)!)
+            if (selectedPiece?.movements) != nil && (selectedPiece?.movements)!.count > 0 {
+                let movements = (selectedPiece?.movements)!.array
+                let itemsToPlay: [AVPlayerItem] = movements.map {
+                    return AVPlayerItem(url: (($0 as? Movement)?.trackURL)!)
+                }
+                destination.player = AVQueuePlayer(items: itemsToPlay)
+            } else {
+                destination.player = AVPlayer(url: (selectedPiece?.trackURL)!)
+            }
         }
     }
 }
