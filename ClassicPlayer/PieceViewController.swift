@@ -24,6 +24,7 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
     var selectedPiece: Piece?
     var player: AVPlayer?
     var movements: NSOrderedSet?
+    var contextString = "some stuff"
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -90,9 +91,36 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
                     return AVPlayerItem(url: (($0 as? Movement)?.trackURL)!)
                 }
                 destination.player = AVQueuePlayer(items: itemsToPlay)
+                destination.player?.addObserver(self,
+                                       forKeyPath: #keyPath(AVPlayer.currentItem),
+                                       options: [.old, .new],
+                                       context: &contextString)
+
             } else {
                 destination.player = AVPlayer(url: (selectedPiece?.trackURL)!)
             }
         }
     }
+    
+    override func observeValue(forKeyPath keyPath: String?,
+                               of object: Any?,
+                               change: [NSKeyValueChangeKey : Any]?,
+                               context: UnsafeMutableRawPointer?) {
+        // Only handle observations for the playerItemContext
+        guard context == &contextString else {
+            super.observeValue(forKeyPath: keyPath,
+                               of: object,
+                               change: change,
+                               context: context)
+            return
+        }
+        
+        if keyPath == #keyPath(AVPlayer.currentItem) {
+            // Get the status change from the change dictionary
+            if let currentItem = change?[.newKey] as? AVPlayerItem {
+                print("got a new currnetItem \(currentItem)")
+            }
+        }
+    }
+
 }
