@@ -95,8 +95,11 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
                                        forKeyPath: #keyPath(AVPlayer.currentItem),
                                        options: [.old, .new],
                                        context: &contextString)
-
-            } else {
+               destination.player?.addObserver(self,
+                                       forKeyPath: #keyPath(AVPlayer.status),
+                                       options: [.old, .new],
+                                       context: &contextString)
+           } else {
                 destination.player = AVPlayer(url: (selectedPiece?.trackURL)!)
             }
         }
@@ -114,13 +117,33 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
                                context: context)
             return
         }
-        
         if keyPath == #keyPath(AVPlayer.currentItem) {
             // Get the status change from the change dictionary
             if let currentItem = change?[.newKey] as? AVPlayerItem {
                 print("got a new currnetItem \(currentItem)")
             }
         }
+        if keyPath == #keyPath(AVPlayer.status) {
+            let status: AVPlayerStatus
+            
+            // Get the status change from the change dictionary
+            if let statusNumber = change?[.newKey] as? NSNumber {
+                status = AVPlayerStatus(rawValue: statusNumber.intValue)!
+            } else {
+                status = .unknown
+            }
+            // Switch over the status
+            switch status {
+            case .readyToPlay:
+                // Player item is ready to play.
+                print("player ready to play")
+            case .failed:
+                // Player item failed. See error.
+                print("player failed")
+            case .unknown:
+                // Player item is not yet ready.
+                print("player status unknown")
+            }
+        }
     }
-
 }
