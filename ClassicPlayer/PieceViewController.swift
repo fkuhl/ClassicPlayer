@@ -22,15 +22,20 @@ class MovementTableViewCell: UITableViewCell {
  */
 
 class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+    static let enSpace = "\u{2002}"
+    static let blackCircle = "\u{25CF}"
+
     @IBOutlet weak var artAndLabelsStack: UIStackView!
     @IBOutlet weak var artwork: UIImageView!
     @IBOutlet weak var composer: UILabel!
     @IBOutlet weak var pieceTitle: UILabel!
     @IBOutlet weak var artist: UILabel!
     @IBOutlet weak var movementTable: UITableView!
+    var playerViewController: AVPlayerViewController?
     var selectedPiece: Piece?
-    var player: AVPlayer?
     var movements: NSOrderedSet?
+    var currentIndex = 0
+    var playerRate: Float = 0.0
     var contextString = "some stuff"
     
     override func viewDidLoad() {
@@ -78,6 +83,11 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
         }
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        playerViewController?.player = nil
+    }
+    
     func tableView(_: UITableView, numberOfRowsInSection section: Int) -> Int {
         return movements?.count ?? 0
     }
@@ -85,36 +95,38 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Movement", for: indexPath) as! MovementTableViewCell
         let movementEntry = movements![indexPath.row]
-        cell.indicator?.text = "X"
+        cell.indicator?.text = (indexPath.row == currentIndex) ? PieceViewController.blackCircle : PieceViewController.enSpace
+        cell.indicator?.textColor = (playerRate < 0.5) ? UIColor.orange : UIColor.green
         cell.movementTitle?.text = (movementEntry as? Movement)?.title
         return cell
     }
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+    }
+
+    
+    //The embed segue that places the AVPlayerViewController in the ContainerVC
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "PlayTracks" {
-            let destination = segue.destination as! AVPlayerViewController
+            self.playerViewController = segue.destination as? AVPlayerViewController
             if (selectedPiece?.movements) != nil && (selectedPiece?.movements)!.count > 0 {
                 let movements = (selectedPiece?.movements)!.array
                 let itemsToPlay: [AVPlayerItem] = movements.map {
                     movementAny in
                     return AVPlayerItem(url: ((movementAny as? Movement)?.trackURL)!)
                 }
-                itemsToPlay.forEach {
-                    playerItem in
-                    playerItem.addObserver(self,
-                                           forKeyPath: #keyPath(AVPlayerItem.status),
-                                           options: [.old, .new],
-                                           context: &contextString)
-                }
-                 destination.player = AVQueuePlayer(items: itemsToPlay)
-                //TODO this is the default. Set to .none when last item begins?
-                destination.player?.actionAtItemEnd = AVPlayerActionAtItemEnd.advance
-                destination.player?.addObserver(self,
-                                    forKeyPath: #keyPath(AVPlayer.currentItem),
-                                    options: [.old, .new],
-                                    context: &contextString)
+                playerViewController?.player = AVQueuePlayer(items: itemsToPlay)
+                playerViewController?.player?.addObserver(self,
+                                                forKeyPath: #keyPath(AVPlayer.currentItem),
+                                                options: [.old, .new],
+                                                context: &contextString)
+                playerViewController?.player?.addObserver(self,
+                                                forKeyPath: #keyPath(AVPlayer.rate),
+                                                options: [.old, .new],
+                                                context: &contextString)
           } else {
-                destination.player = AVPlayer(url: (selectedPiece?.trackURL)!)
+                playerViewController?.player = AVPlayer(url: (selectedPiece?.trackURL)!)
             }
         }
     }
@@ -123,7 +135,6 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
                                of object: Any?,
                                change: [NSKeyValueChangeKey : Any]?,
                                context: UnsafeMutableRawPointer?) {
-        // Only handle observations for the playerItemContext
         guard context == &contextString else {
             super.observeValue(forKeyPath: keyPath,
                                of: object,
@@ -132,32 +143,21 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
             return
         }
         if keyPath == #keyPath(AVPlayer.currentItem) {
-            // Get the status change from the change dictionary
             if let currentItem = change?[.newKey] as? AVPlayerItem {
-                print("new currentItem \(currentItem)")
+                currentIndex += 1
+                print("new currentItem, index \(currentIndex) \(currentItem)")
+                if currentIndex == movements!.count - 1 {
+                    //Just pause after last item, rather than searching for stuff.
+                    (object as? AVPlayer)?.actionAtItemEnd = .pause
+                }
+                DispatchQueue.main.async { self.movementTable.reloadData() }
             }
         }
-        if keyPath == #keyPath(AVPlayerItem.status) {
-            let status: AVPlayerItemStatus
-            
-            // Get the status change from the change dictionary
-            if let statusNumber = change?[.newKey] as? NSNumber {
-                status = AVPlayerItemStatus(rawValue: statusNumber.intValue)!
-            } else {
-                status = .unknown
-            }
-            let item: AVPlayerItem? = object as? AVPlayerItem
-            // Switch over the status
-            switch status {
-            case .readyToPlay:
-                // Player item is ready to play.
-                print("item \(String(describing: item)) ready to play")
-            case .failed:
-                // Player item failed. See error.
-                print("item \(String(describing: item)) failed")
-            case .unknown:
-                // Player item is not yet ready.
-                print("item \(String(describing: item)) status unknown")
+        if keyPath == #keyPath(AVPlayer.rate) {
+            if let rate = change?[.newKey] as? NSNumber {
+                playerRate = rate.floatValue
+                print("new rate \(rate)")
+                DispatchQueue.main.async { self.movementTable.reloadData() }
             }
         }
     }

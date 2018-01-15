@@ -52,7 +52,6 @@ class PiecesFromComposerViewController: UIViewController, NSFetchedResultsContro
         request.predicate = NSPredicate(format: "composer == %@", selectedComposer!)
         request.resultType = .managedObjectResultType
         request.returnsDistinctResults = true
-//        request.propertiesToFetch = [ "title", "albumID", "trackID", "ensemble" ]
         request.sortDescriptors = [ NSSortDescriptor(key: "title", ascending: true) ]
         
         do {
