@@ -11,8 +11,15 @@ import AVFoundation
 import AVKit
 
 class MovementTableViewCell: UITableViewCell {
+    @IBOutlet weak var indicator: UILabel!
     @IBOutlet weak var movementTitle: UILabel!
 }
+
+/*
+ To avoid the dread "Detected a case where constraints ambiguously suggest a height of zero"
+ complaint regarding table view cell heights, the trick is to ensure that the contents are
+ constrained to ALL 4 EDGES. The StackView odes the trick here.
+ */
 
 class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     @IBOutlet weak var artAndLabelsStack: UIStackView!
@@ -78,6 +85,7 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Movement", for: indexPath) as! MovementTableViewCell
         let movementEntry = movements![indexPath.row]
+        cell.indicator?.text = "X"
         cell.movementTitle?.text = (movementEntry as? Movement)?.title
         return cell
     }
@@ -88,18 +96,24 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
             if (selectedPiece?.movements) != nil && (selectedPiece?.movements)!.count > 0 {
                 let movements = (selectedPiece?.movements)!.array
                 let itemsToPlay: [AVPlayerItem] = movements.map {
-                    return AVPlayerItem(url: (($0 as? Movement)?.trackURL)!)
+                    movementAny in
+                    return AVPlayerItem(url: ((movementAny as? Movement)?.trackURL)!)
                 }
-                destination.player = AVQueuePlayer(items: itemsToPlay)
+                itemsToPlay.forEach {
+                    playerItem in
+                    playerItem.addObserver(self,
+                                           forKeyPath: #keyPath(AVPlayerItem.status),
+                                           options: [.old, .new],
+                                           context: &contextString)
+                }
+                 destination.player = AVQueuePlayer(items: itemsToPlay)
+                //TODO this is the default. Set to .none when last item begins?
+                destination.player?.actionAtItemEnd = AVPlayerActionAtItemEnd.advance
                 destination.player?.addObserver(self,
-                                       forKeyPath: #keyPath(AVPlayer.currentItem),
-                                       options: [.old, .new],
-                                       context: &contextString)
-               destination.player?.addObserver(self,
-                                       forKeyPath: #keyPath(AVPlayer.status),
-                                       options: [.old, .new],
-                                       context: &contextString)
-           } else {
+                                    forKeyPath: #keyPath(AVPlayer.currentItem),
+                                    options: [.old, .new],
+                                    context: &contextString)
+          } else {
                 destination.player = AVPlayer(url: (selectedPiece?.trackURL)!)
             }
         }
@@ -120,29 +134,30 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
         if keyPath == #keyPath(AVPlayer.currentItem) {
             // Get the status change from the change dictionary
             if let currentItem = change?[.newKey] as? AVPlayerItem {
-                print("got a new currnetItem \(currentItem)")
+                print("new currentItem \(currentItem)")
             }
         }
-        if keyPath == #keyPath(AVPlayer.status) {
-            let status: AVPlayerStatus
+        if keyPath == #keyPath(AVPlayerItem.status) {
+            let status: AVPlayerItemStatus
             
             // Get the status change from the change dictionary
             if let statusNumber = change?[.newKey] as? NSNumber {
-                status = AVPlayerStatus(rawValue: statusNumber.intValue)!
+                status = AVPlayerItemStatus(rawValue: statusNumber.intValue)!
             } else {
                 status = .unknown
             }
+            let item: AVPlayerItem? = object as? AVPlayerItem
             // Switch over the status
             switch status {
             case .readyToPlay:
                 // Player item is ready to play.
-                print("player ready to play")
+                print("item \(String(describing: item)) ready to play")
             case .failed:
                 // Player item failed. See error.
-                print("player failed")
+                print("item \(String(describing: item)) failed")
             case .unknown:
                 // Player item is not yet ready.
-                print("player status unknown")
+                print("item \(String(describing: item)) status unknown")
             }
         }
     }
