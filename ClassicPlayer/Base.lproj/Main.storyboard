@@ -221,22 +221,20 @@
                                                 <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" alignment="top" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="4Yq-0Z-rPo">
                                                     <rect key="frame" x="8" y="8" width="359" height="47.5"/>
                                                     <subviews>
-                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Indicator" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="loz-R3-gro">
-                                                            <rect key="frame" x="0.0" y="0.0" width="20" height="18"/>
-                                                            <constraints>
-                                                                <constraint firstAttribute="width" constant="20" id="rRs-WO-seB"/>
-                                                            </constraints>
-                                                            <fontDescription key="fontDescription" style="UICTFontTextStyleSubhead"/>
-                                                            <nil key="textColor"/>
-                                                            <nil key="highlightedColor"/>
-                                                        </label>
-                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" text="title" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FdN-3q-jdO">
-                                                            <rect key="frame" x="24" y="0.0" width="335" height="18"/>
+                                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="hLD-IQ-PaF" userLabel="Indicator">
+                                                            <rect key="frame" x="0.0" y="0.0" width="43.5" height="47.5"/>
+                                                        </imageView>
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" text="title" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FdN-3q-jdO">
+                                                            <rect key="frame" x="47.5" y="0.0" width="311.5" height="18"/>
                                                             <fontDescription key="fontDescription" style="UICTFontTextStyleSubhead"/>
                                                             <nil key="textColor"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
                                                     </subviews>
+                                                    <constraints>
+                                                        <constraint firstItem="hLD-IQ-PaF" firstAttribute="height" secondItem="4Yq-0Z-rPo" secondAttribute="height" id="9Ev-yf-eAP"/>
+                                                        <constraint firstItem="hLD-IQ-PaF" firstAttribute="leading" secondItem="4Yq-0Z-rPo" secondAttribute="leading" id="pR2-oz-kgG"/>
+                                                    </constraints>
                                                 </stackView>
                                             </subviews>
                                             <constraints>
@@ -247,7 +245,7 @@
                                             </constraints>
                                         </tableViewCellContentView>
                                         <connections>
-                                            <outlet property="indicator" destination="loz-R3-gro" id="dkx-bf-Eyg"/>
+                                            <outlet property="indicator" destination="hLD-IQ-PaF" id="nI2-nr-QHA"/>
                                             <outlet property="movementTitle" destination="FdN-3q-jdO" id="SvO-G1-W9I"/>
                                         </connections>
                                     </tableViewCell>

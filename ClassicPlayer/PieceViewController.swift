@@ -11,8 +11,8 @@ import AVFoundation
 import AVKit
 
 class MovementTableViewCell: UITableViewCell {
-    @IBOutlet weak var indicator: UILabel!
     @IBOutlet weak var movementTitle: UILabel!
+    @IBOutlet weak var indicator: UIImageView!
 }
 
 /*
@@ -94,10 +94,26 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Movement", for: indexPath) as! MovementTableViewCell
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        if indexPath.row == currentIndex {
+            if playerRate < 0.5 {
+                cell.indicator.stopAnimating()
+                cell.indicator.animationImages = nil
+                cell.indicator.image = appDelegate.audioPaused
+            } else {
+                cell.indicator.image = nil
+                cell.indicator.animationImages = appDelegate.audioBarSet
+                cell.indicator.animationRepeatCount = 0 //like, forever
+                cell.indicator.animationDuration = 0.6  //sec
+                cell.indicator.startAnimating()
+            }
+        } else {
+            cell.indicator.stopAnimating()
+            cell.indicator.animationImages = nil
+            cell.indicator.image = appDelegate.audioNotCurrent
+        }
         let movementEntry = movements![indexPath.row]
-        cell.indicator?.text = (indexPath.row == currentIndex) ? PieceViewController.blackCircle : PieceViewController.enSpace
-        cell.indicator?.textColor = (playerRate < 0.5) ? UIColor.orange : UIColor.green
-        cell.movementTitle?.text = (movementEntry as? Movement)?.title
+        cell.movementTitle.text = (movementEntry as? Movement)?.title
         return cell
     }
     

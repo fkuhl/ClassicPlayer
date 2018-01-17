@@ -35,10 +35,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         workNrMovement,
         workRomMovement
     ]
-    private static let parseNames = ["colon or dash", "arabic numeral", "roman numeral"]
+    private static let parseNames = ["colon or dash", "arabic numeral", "roman numeral",
+                                     "work colon dash movt", "work arabic movt", "work roman movt"]
     private static let parseTemplate = "$1\(AppDelegate.separator)$2"
 
     var window: UIWindow?
+    var audioBarSet: [UIImage]?
+    var audioPaused: UIImage?
+    var audioNotCurrent: UIImage?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         let audioSession = AVAudioSession.sharedInstance()
@@ -47,7 +51,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         } catch {
             print("Setting category to AVAudioSessionCategoryPlayback failed.")
         }
-        //You can check permission; if you don't have it, the user muct go to settings, so end
+        //You can check permission; if you don't have it, the user must go to settings, so end
         switch MPMediaLibrary.authorizationStatus() {
         case .authorized:
             self.persistentContainer.performBackgroundTask { context in
@@ -68,7 +72,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 }
             }
         }
-         return true
+        makeAudioBarSet()
+        return true
     }
     
     private func clearAndLoad(into context: NSManagedObjectContext) {
@@ -242,16 +247,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         mov.trackID = String(item.persistentID, radix: 16, uppercase: false)
         mov.trackURL = item.assetURL
         piece.addToMovements(mov)
-        print("    \(mov.title ?? "")")
+        print("    '\(mov.title ?? "")'")
     }
 
     private func storePiece(from mediaItem: MPMediaItem, entitled title: String, to album: Album, into context: NSManagedObjectContext) -> Piece {
         if mediaItem.genre == "Classical" {
             let genreMark = (mediaItem.genre == "Classical") ? "!" : ""
             print("  \(genreMark)|\(mediaItem.composer ?? "<anon>")| \(title)")
-        }
-        if title == "Tevot" {
-            print("Tevot album\(String(mediaItem.albumPersistentID)) track \(String(mediaItem.persistentID))")
         }
         let piece = NSEntityDescription.insertNewObject(forEntityName: "Piece", into: context) as! Piece
         piece.albumID = String(mediaItem.albumPersistentID, radix: 16, uppercase: false) //estupido: persistentIDs are UInt64
@@ -287,6 +289,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let propertyVal = result.value(forProperty: MPMediaItemPropertyArtwork)
         let artwork = propertyVal as? MPMediaItemArtwork
         return artwork?.image(at: CGSize(width: 20, height: 20))
+    }
+    
+    private func makeAudioBarSet() {
+        audioBarSet = [UIImage]()
+        for imageFrame in 1...10 {
+            let image = UIImage(named:"bars-\(imageFrame)")
+            if let frame = image {
+                audioBarSet?.append(frame)
+            }
+        }
+        audioPaused = UIImage(named:"bars-paused")
+        audioNotCurrent = UIImage(named:"bars-not-current")
     }
 
     func applicationWillResignActive(_ application: UIApplication) {
