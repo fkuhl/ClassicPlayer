@@ -34,7 +34,8 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
     var playerViewController: AVPlayerViewController?
     var selectedPiece: Piece?
     var movements: NSOrderedSet?
-    var currentIndex = 0
+    var currentlyPlayingIndex = 0 //what's next in the player
+    var firstIndexInPlayer = 0    //index of first movement in player
     var playerRate: Float = 0.0
     var contextString = "some stuff"
     
@@ -95,7 +96,7 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Movement", for: indexPath) as! MovementTableViewCell
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        if indexPath.row == currentIndex {
+        if indexPath.row == currentlyPlayingIndex {
             if playerRate < 0.5 {
                 cell.indicator.stopAnimating()
                 cell.indicator.animationImages = nil
@@ -118,9 +119,33 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
+        firstIndexInPlayer = indexPath.row
+        currentlyPlayingIndex = indexPath.row
+        let partialList = (selectedPiece?.movements)!.array[indexPath.row...]
+        let playerItems = partialList.map {
+            movementAny in
+            return AVPlayerItem(url: ((movementAny as? Movement)?.trackURL)!)
+        }
+        setQueuePlayer(items: playerItems)
+        if currentlyPlayingIndex == movements!.count - 1 {
+            //Just pause after last item, rather than searching for stuff.
+            playerViewController?.player?.actionAtItemEnd = .pause
+        }
+        tableView.reloadData()
+        playerViewController?.player?.play() //Tap on the table, it starts to play
     }
 
+    private func setQueuePlayer(items: [AVPlayerItem]) {
+        playerViewController?.player = AVQueuePlayer(items: items)
+        playerViewController?.player?.addObserver(self,
+                                                  forKeyPath: #keyPath(AVPlayer.currentItem),
+                                                  options: [.old, .new],
+                                                  context: &contextString)
+        playerViewController?.player?.addObserver(self,
+                                                  forKeyPath: #keyPath(AVPlayer.rate),
+                                                  options: [.old, .new],
+                                                  context: &contextString)
+    }
     
     //The embed segue that places the AVPlayerViewController in the ContainerVC
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -128,19 +153,13 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
             self.playerViewController = segue.destination as? AVPlayerViewController
             if (selectedPiece?.movements) != nil && (selectedPiece?.movements)!.count > 0 {
                 let movements = (selectedPiece?.movements)!.array
-                let itemsToPlay: [AVPlayerItem] = movements.map {
+                let playerItems = movements.map {
                     movementAny in
                     return AVPlayerItem(url: ((movementAny as? Movement)?.trackURL)!)
                 }
-                playerViewController?.player = AVQueuePlayer(items: itemsToPlay)
-                playerViewController?.player?.addObserver(self,
-                                                forKeyPath: #keyPath(AVPlayer.currentItem),
-                                                options: [.old, .new],
-                                                context: &contextString)
-                playerViewController?.player?.addObserver(self,
-                                                forKeyPath: #keyPath(AVPlayer.rate),
-                                                options: [.old, .new],
-                                                context: &contextString)
+                firstIndexInPlayer = 0 //start with all movements
+                currentlyPlayingIndex = 0
+                setQueuePlayer(items: playerItems)
           } else {
                 playerViewController?.player = AVPlayer(url: (selectedPiece?.trackURL)!)
             }
@@ -160,9 +179,9 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
         }
         if keyPath == #keyPath(AVPlayer.currentItem) {
             if let currentItem = change?[.newKey] as? AVPlayerItem {
-                currentIndex += 1
-                print("new currentItem, index \(currentIndex) \(currentItem)")
-                if currentIndex == movements!.count - 1 {
+                currentlyPlayingIndex += 1
+                print("new currentItem, index \(currentlyPlayingIndex) \(currentItem)")
+                if currentlyPlayingIndex == movements!.count - 1 {
                     //Just pause after last item, rather than searching for stuff.
                     (object as? AVPlayer)?.actionAtItemEnd = .pause
                 }
@@ -172,7 +191,6 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
         if keyPath == #keyPath(AVPlayer.rate) {
             if let rate = change?[.newKey] as? NSNumber {
                 playerRate = rate.floatValue
-                print("new rate \(rate)")
                 DispatchQueue.main.async { self.movementTable.reloadData() }
             }
         }
