@@ -2,7 +2,7 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "bars-quiet.png",
+      "filename" : "bars-paused.png",
       "scale" : "1x"
     },
     {

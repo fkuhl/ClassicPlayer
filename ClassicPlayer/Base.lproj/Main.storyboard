@@ -418,4 +418,5 @@
         <image name="1656-piano" width="23" height="19"/>
         <image name="1706-music-note" width="19" height="23"/>
     </resources>
+    <color key="tintColor" name="TheBlue"/>
 </document>
