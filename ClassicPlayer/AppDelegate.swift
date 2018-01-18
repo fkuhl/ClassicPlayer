@@ -47,6 +47,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         let audioSession = AVAudioSession.sharedInstance()
         do {
+            //In addition to setting this audio mode, info.plist contains a "Required background modes" key,
+            //with an "audio" ("app plays audio ... AirPlay") entry.
             try audioSession.setCategory(AVAudioSessionCategoryPlayback)
         } catch {
             print("Setting category to AVAudioSessionCategoryPlayback failed.")
