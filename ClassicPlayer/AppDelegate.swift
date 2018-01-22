@@ -173,16 +173,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             switch state {
             case .beginPiece:
                 let pieceTitle = parsed?.pieceTitle ?? unwrappedTitle
-                piece = storePiece(from: collection[i], entitled: pieceTitle, to: album, into: context)
-                piecesAdded += 1
                 if i + 1 >= collection.count {
                     //no more songs to be movements
+                    //so piece name is the track name
+                    piece = storePiece(from: collection[i], entitled: unwrappedTitle, to: album, into: context)
+                    piecesAdded += 1
                     i += 1
                     continue
                 }
                 let nextParsed = checkParses(in: collection[i + 1].title ?? "")
                 if nextParsed != nil && pieceTitle == nextParsed!.pieceTitle {
                     //at least two movements: record piece, then first two movements
+                    let pieceTitle = parsed?.pieceTitle ?? unwrappedTitle
+                    piece = storePiece(from: collection[i], entitled: pieceTitle, to: album, into: context)
+                    piecesAdded += 1
                     storeMovement(from: collection[i],     named: parsed!.movementTitle,     for: piece!, into: context)
                     storeMovement(from: collection[i + 1], named: nextParsed!.movementTitle, for: piece!, into: context)
                     movementsAdded += 2
@@ -191,6 +195,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     state = .continuePiece
                 } else {
                     //next is different piece
+                    //so piece name is the track name
+                    piece = storePiece(from: collection[i], entitled: unwrappedTitle, to: album, into: context)
+                    piecesAdded += 1
                     i += 1
                     state = .beginPiece
                 }
