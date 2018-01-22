@@ -186,6 +186,16 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
                     (object as? AVPlayer)?.actionAtItemEnd = .pause
                 }
                 DispatchQueue.main.async { self.movementTable.reloadData() }
+                //As of iOS 11, the scroll seems to need a little delay.
+                let deadlineTime = DispatchTime.now() + .milliseconds(100)
+                DispatchQueue.main.asyncAfter(deadline: deadlineTime) {
+                    if let visibleIndexPaths = self.movementTable.indexPathsForVisibleRows {
+                        let currentPath = IndexPath(indexes: [0, self.currentlyPlayingIndex])
+                        if !visibleIndexPaths.contains(currentPath) {
+                            self.movementTable.scrollToRow(at: currentPath, at: .bottom, animated: true)
+                        }
+                    }
+                }
             }
         }
         if keyPath == #keyPath(AVPlayer.rate) {
