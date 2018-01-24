@@ -13,7 +13,7 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
     @IBOutlet weak var tableView: UITableView!
     private var tableIsLoaded = false
     
-    static var indexedSectionCount = 27
+    static var indexedSectionCount = 27  //A magic number; that's how many sections any UITableView index can have.
     private var composerObjects: [NSDictionary]?
     private var sectionCount = 1
     private var sectionSize = 0
@@ -38,6 +38,7 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
             request.resultType = .dictionaryResultType
             request.returnsDistinctResults = true
             request.propertiesToFetch = [ "composer" ]
+            request.predicate = NSPredicate(format: "composer <> %@", "") //No blank composers!
             request.sortDescriptors = [ NSSortDescriptor(key: "composer", ascending: true) ]
             do {
                 self.composerObjects = try context!.fetch(request)
