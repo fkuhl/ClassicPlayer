@@ -49,6 +49,7 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        print("PieceVC.viewWillAppear")
         self.title = selectedPiece?.title
         self.composer.text = selectedPiece?.composer
         self.pieceTitle.text = selectedPiece?.title
@@ -82,10 +83,17 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
         } else {
             movementTable?.isHidden = true
         }
+        //Could be returning from
+        if playerViewController?.player == nil {
+            installPlayer()
+            playerRate = 0.0 //On such a return the player is paused
+            movementTable.reloadData()
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        print("PieceVC.viewWillDisappear")
         playerViewController?.player = nil
     }
     
@@ -150,19 +158,24 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
     //The embed segue that places the AVPlayerViewController in the ContainerVC
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "PlayTracks" {
+            print("PieceVC.prepareForSegue")
             self.playerViewController = segue.destination as? AVPlayerViewController
-            if (selectedPiece?.movements) != nil && (selectedPiece?.movements)!.count > 0 {
-                let movements = (selectedPiece?.movements)!.array
-                let playerItems = movements.map {
-                    movementAny in
-                    return AVPlayerItem(url: ((movementAny as? Movement)?.trackURL)!)
-                }
-                firstIndexInPlayer = 0 //start with all movements
-                currentlyPlayingIndex = 0
-                setQueuePlayer(items: playerItems)
-          } else {
-                playerViewController?.player = AVPlayer(url: (selectedPiece?.trackURL)!)
+            installPlayer()
+        }
+    }
+    
+    private func installPlayer() {
+        if (selectedPiece?.movements) != nil && (selectedPiece?.movements)!.count > 0 {
+            let movements = (selectedPiece?.movements)!.array
+            let playerItems = movements.map {
+                movementAny in
+                return AVPlayerItem(url: ((movementAny as? Movement)?.trackURL)!)
             }
+            firstIndexInPlayer = 0 //start with all movements
+            currentlyPlayingIndex = 0
+            setQueuePlayer(items: playerItems)
+        } else {
+            playerViewController?.player = AVPlayer(url: (selectedPiece?.trackURL)!)
         }
     }
     
