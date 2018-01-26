@@ -15,16 +15,24 @@ class AlbumCell: UICollectionViewCell {
     @IBOutlet weak var artist: UILabel!
 }
 
-class AlbumsViewController: UIViewController, NSFetchedResultsControllerDelegate, UICollectionViewDelegate, UICollectionViewDataSource {
+fileprivate let sectionInsets = UIEdgeInsets(top: 50.0, left: 20.0, bottom: 50.0, right: 20.0)
+
+class AlbumsViewController: UIViewController, NSFetchedResultsControllerDelegate, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     @IBOutlet weak var collectionView: UICollectionView!
     private var collectionIsLoaded = false
     @IBOutlet weak var sortButton: UIButton!
     private var albums: [Album]?
-    
+
+    // MARK: - UIViewController
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.collectionView.delegate = self
+        self.collectionView.delegate = self //includes layout!
         self.collectionView.dataSource = self
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(fontSizeChanged),
+                                               name: .UIContentSizeCategoryDidChange,
+                                               object: nil)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -58,6 +66,14 @@ class AlbumsViewController: UIViewController, NSFetchedResultsControllerDelegate
         // Dispose of any resources that can be recreated.
     }
     
+    @objc
+    func fontSizeChanged() {
+        print("font size changed")
+        collectionView?.collectionViewLayout.invalidateLayout()
+    }
+
+    // MARK: - UICollectionViewDataSource
+
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1
     }
@@ -89,6 +105,58 @@ class AlbumsViewController: UIViewController, NSFetchedResultsControllerDelegate
             }
         }
         return cell
+    }
+
+    // MARK: - UICollectionViewDelegateFlowLayout
+
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        sizeForItemAt indexPath: IndexPath) -> CGSize {
+        print("layout item \(indexPath.row) font size \(UIApplication.shared.preferredContentSizeCategory)")
+        let artHeight = 150
+        var stackHeight = 0, stackWidth = 0
+        switch UIApplication.shared.preferredContentSizeCategory {
+        case .extraLarge:
+            stackWidth = 150
+            stackHeight = artHeight + 22 + 22 + 19
+        case .extraExtraLarge:
+            stackWidth = 170
+            stackHeight = artHeight + 24 + 24 + 21
+        case .extraExtraExtraLarge:
+            stackWidth = 190
+            stackHeight = artHeight + 26 + 26 + 23
+        case .accessibilityMedium:
+            stackWidth = 210
+            stackHeight = artHeight + 31 + 31 + 28
+        case .accessibilityLarge:
+            stackWidth = 230
+            stackHeight = artHeight + 37 + 37 + 32
+        case .accessibilityExtraLarge:
+            stackWidth = 250
+            stackHeight = artHeight + 43 + 43 + 39
+        case .accessibilityExtraExtraLarge:
+            stackWidth = 270
+            stackHeight = artHeight + 50 + 50 + 44
+        case .accessibilityExtraExtraExtraLarge:
+            stackWidth = 290
+            stackHeight = artHeight + 58 + 58 + 51
+        default:
+            stackWidth = 150
+            stackHeight = artHeight + 20 + 20 + 16
+        }
+        return CGSize(width: stackWidth, height: stackHeight)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        insetForSectionAt section: Int) -> UIEdgeInsets {
+        return sectionInsets
+    }
+    
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return sectionInsets.left
     }
 
 
