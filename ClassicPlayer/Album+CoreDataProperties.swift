@@ -2,8 +2,8 @@
 //  Album+CoreDataProperties.swift
 //  ClassicPlayer
 //
-//  Created by Frederick Kuhl on 12/22/17.
-//  Copyright © 2017 TyndaleSoft LLC. All rights reserved.
+//  Created by Frederick Kuhl on 1/25/18.
+//  Copyright © 2018 TyndaleSoft LLC. All rights reserved.
 //
 //
 
@@ -18,9 +18,11 @@ extension Album {
     }
 
     @NSManaged public var albumID: String?
-    @NSManaged public var title: String?
-    @NSManaged public var trackCount: Int16
     @NSManaged public var artist: String?
+    @NSManaged public var title: String?
+    @NSManaged public var trackCount: Int32
+    @NSManaged public var composer: String?
+    @NSManaged public var genre: String?
     @NSManaged public var pieces: NSSet?
 
 }

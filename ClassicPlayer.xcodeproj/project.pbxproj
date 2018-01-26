@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		270B337920192365007D1E35 /* AlbumsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 270B337820192365007D1E35 /* AlbumsViewController.swift */; };
 		2733A60C1FE5FDE000E1EE77 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2733A60B1FE5FDE000E1EE77 /* AppDelegate.swift */; };
 		2733A60F1FE5FDE000E1EE77 /* ClassicPlayer.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2733A60D1FE5FDE000E1EE77 /* ClassicPlayer.xcdatamodeld */; };
 		2733A6161FE5FDE000E1EE77 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2733A6141FE5FDE000E1EE77 /* Main.storyboard */; };
@@ -37,6 +38,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		270B337820192365007D1E35 /* AlbumsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumsViewController.swift; sourceTree = "<group>"; };
 		2733A6081FE5FDE000E1EE77 /* ClassicPlayer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClassicPlayer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2733A60B1FE5FDE000E1EE77 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		2733A60E1FE5FDE000E1EE77 /* ClassicPlayer.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ClassicPlayer.xcdatamodel; sourceTree = "<group>"; };
@@ -109,6 +111,7 @@
 		2733A60A1FE5FDE000E1EE77 /* ClassicPlayer */ = {
 			isa = PBXGroup;
 			children = (
+				270B337820192365007D1E35 /* AlbumsViewController.swift */,
 				2733A60B1FE5FDE000E1EE77 /* AppDelegate.swift */,
 				2733A6171FE5FDE000E1EE77 /* Assets.xcassets */,
 				2733A60D1FE5FDE000E1EE77 /* ClassicPlayer.xcdatamodeld */,
@@ -252,6 +255,7 @@
 				2733A60F1FE5FDE000E1EE77 /* ClassicPlayer.xcdatamodeld in Sources */,
 				27FCDED81FF2B0BB001D81CE /* PiecesFromComposerViewController.swift in Sources */,
 				2755D7301FE9629C006F49AE /* Piece+CoreDataProperties.swift in Sources */,
+				270B337920192365007D1E35 /* AlbumsViewController.swift in Sources */,
 				2755D7321FE9629C006F49AE /* Album+CoreDataProperties.swift in Sources */,
 				2755D7311FE9629C006F49AE /* Album+CoreDataClass.swift in Sources */,
 				2755D7331FE9629C006F49AE /* Movement+CoreDataClass.swift in Sources */,

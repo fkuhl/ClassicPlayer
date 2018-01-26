@@ -120,15 +120,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 }
                 let album = NSEntityDescription.insertNewObject(forEntityName: "Album", into: context) as! Album
                 //Someday we may purpose "artist" as a composite field containing ensemble, director, soloists
-                album.artist = items[0].value(forProperty: MPMediaItemPropertyAlbumArtist) as? String
-                album.title = items[0].value(forProperty: MPMediaItemPropertyAlbumTitle) as? String
-                let trackCount = items[0].value(forProperty: MPMediaItemPropertyAlbumTrackCount)
-                //print("track ct: \(String(describing: trackCount))")
-                album.trackCount = Int16(trackCount as! Int)
-                let propVal = items[0].value(forProperty: MPMediaItemPropertyAlbumPersistentID)
-                let numVal = propVal as? NSNumber
-                album.albumID = String(describing: numVal)
-                if (items[0].value(forProperty: MPMediaItemPropertyGenre) as? String) == "Classical" {
+                album.artist = items[0].albumArtist
+                album.title = items[0].albumTitle
+                album.composer = items[0].composer
+                album.genre = items[0].genre
+                album.trackCount = Int32(items[0].albumTrackCount)
+                album.albumID = AppDelegate.encodeForCoreData(id: items[0].albumPersistentID)
+                if album.genre == "Classical" {
                     pieceCount += loadAndCountPieces(for: album, from: items, into: context)
                 } else {
                     loadSongs(for: album, from: items, into: context)
@@ -245,7 +243,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         let mov = NSEntityDescription.insertNewObject(forEntityName: "Movement", into: context) as! Movement
         mov.title = movementTitle
-        mov.trackID = String(item.persistentID, radix: 16, uppercase: false)
+        mov.trackID = AppDelegate.encodeForCoreData(id: item.persistentID)
         piece.addToMovements(mov)
         print("    \(mov.title ?? "")")
     }
@@ -253,7 +251,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     private func storeMovement(from item: MPMediaItem, named: String, for piece: Piece, into context: NSManagedObjectContext) {
         let mov = NSEntityDescription.insertNewObject(forEntityName: "Movement", into: context) as! Movement
         mov.title = named
-        mov.trackID = String(item.persistentID, radix: 16, uppercase: false)
+        mov.trackID = AppDelegate.encodeForCoreData(id: item.persistentID)
         mov.trackURL = item.assetURL
         piece.addToMovements(mov)
         print("    '\(mov.title ?? "")'")
@@ -265,7 +263,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             print("  \(genreMark)|\(mediaItem.composer ?? "<anon>")| \(title)")
         }
         let piece = NSEntityDescription.insertNewObject(forEntityName: "Piece", into: context) as! Piece
-        piece.albumID = String(mediaItem.albumPersistentID, radix: 16, uppercase: false) //estupido: persistentIDs are UInt64
+        piece.albumID =  AppDelegate.encodeForCoreData(id: mediaItem.albumPersistentID)
         piece.composer = mediaItem.composer ?? ""
         piece.director = ""
         piece.ensemble = mediaItem.artist ?? ""
@@ -273,7 +271,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         piece.soloists = ""
         piece.title = title
         piece.album = album
-        piece.trackID = String(mediaItem.persistentID, radix: 16, uppercase: false)
+        piece.trackID = AppDelegate.encodeForCoreData(id: mediaItem.persistentID)
         piece.trackURL = mediaItem.assetURL
         album.addToPieces(piece)
         return piece
@@ -281,7 +279,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     static func artworkFor(album: String) -> UIImage? {
         let query = MPMediaQuery.albums()
-        let idVal = UInt64(album, radix: 16)
+        let idVal = AppDelegate.decodeIDFrom(coreDataRepresentation: album)
         let predicate = MPMediaPropertyPredicate(value: idVal, forProperty: MPMediaItemPropertyAlbumPersistentID)
         query.filterPredicates = Set([ predicate ])
         if query.collections == nil {
@@ -337,6 +335,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     // MARK: - Core Data stack
+    
+    //estupido: persistentIDs are UInt64, but CoreData knows nothing of them. Store as hex strings
+    class func encodeForCoreData(id: MPMediaEntityPersistentID) -> String {
+        return String(id, radix: 16, uppercase: false)
+    }
+    
+    class func decodeIDFrom(coreDataRepresentation: String) -> MPMediaEntityPersistentID {
+        return UInt64(coreDataRepresentation, radix: 16) ?? 0
+    }
 
     lazy var persistentContainer: NSPersistentContainer = {
         /*
