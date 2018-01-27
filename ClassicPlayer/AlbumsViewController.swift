@@ -24,6 +24,12 @@ class AlbumsViewController: UIViewController, NSFetchedResultsControllerDelegate
     private var collectionIsLoaded = false
     @IBOutlet weak var sortButton: UIButton!
     private var albums: [Album]?
+    
+    //We're all set up with sections and titles, and no automatic way to display them!
+    static var indexedSectionCount = 27  //A magic number; that's how many sections any UITableView index can have.
+    private var sectionCount = 1
+    private var sectionSize = 0
+    private var sectionTitles: [String]?
 
     // MARK: - UIViewController
 
@@ -58,6 +64,7 @@ class AlbumsViewController: UIViewController, NSFetchedResultsControllerDelegate
         do {
             albums = try context.fetch(request)
             setInterlineSpacing()
+            computeSections()
             collectionView.reloadData()
         }
         catch {
@@ -66,6 +73,28 @@ class AlbumsViewController: UIViewController, NSFetchedResultsControllerDelegate
         }
     }
     
+    private func computeSections() {
+        guard let unwrappedAlbums = albums else {
+            return
+        }
+        if unwrappedAlbums.count < AlbumsViewController.indexedSectionCount {
+            sectionCount = 1
+            sectionSize = unwrappedAlbums.count
+            sectionTitles = []
+        } else {
+            sectionCount = AlbumsViewController.indexedSectionCount
+            sectionSize = unwrappedAlbums.count / ComposersViewController.indexedSectionCount
+            sectionTitles = []
+            for i in 0 ..< AlbumsViewController.indexedSectionCount {
+                let album = albums?[i * sectionSize]
+                let composer = album?.title
+                let title = composer?.prefix(2)
+                //print("title \(i) is \(title ?? "nada")")
+                sectionTitles?.append(String(title!))
+            }
+        }
+    }
+
     private func setInterlineSpacing() {
         let subheadFont = UIFont.preferredFont(forTextStyle: .subheadline)
         print("line height of \(subheadFont.lineHeight) for font \(subheadFont)")
@@ -88,12 +117,17 @@ class AlbumsViewController: UIViewController, NSFetchedResultsControllerDelegate
     // MARK: - UICollectionViewDataSource
 
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 1
+        return sectionCount
     }
     
     func collectionView(_ collectionView: UICollectionView,
                                  numberOfItemsInSection section: Int) -> Int {
-        return albums?.count ?? 0
+        if section < AlbumsViewController.indexedSectionCount - 1 {
+            return sectionSize
+        } else {
+            //that pesky last section
+            return albums!.count - AlbumsViewController.indexedSectionCount * sectionSize
+        }
     }
     
     fileprivate let stackWidthIdentifier = "com.tyndalesoft.ClassicPlayer.stackWidth"
@@ -102,7 +136,7 @@ class AlbumsViewController: UIViewController, NSFetchedResultsControllerDelegate
                         cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Album",
                                                       for: indexPath) as! AlbumCell
-        let albumEntry = albums![indexPath.row]
+        let albumEntry = albums![indexPath.section * sectionSize + indexPath.row]
         cell.albumTitle.text = albumEntry.title
         cell.artist.text = albumEntry.artist
        let id = albumEntry.albumID
@@ -137,6 +171,10 @@ class AlbumsViewController: UIViewController, NSFetchedResultsControllerDelegate
     private func cellWidthForTextSize() -> CGFloat {
         let subheadFont = UIFont.preferredFont(forTextStyle: .subheadline)
         return max(150.0, 10.0 * subheadFont.pointSize) //10 is a magic number!
+    }
+    
+    func indexTitles(for collectionView: UICollectionView) -> [String]? {
+        return sectionTitles
     }
 
     // MARK: - UICollectionViewDelegateFlowLayout
