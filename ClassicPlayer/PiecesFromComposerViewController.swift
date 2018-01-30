@@ -23,6 +23,8 @@ class PiecesFromComposerViewController: UIViewController, NSFetchedResultsContro
     private var tableIsLoaded = false
     private var pieces: [Piece]?
 
+    // MARK: - UIViewController
+
     override func viewDidLoad() {
         super.viewDidLoad()
         self.tableView.delegate = self
@@ -63,7 +65,9 @@ class PiecesFromComposerViewController: UIViewController, NSFetchedResultsContro
             fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
         }
     }
-    
+
+    // MARK: - UITableViewDataSource
+
     func tableView(_: UITableView, numberOfRowsInSection section: Int) -> Int {
         return pieces?.count ?? 0
     }
@@ -98,11 +102,6 @@ class PiecesFromComposerViewController: UIViewController, NSFetchedResultsContro
         }
         return cell
     }
-    
-    //superseded by UITableViewAutomaticDimension--see viewDidLoad
-//    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-//        return max(CGFloat(72.0), UIFontMetrics.default.scaledValue(for: 72.0))
-//    }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "PieceSelected" {

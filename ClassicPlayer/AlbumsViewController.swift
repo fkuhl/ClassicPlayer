@@ -9,18 +9,20 @@
 import UIKit
 import CoreData
 
-class AlbumCell: UICollectionViewCell {
-    @IBOutlet weak var stack: UIStackView!
+class AlbumCell: UITableViewCell {
+    @IBOutlet weak var artAndLabelsStack: UIStackView!
     @IBOutlet weak var artwork: UIImageView!
     @IBOutlet weak var albumTitle: UILabel!
-    @IBOutlet weak var artist: UILabel!
-    var stackWidthConstraint: NSLayoutConstraint?
+    @IBOutlet weak var albumArtist: UILabel!
+    @IBOutlet weak var genre: UILabel!
+    @IBOutlet weak var year: UILabel!
+    @IBOutlet weak var trackCount: UILabel!
 }
 
 fileprivate let sectionInsets = UIEdgeInsets(top: 50.0, left: 20.0, bottom: 50.0, right: 20.0)
 
-class AlbumsViewController: UIViewController, NSFetchedResultsControllerDelegate, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
-    @IBOutlet weak var collectionView: UICollectionView!
+class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+    @IBOutlet weak var tableView: UITableView!
     private var collectionIsLoaded = false
     @IBOutlet weak var sortButton: UIButton!
     private var albums: [Album]?
@@ -35,14 +37,10 @@ class AlbumsViewController: UIViewController, NSFetchedResultsControllerDelegate
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.collectionView.delegate = self //includes layout!
-        self.collectionView.dataSource = self
-        (self.collectionView.collectionViewLayout as? UICollectionViewFlowLayout)?.estimatedItemSize
-            = UICollectionViewFlowLayoutAutomaticSize
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(fontSizeChanged),
-                                               name: .UIContentSizeCategoryDidChange,
-                                               object: nil)
+        self.tableView.delegate = self
+        self.tableView.dataSource = self
+        self.tableView.rowHeight = /*UITableViewAutomaticDimension*/ 128.0
+        self.tableView.estimatedRowHeight = 128.0
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -58,8 +56,6 @@ class AlbumsViewController: UIViewController, NSFetchedResultsControllerDelegate
         // Dispose of any resources that can be recreated.
     }
 
-    // MARK: - UI adjustments
-
     private func updateUI() {
         let context:NSManagedObjectContext! = (UIApplication.shared.delegate as! AppDelegate).context
         let request = NSFetchRequest<Album>()
@@ -70,12 +66,11 @@ class AlbumsViewController: UIViewController, NSFetchedResultsControllerDelegate
         request.sortDescriptors = [ NSSortDescriptor(key: "title", ascending: true) ]
         do {
             albums = try context.fetch(request)
-            setInterlineSpacing()
             computeSections()
-            collectionView.reloadData()
+            tableView.reloadData()
         }
         catch {
-            let nserror = error as NSError
+             let nserror = error as NSError
             fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
         }
     }
@@ -102,28 +97,13 @@ class AlbumsViewController: UIViewController, NSFetchedResultsControllerDelegate
         }
     }
 
-    private func setInterlineSpacing() {
-        let subheadFont = UIFont.preferredFont(forTextStyle: .subheadline)
-        //print("line height of \(subheadFont.lineHeight) for font \(subheadFont)")
-        (collectionView?.collectionViewLayout as? UICollectionViewFlowLayout)?.minimumLineSpacing = subheadFont.lineHeight * 2.0
-        collectionView?.collectionViewLayout.invalidateLayout()
-    }
-    
-    @objc
-    func fontSizeChanged() {
-        print("font size changed")
-        setInterlineSpacing()
-        collectionView?.collectionViewLayout.invalidateLayout()
-    }
+    // MARK: - UITableViewDataSource
 
-    // MARK: - UICollectionViewDataSource
-
-    func numberOfSections(in collectionView: UICollectionView) -> Int {
+    func numberOfSections(in collectionView: UITableView) -> Int {
         return sectionCount
     }
     
-    func collectionView(_ collectionView: UICollectionView,
-                                 numberOfItemsInSection section: Int) -> Int {
+    func tableView(_: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section < AlbumsViewController.indexedSectionCount - 1 {
             return sectionSize
         } else {
@@ -132,16 +112,22 @@ class AlbumsViewController: UIViewController, NSFetchedResultsControllerDelegate
         }
     }
     
-    fileprivate let stackWidthIdentifier = "com.tyndalesoft.ClassicPlayer.stackWidth"
-    
-    func collectionView(_ collectionView: UICollectionView,
-                        cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Album",
-                                                      for: indexPath) as! AlbumCell
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "Album", for: indexPath) as! AlbumCell
         let albumEntry = albums![indexPath.section * sectionSize + indexPath.row]
-        cell.albumTitle.text = albumEntry.title
-        cell.artist.text = albumEntry.artist
-       let id = albumEntry.albumID
+        cell.albumTitle?.text = albumEntry.title
+        cell.albumArtist?.text = albumEntry.artist
+        let yearText: String
+        if let timeInterval = albumEntry.releaseDate?.timeIntervalSince1970 {
+            let releaseDate = Date(timeIntervalSince1970: timeInterval)
+            let calendar = Calendar.current
+            yearText = "\(calendar.component(.year, from: releaseDate))"
+        } else {
+            yearText = "[n.d.]"
+        }
+        cell.year?.text = "\(yearText) • \(albumEntry.genre ?? "")"
+        cell.trackCount?.text = "tracks: \(albumEntry.trackCount)"
+        let id = albumEntry.albumID
         if let realID = id {
             let returnedArtwork = AppDelegate.artworkFor(album: realID)
             if returnedArtwork != nil {
@@ -149,90 +135,32 @@ class AlbumsViewController: UIViewController, NSFetchedResultsControllerDelegate
                 cell.artwork.isOpaque = true
                 cell.artwork.alpha = 1.0
             } else {
-                cell.artwork.image = UIImage(named: "1706-music-note", in: nil, compatibleWith: nil)
-                //cell.artwork.bounds = CGRect(x: 0, y: 0, width: 150, height: 150)
+                cell.artwork.image = AppDelegate.defaultImage
                 cell.artwork.isOpaque = false
                 cell.artwork.alpha = 0.3
             }
         }
-        cell.contentView.translatesAutoresizingMaskIntoConstraints = false
-        for constraint in cell.stack.constraints {
-            if constraint.identifier == stackWidthIdentifier { cell.stack.removeConstraint(constraint) }
+        //Priority lowered on artwork height to prevent unsatisfiable constraint.
+        if UIApplication.shared.preferredContentSizeCategory > .extraExtraLarge {
+            cell.artAndLabelsStack.axis = .vertical
+            cell.artAndLabelsStack.alignment = .leading
+        } else {
+            cell.artAndLabelsStack.axis = .horizontal
+            cell.artAndLabelsStack.alignment = .top
+            //Content hugging priority lowered on text fields so they expand across the cell.
+            cell.artAndLabelsStack.distribution = .fill
         }
-        let widthConstraint = cell.stack.widthAnchor.constraint(equalToConstant: cellWidthForTextSize())
-        widthConstraint.identifier = stackWidthIdentifier
-        widthConstraint.isActive = true
         return cell
     }
     
-    private func cellWidthForTextSize() -> CGFloat {
-        let subheadFont = UIFont.preferredFont(forTextStyle: .subheadline)
-        return max(150.0, 10.0 * subheadFont.pointSize) //10 is a magic number!
-    }
-    
-    func indexTitles(for collectionView: UICollectionView) -> [String]? {
+    func sectionIndexTitles(for tableView: UITableView) -> [String]? {
         return sectionTitles
     }
-
-    // MARK: - UICollectionViewDelegateFlowLayout
-
-//    func collectionView(_ collectionView: UICollectionView,
-//                        layout collectionViewLayout: UICollectionViewLayout,
-//                        sizeForItemAt indexPath: IndexPath) -> CGSize {
-//        print("layout item \(indexPath.row) font size \(UIApplication.shared.preferredContentSizeCategory)")
-//        let artHeight = 150
-//        var stackHeight = 0, stackWidth = 0
-//        switch UIApplication.shared.preferredContentSizeCategory {
-//        case .extraLarge:
-//            stackWidth = 150
-//            stackHeight = artHeight + 22 + 22 + 19
-//        case .extraExtraLarge:
-//            stackWidth = 170
-//            stackHeight = artHeight + 24 + 24 + 21
-//        case .extraExtraExtraLarge:
-//            stackWidth = 190
-//            stackHeight = artHeight + 26 + 26 + 23
-//        case .accessibilityMedium:
-//            stackWidth = 210
-//            stackHeight = artHeight + 31 + 31 + 28
-//        case .accessibilityLarge:
-//            stackWidth = 230
-//            stackHeight = artHeight + 37 + 37 + 32
-//        case .accessibilityExtraLarge:
-//            stackWidth = 250
-//            stackHeight = artHeight + 43 + 43 + 39
-//        case .accessibilityExtraExtraLarge:
-//            stackWidth = 270
-//            stackHeight = artHeight + 50 + 50 + 44
-//        case .accessibilityExtraExtraExtraLarge:
-//            stackWidth = 290
-//            stackHeight = artHeight + 58 + 58 + 51
-//        default:
-//            stackWidth = 150
-//            stackHeight = artHeight + 20 + 20 + 16
-//        }
-//        return CGSize(width: stackWidth, height: stackHeight)
-//    }
-//
-//    func collectionView(_ collectionView: UICollectionView,
-//                        layout collectionViewLayout: UICollectionViewLayout,
-//                        insetForSectionAt section: Int) -> UIEdgeInsets {
-//        return sectionInsets
-//    }
-
-//    func collectionView(_ collectionView: UICollectionView,
-//                        layout collectionViewLayout: UICollectionViewLayout,
-//                        minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-//        let subheadFont = UIFont.preferredFont(forTextStyle: .subheadline)
-//        print("line height of \(subheadFont.lineHeight) for font \(subheadFont)")
-//        return subheadFont.lineHeight * 2.0
-//    }
-
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "AlbumSelected" {
             let secondViewController = segue.destination as! AlbumTracksViewController
-            if let selected = collectionView?.indexPathsForSelectedItems?[0] {
+            if let selected = tableView?.indexPathForSelectedRow {
                 secondViewController.album =
                     albums![selected.section * sectionSize + selected.row]
                 secondViewController.title = secondViewController.album?.title

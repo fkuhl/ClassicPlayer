@@ -43,6 +43,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var audioBarSet: [UIImage]?
     var audioPaused: UIImage?
     var audioNotCurrent: UIImage?
+    
+    private static var _defaultImage: UIImage? = nil
+    
+    static var defaultImage: UIImage {
+        get {
+            if _defaultImage == nil {
+                _defaultImage = UIImage(named: "default-album", in: nil, compatibleWith: nil)
+            }
+            return _defaultImage!
+        }
+    }
 
     // MARK: - App delegate
 
@@ -158,6 +169,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 album.genre = items[0].genre
                 album.trackCount = Int32(items[0].albumTrackCount)
                 album.albumID = AppDelegate.encodeForCoreData(id: items[0].albumPersistentID)
+                if let timeInterval = items[0].releaseDate?.timeIntervalSince1970 {
+                    album.releaseDate = NSDate(timeIntervalSince1970: timeInterval)
+                } else {
+                    album.releaseDate = nil
+                }
                 if album.genre == "Classical" {
                     pieceCount += loadAndCountPieces(for: album, from: items, into: context)
                 } else {
