@@ -39,7 +39,7 @@ class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         super.viewDidLoad()
         self.tableView.delegate = self
         self.tableView.dataSource = self
-        self.tableView.rowHeight = /*UITableViewAutomaticDimension*/ 128.0
+        self.tableView.rowHeight = UITableViewAutomaticDimension /*128.0*/
         self.tableView.estimatedRowHeight = 128.0
     }
     
