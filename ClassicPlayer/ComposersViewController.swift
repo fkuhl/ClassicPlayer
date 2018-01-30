@@ -19,6 +19,8 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
     private var sectionSize = 0
     private var sectionTitles: [String]?
 
+    // MARK: - UIViewController
+
     override func viewDidLoad() {
         super.viewDidLoad()
         self.tableView.delegate = self
@@ -88,6 +90,8 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+
+    // MARK: - UITableViewDataSource
 
     func numberOfSections(in tableView: UITableView) -> Int {
         return sectionCount

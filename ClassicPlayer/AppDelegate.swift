@@ -44,7 +44,40 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var audioPaused: UIImage?
     var audioNotCurrent: UIImage?
 
+    // MARK: - App delegate
+
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+        initializeAudio()
+        return true
+    }
+
+    func applicationWillResignActive(_ application: UIApplication) {
+        // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
+        // Use this method to pause ongoing tasks, disable timers, and invalidate graphics rendering callbacks. Games should use this method to pause the game.
+    }
+    
+    func applicationDidEnterBackground(_ application: UIApplication) {
+        // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
+        // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+    }
+    
+    func applicationWillEnterForeground(_ application: UIApplication) {
+        // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
+    }
+    
+    func applicationDidBecomeActive(_ application: UIApplication) {
+        // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+    }
+    
+    func applicationWillTerminate(_ application: UIApplication) {
+        // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+        // Saves changes in the application's managed object context before the application terminates.
+        self.saveContext()
+    }
+
+    // MARK: - Audio and library
+
+    private func initializeAudio() {
         let audioSession = AVAudioSession.sharedInstance()
         do {
             //In addition to setting this audio mode, info.plist contains a "Required background modes" key,
@@ -64,7 +97,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 switch status {
                 case .authorized:
                     //TODO This occurs if app wasn't installed: app asks for permission. When it gets it, the media are read, but UI isn't updated, because ComposersVC has already appeared.
-                   self.persistentContainer.performBackgroundTask { context in
+                    self.persistentContainer.performBackgroundTask { context in
                         self.clearAndLoad(into: context)
                     }
                 default:
@@ -75,7 +108,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
         makeAudioBarSet()
-        return true
     }
     
     private func clearAndLoad(into context: NSManagedObjectContext) {
@@ -295,8 +327,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let result = results[0].items[0]
         let propertyVal = result.value(forProperty: MPMediaItemPropertyArtwork)
         let artwork = propertyVal as? MPMediaItemArtwork
-        return artwork?.image(at: CGSize(width: 20, height: 20))
-    }
+        let returnedImage = artwork?.image(at: CGSize(width: 30, height: 30))
+        //What's returned is (see docs) "smallest image at least as large as specified"--
+        //which turns out to be 600 x 600, with no discernible difference for the albums
+        //with iTunes LPs.
+        return returnedImage
+   }
     
     private func makeAudioBarSet() {
         audioBarSet = [UIImage]()
@@ -308,30 +344,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         audioPaused = UIImage(named:"bars-paused")
         audioNotCurrent = UIImage(named:"bars-not-current")
-    }
-
-    func applicationWillResignActive(_ application: UIApplication) {
-        // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
-        // Use this method to pause ongoing tasks, disable timers, and invalidate graphics rendering callbacks. Games should use this method to pause the game.
-    }
-
-    func applicationDidEnterBackground(_ application: UIApplication) {
-        // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
-        // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
-    }
-
-    func applicationWillEnterForeground(_ application: UIApplication) {
-        // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
-    }
-
-    func applicationDidBecomeActive(_ application: UIApplication) {
-        // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
-    }
-
-    func applicationWillTerminate(_ application: UIApplication) {
-        // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
-        // Saves changes in the application's managed object context before the application terminates.
-        self.saveContext()
     }
     
     // MARK: - Core Data stack

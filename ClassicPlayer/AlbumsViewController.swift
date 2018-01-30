@@ -52,7 +52,14 @@ class AlbumsViewController: UIViewController, NSFetchedResultsControllerDelegate
             collectionIsLoaded = true
         }
     }
-    
+ 
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
+    }
+
+    // MARK: - UI adjustments
+
     private func updateUI() {
         let context:NSManagedObjectContext! = (UIApplication.shared.delegate as! AppDelegate).context
         let request = NSFetchRequest<Album>()
@@ -97,14 +104,9 @@ class AlbumsViewController: UIViewController, NSFetchedResultsControllerDelegate
 
     private func setInterlineSpacing() {
         let subheadFont = UIFont.preferredFont(forTextStyle: .subheadline)
-        print("line height of \(subheadFont.lineHeight) for font \(subheadFont)")
+        //print("line height of \(subheadFont.lineHeight) for font \(subheadFont)")
         (collectionView?.collectionViewLayout as? UICollectionViewFlowLayout)?.minimumLineSpacing = subheadFont.lineHeight * 2.0
         collectionView?.collectionViewLayout.invalidateLayout()
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
     
     @objc
@@ -144,11 +146,6 @@ class AlbumsViewController: UIViewController, NSFetchedResultsControllerDelegate
             let returnedArtwork = AppDelegate.artworkFor(album: realID)
             if returnedArtwork != nil {
                 cell.artwork.image = returnedArtwork
-//                let returnedFrame = cell.artwork.frame
-//                if returnedFrame.height > 150 {
-//                    //cell.artwork.frame = CGRect(origin: returnedFrame.origin, size: CGSize(width: returnedFrame.size.width, height: 150.0))
-//                    print("title: \(albumEntry.title) oversized: \(returnedFrame.size)")
-//                }
                 cell.artwork.isOpaque = true
                 cell.artwork.alpha = 1.0
             } else {
@@ -233,5 +230,13 @@ class AlbumsViewController: UIViewController, NSFetchedResultsControllerDelegate
 
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "AlbumSelected" {
+            let secondViewController = segue.destination as! AlbumTracksViewController
+            if let selected = collectionView?.indexPathsForSelectedItems?[0] {
+                secondViewController.album =
+                    albums![selected.section * sectionSize + selected.row]
+                secondViewController.title = secondViewController.album?.title
+            }
+        }
     }
 }
