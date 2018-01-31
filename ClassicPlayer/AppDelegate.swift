@@ -54,6 +54,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             return _defaultImage!
         }
     }
+    
+    private static var _brandColor: UIColor? = nil
+    
+    static var brandColor: UIColor {
+        get {
+            if _brandColor == nil {
+                _brandColor = UIColor(named: "TheBlue")
+            }
+            return _brandColor!
+        }
+    }
 
     // MARK: - App delegate
 

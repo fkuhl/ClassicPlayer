@@ -22,7 +22,7 @@
                                 <rect key="frame" x="0.0" y="64" width="414" height="623"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="Album" rowHeight="128" id="xJ4-sl-PgV" customClass="AlbumCell" customModule="ClassicPlayer" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="Album" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="Album" rowHeight="128" id="xJ4-sl-PgV" customClass="AlbumCell" customModule="ClassicPlayer" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="28" width="414" height="128"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="xJ4-sl-PgV" id="RBN-hg-8fM">
@@ -112,6 +112,9 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" name=".AppleSystemUIFont" family=".AppleSystemUIFont" pointSize="15"/>
                                 <state key="normal" title="Sort"/>
+                                <connections>
+                                    <segue destination="hqS-jg-oYi" kind="presentation" identifier="SortSelected" id="yLo-K6-GQL"/>
+                                </connections>
                             </button>
                         </barButtonItem>
                     </navigationItem>
@@ -123,6 +126,49 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="KPI-ms-6bA" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-3117" y="-1838"/>
+        </scene>
+        <!--Album Sort View Controller-->
+        <scene sceneID="pZ0-Mr-q6R">
+            <objects>
+                <viewController id="hqS-jg-oYi" customClass="AlbumSortViewController" customModule="ClassicPlayer" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="qyZ-zR-kzh">
+                        <rect key="frame" x="0.0" y="0.0" width="200" height="200"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="Sorting" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="rw6-ES-b40">
+                                <rect key="frame" x="8" y="8" width="184" height="184"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <prototypes>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="Sorting" id="csY-ik-XUv">
+                                        <rect key="frame" x="0.0" y="28" width="184" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="csY-ik-XUv" id="H6X-dE-3JL">
+                                            <rect key="frame" x="0.0" y="0.0" width="184" height="43.666666666666664"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </prototypes>
+                                <sections/>
+                            </tableView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="rw6-ES-b40" firstAttribute="leading" secondItem="qyZ-zR-kzh" secondAttribute="leading" constant="8" id="77O-LC-ODp"/>
+                            <constraint firstItem="RRg-GN-pWk" firstAttribute="bottom" secondItem="rw6-ES-b40" secondAttribute="bottom" constant="8" id="OFr-v2-A8x"/>
+                            <constraint firstAttribute="trailing" secondItem="rw6-ES-b40" secondAttribute="trailing" constant="8" id="Zfp-4A-YIt"/>
+                            <constraint firstItem="rw6-ES-b40" firstAttribute="top" secondItem="RRg-GN-pWk" secondAttribute="top" constant="8" id="xiV-52-OTX"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="RRg-GN-pWk"/>
+                    </view>
+                    <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+                    <size key="freeformSize" width="200" height="200"/>
+                    <connections>
+                        <outlet property="tableView" destination="rw6-ES-b40" id="nRG-Id-2MW"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="IiA-1M-iFC" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-2567" y="-2057"/>
         </scene>
         <!--Composers Table-->
         <scene sceneID="UV9-jb-If7">
@@ -506,7 +552,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="KfR-0h-UQw" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1699" y="-1838"/>
+            <point key="canvasLocation" x="-928" y="-2307"/>
         </scene>
         <!--Albums-->
         <scene sceneID="RKe-kA-kpH">
@@ -653,7 +699,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jfn-a4-fcJ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-2412" y="-1838"/>
+            <point key="canvasLocation" x="-1699" y="-1838"/>
         </scene>
     </scenes>
     <resources>

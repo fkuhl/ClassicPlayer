@@ -9,46 +9,13 @@
 import UIKit
 import CoreData
 
-fileprivate class AlbumCell: UITableViewCell {
+class AlbumCell: UITableViewCell {
     @IBOutlet weak var artAndLabelsStack: UIStackView!
     @IBOutlet weak var artwork: UIImageView!
     @IBOutlet weak var albumTitle: UILabel!
     @IBOutlet weak var albumArtist: UILabel!
-    @IBOutlet weak var genre: UILabel!
     @IBOutlet weak var year: UILabel!
     @IBOutlet weak var trackCount: UILabel!
-}
-
-fileprivate enum Sortings {
-    case title
-    case artist
-    case genre
-    
-    var dropDownDisplayName: String {
-        get {
-            switch self {
-            case .title:
-                return "Title"
-            case .artist:
-                return "Artist"
-            case .genre:
-                return "Genre"
-           }
-        }
-    }
-    
-    var sortDescriptor: String {
-        get {
-            switch self {
-            case .title:
-                return "title"
-            case .artist:
-                return "artist"
-            case .genre:
-                return "genre"
-            }
-        }
-    }
 }
 
 class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
@@ -195,6 +162,9 @@ class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDa
                     albums![selected.section * sectionSize + selected.row]
                 secondViewController.title = secondViewController.album?.title
             }
+        } else if segue.identifier == "SortSelected" {
+            let secondViewController = segue.destination as! AlbumSortViewController
+            secondViewController.albumsViewController = self
         }
     }
 }
