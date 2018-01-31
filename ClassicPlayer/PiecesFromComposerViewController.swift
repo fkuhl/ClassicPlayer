@@ -96,7 +96,7 @@ class PiecesFromComposerViewController: UIViewController, NSFetchedResultsContro
                 cell.artwork.isOpaque = true
                 cell.artwork.alpha = 1.0
            } else {
-                cell.artwork.image = UIImage(named: "1706-music-note", in: nil, compatibleWith: nil)
+                cell.artwork.image = AppDelegate.defaultImage
                 cell.artwork.isOpaque = false
                 cell.artwork.alpha = 0.3
             }
