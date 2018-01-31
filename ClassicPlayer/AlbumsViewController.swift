@@ -19,15 +19,12 @@ class AlbumCell: UITableViewCell {
     @IBOutlet weak var trackCount: UILabel!
 }
 
-fileprivate let sectionInsets = UIEdgeInsets(top: 50.0, left: 20.0, bottom: 50.0, right: 20.0)
-
 class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     @IBOutlet weak var tableView: UITableView!
     private var collectionIsLoaded = false
     @IBOutlet weak var sortButton: UIButton!
     private var albums: [Album]?
     
-    //We're all set up with sections and titles, and no automatic way to display them!
     static var indexedSectionCount = 27  //A magic number; that's how many sections any UITableView index can have.
     private var sectionCount = 1
     private var sectionSize = 0
@@ -39,7 +36,7 @@ class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         super.viewDidLoad()
         self.tableView.delegate = self
         self.tableView.dataSource = self
-        self.tableView.rowHeight = UITableViewAutomaticDimension /*128.0*/
+        self.tableView.rowHeight = UITableViewAutomaticDimension //Autolayout determines height!
         self.tableView.estimatedRowHeight = 128.0
     }
     
@@ -91,7 +88,6 @@ class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 let album = albums?[i * sectionSize]
                 let composer = album?.title
                 let title = composer?.prefix(2)
-                //print("title \(i) is \(title ?? "nada")")
                 sectionTitles?.append(String(title!))
             }
         }
@@ -141,6 +137,8 @@ class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             }
         }
         //Priority lowered on artwork height to prevent unsatisfiable constraint.
+        //As of 1/31/2018, a change in text size in medias res causes the cells to re-layout
+        //properly but the text itself doesn't change size!
         if UIApplication.shared.preferredContentSizeCategory > .extraExtraLarge {
             cell.artAndLabelsStack.axis = .vertical
             cell.artAndLabelsStack.alignment = .leading

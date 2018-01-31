@@ -31,6 +31,10 @@ class PiecesFromComposerViewController: UIViewController, NSFetchedResultsContro
         self.tableView.dataSource = self
         self.tableView.rowHeight = UITableViewAutomaticDimension
         self.tableView.estimatedRowHeight = 72.0
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(fontSizeChanged),
+                                               name: .UIContentSizeCategoryDidChange,
+                                               object: nil)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -63,6 +67,13 @@ class PiecesFromComposerViewController: UIViewController, NSFetchedResultsContro
         catch {
             let nserror = error as NSError
             fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
+        }
+    }
+    
+    @objc private func fontSizeChanged() {
+        DispatchQueue.main.async {
+            self.view.setNeedsLayout()
+            self.view.layoutIfNeeded()
         }
     }
 

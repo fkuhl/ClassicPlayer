@@ -32,11 +32,11 @@
                                                 <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" alignment="top" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="CTU-mY-nD9" userLabel="Art and Labels Stack">
                                                     <rect key="frame" x="8" y="4" width="398" height="120"/>
                                                     <subviews>
-                                                        <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1000" verticalCompressionResistancePriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="Tjq-9D-OSg" userLabel="Artwork">
+                                                        <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Tjq-9D-OSg" userLabel="Artwork">
                                                             <rect key="frame" x="0.0" y="0.0" width="120" height="120"/>
                                                             <constraints>
                                                                 <constraint firstAttribute="width" constant="120" id="LnF-F8-HiP"/>
-                                                                <constraint firstAttribute="height" constant="120" id="P8x-Lv-6qB"/>
+                                                                <constraint firstAttribute="height" priority="750" constant="120" id="P8x-Lv-6qB"/>
                                                             </constraints>
                                                         </imageView>
                                                         <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="tHc-5q-dD9">
