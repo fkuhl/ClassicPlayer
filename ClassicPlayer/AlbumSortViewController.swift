@@ -11,6 +11,7 @@ import UIKit
 
 enum AlbumSorts: Int {
     case title
+    case composer
     case artist
     case genre
     
@@ -19,7 +20,9 @@ enum AlbumSorts: Int {
             switch self {
             case .title:
                 return "Title"
-            case .artist:
+            case.composer:
+                return "Composer"
+           case .artist:
                 return "Artist"
             case .genre:
                 return "Genre"
@@ -32,6 +35,8 @@ enum AlbumSorts: Int {
             switch self {
             case .title:
                 return "title"
+            case .composer:
+                return "composer"
             case .artist:
                 return "artist"
             case .genre:
@@ -65,7 +70,7 @@ class AlbumSortViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func tableView(_: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 3 //because there is no way to get the number of enum values
+        return 4 //because there is no way to get the number of enum values
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

@@ -13,6 +13,7 @@ class AlbumCell: UITableViewCell {
     @IBOutlet weak var artAndLabelsStack: UIStackView!
     @IBOutlet weak var artwork: UIImageView!
     @IBOutlet weak var albumTitle: UILabel!
+    @IBOutlet weak var composer: UILabel!
     @IBOutlet weak var albumArtist: UILabel!
     @IBOutlet weak var year: UILabel!
     @IBOutlet weak var trackCount: UILabel!
@@ -93,6 +94,8 @@ class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 switch (sort) {
                 case .title:
                     indexString = album?.title ?? ""
+                case .composer:
+                    indexString = album?.composer ?? "[]"
                 case .artist:
                     indexString = album?.artist ?? ""
                 case .genre:
@@ -147,6 +150,7 @@ class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         let cell = tableView.dequeueReusableCell(withIdentifier: "Album", for: indexPath) as! AlbumCell
         let albumEntry = albums![indexPath.section * sectionSize + indexPath.row]
         cell.albumTitle?.text = albumEntry.title
+        cell.composer?.text = albumEntry.composer ?? "[]"
         cell.albumArtist?.text = albumEntry.artist
         let yearText: String
         if let timeInterval = albumEntry.releaseDate?.timeIntervalSince1970 {

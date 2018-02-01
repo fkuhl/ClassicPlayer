@@ -16,6 +16,7 @@ extension Notification.Name {
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
+    private static let parsedGenres = ["Classical", "Opera"]
     private static let showParses = false
     private static let separator: Character = "|"
     private static let composerColonWorkDashMovement = try! NSRegularExpression(pattern: "[A-Z][a-z]+:\\s*([^-]+) -\\s+(.+)", options: [])
@@ -157,6 +158,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         print("deleted \(deleteResult?.result ?? "<nil>") \(type)")
     }
     
+    private func isGenreToParse(_ optionalGenre: String?) -> Bool {
+        guard let genre = optionalGenre else {
+            return false
+        }
+        return AppDelegate.parsedGenres.contains(genre)
+    }
+    
     private func loadFromMedia(into context: NSManagedObjectContext) {
         do {
             var albumCount = 0, pieceCount = 0
@@ -166,7 +174,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
             for mediaCollection in mediaStuff.collections! {
                 let items = mediaCollection.items
-                if items[0].genre == "Classical" {
+                if isGenreToParse(items[0].genre) {
                     print("Album: \(items[0].value(forProperty: MPMediaItemPropertyComposer) ?? "<anon>"): "
                         + "\(items[0].value(forProperty: MPMediaItemPropertyAlbumTrackCount) ?? "") "
                         + "\(items[0].value(forProperty: MPMediaItemPropertyAlbumTitle) ?? "<no title>")"
@@ -185,7 +193,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 } else {
                     album.releaseDate = nil
                 }
-                if album.genre == "Classical" {
+                if isGenreToParse(album.genre) {
                     pieceCount += loadAndCountPieces(for: album, from: items, into: context)
                 } else {
                     loadSongs(for: album, from: items, into: context)
