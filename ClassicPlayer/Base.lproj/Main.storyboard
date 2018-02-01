@@ -113,13 +113,16 @@
                                 <fontDescription key="fontDescription" name=".AppleSystemUIFont" family=".AppleSystemUIFont" pointSize="15"/>
                                 <state key="normal" title="Sort"/>
                                 <connections>
-                                    <segue destination="hqS-jg-oYi" kind="presentation" identifier="SortSelected" id="yLo-K6-GQL"/>
+                                    <action selector="sortButtonTapped:" destination="wfN-XP-yh6" eventType="touchUpInside" id="xDu-22-buR"/>
                                 </connections>
                             </button>
+                            <connections>
+                                <action selector="sortButtonTapped:" destination="wfN-XP-yh6" id="4FR-yM-S27"/>
+                            </connections>
                         </barButtonItem>
                     </navigationItem>
                     <connections>
-                        <outlet property="sortButton" destination="mLD-4z-Z3e" id="pcR-xd-S75"/>
+                        <outlet property="sortButton" destination="m1S-5v-vpk" id="oYN-VJ-0bh"/>
                         <outlet property="tableView" destination="P8Z-x0-puS" id="Wko-7a-VrA"/>
                     </connections>
                 </viewController>
@@ -130,7 +133,7 @@
         <!--Album Sort View Controller-->
         <scene sceneID="pZ0-Mr-q6R">
             <objects>
-                <viewController id="hqS-jg-oYi" customClass="AlbumSortViewController" customModule="ClassicPlayer" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="AlbumsSortController" id="hqS-jg-oYi" customClass="AlbumSortViewController" customModule="ClassicPlayer" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="qyZ-zR-kzh">
                         <rect key="frame" x="0.0" y="0.0" width="200" height="200"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

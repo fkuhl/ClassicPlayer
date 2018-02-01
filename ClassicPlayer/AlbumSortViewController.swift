@@ -76,5 +76,10 @@ class AlbumSortViewController: UIViewController, UITableViewDelegate, UITableVie
     }
 
     // MARK: - UITableViewDelegate
-
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if let newSort = AlbumSorts(rawValue: indexPath.row) {
+            albumsViewController?.userDidChoose(sort: newSort)
+        }
+    }
 }

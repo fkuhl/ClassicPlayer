@@ -19,16 +19,16 @@ class AlbumCell: UITableViewCell {
 }
 
 class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+    @IBOutlet weak var sortButton: UIBarButtonItem!
     @IBOutlet weak var tableView: UITableView!
     private var collectionIsLoaded = false
-    @IBOutlet weak var sortButton: UIButton!
     private var albums: [Album]?
     
     static var indexedSectionCount = 27  //A magic number; that's how many sections any UITableView index can have.
     private var sectionCount = 1
     private var sectionSize = 0
     private var sectionTitles: [String]?
-
+ 
     // MARK: - UIViewController
 
     override func viewDidLoad() {
@@ -53,17 +53,8 @@ class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
 
     private func updateUI() {
-        let context:NSManagedObjectContext! = (UIApplication.shared.delegate as! AppDelegate).context
-        let request = NSFetchRequest<Album>()
-        request.entity = NSEntityDescription.entity(forEntityName: "Album", in:context)
-        //request.predicate = NSPredicate(format: "composer == %@", selectedComposer!)
-        request.resultType = .managedObjectResultType
-        request.returnsDistinctResults = true
-        request.sortDescriptors = [ NSSortDescriptor(key: "title", ascending: true) ]
         do {
-            albums = try context.fetch(request)
-            computeSections()
-            tableView.reloadData()
+            try loadAlbumsSortedBy(.title)
         }
         catch {
              let nserror = error as NSError
@@ -71,7 +62,20 @@ class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         }
     }
     
-    private func computeSections() {
+    private func loadAlbumsSortedBy(_ sort: AlbumSorts) throws {
+        let context:NSManagedObjectContext! = (UIApplication.shared.delegate as! AppDelegate).context
+        let request = NSFetchRequest<Album>()
+        request.entity = NSEntityDescription.entity(forEntityName: "Album", in:context)
+        //request.predicate = NSPredicate(format: "composer == %@", selectedComposer!)
+        request.resultType = .managedObjectResultType
+        request.returnsDistinctResults = true
+        request.sortDescriptors = [ NSSortDescriptor(key: sort.sortDescriptor, ascending: true) ]
+        albums = try context.fetch(request)
+        computeSectionsSortedBy(sort)
+        tableView.reloadData()
+    }
+    
+    private func computeSectionsSortedBy(_ sort: AlbumSorts) {
         guard let unwrappedAlbums = albums else {
             return
         }
@@ -85,13 +89,45 @@ class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             sectionTitles = []
             for i in 0 ..< AlbumsViewController.indexedSectionCount {
                 let album = albums?[i * sectionSize]
-                let composer = album?.title
-                let title = composer?.prefix(2)
-                sectionTitles?.append(String(title!))
+                let indexString: String
+                switch (sort) {
+                case .title:
+                    indexString = album?.title ?? ""
+                case .artist:
+                    indexString = album?.artist ?? ""
+                case .genre:
+                    indexString = album?.genre ?? ""
+                }
+                let indexEntry = indexString.prefix(2)
+                sectionTitles?.append(String(indexEntry))
             }
         }
     }
+    
+    // MARK: - Sort popover
 
+    @IBAction func sortButtonTapped(_ sender: Any) {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let sortVC = storyboard.instantiateViewController(withIdentifier: "AlbumsSortController")
+            as! AlbumSortViewController
+        sortVC.albumsViewController = self
+        sortVC.preferredContentSize = CGSize(width: 200, height: 200)
+        sortVC.modalPresentationStyle = .popover
+        sortVC.popoverPresentationController?.barButtonItem = sortButton
+        self.present(sortVC, animated: true) { }
+    }
+    
+    func userDidChoose(sort: AlbumSorts) {
+        self.dismiss(animated: true) { }
+        do {
+            try loadAlbumsSortedBy(sort)
+        }
+        catch {
+            let nserror = error as NSError
+            fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
+        }
+    }
+    
     // MARK: - UITableViewDataSource
 
     func numberOfSections(in collectionView: UITableView) -> Int {
@@ -162,9 +198,6 @@ class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDa
                     albums![selected.section * sectionSize + selected.row]
                 secondViewController.title = secondViewController.album?.title
             }
-        } else if segue.identifier == "SortSelected" {
-            let secondViewController = segue.destination as! AlbumSortViewController
-            secondViewController.albumsViewController = self
         }
     }
 }
