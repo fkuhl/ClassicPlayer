@@ -125,7 +125,9 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
         cell.movementTitle.text = (movementEntry as? Movement)?.title
         return cell
     }
-    
+ 
+    // MARK: - UITableViewDelegate
+
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         firstIndexInPlayer = indexPath.row
         currentlyPlayingIndex = indexPath.row

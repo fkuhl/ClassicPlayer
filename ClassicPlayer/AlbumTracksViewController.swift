@@ -142,6 +142,25 @@ class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableV
         return cell
     }
 
+    // MARK: - UITableViewDelegate
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        firstIndexInPlayer = indexPath.row
+        currentlyPlayingIndex = indexPath.row
+        let partialList = trackData![indexPath.row...]
+        let playerItems: [AVPlayerItem] = partialList.map {
+            item in
+            return AVPlayerItem(url: item.assetURL!)
+        }
+        setQueuePlayer(items: playerItems)
+        if currentlyPlayingIndex == trackData!.count - 1 {
+            //Just pause after last item, rather than searching for stuff.
+            playerViewController?.player?.actionAtItemEnd = .pause
+        }
+        tableView.reloadData()
+        playerViewController?.player?.play() //Tap on the table, it starts to play
+    }
+
     // MARK: - Player management
 
     private func setQueuePlayer(items: [AVPlayerItem]) {
@@ -154,6 +173,9 @@ class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableV
                                                   forKeyPath: #keyPath(AVPlayer.rate),
                                                   options: [.old, .new],
                                                   context: &contextString)
+        if items.count == 1 {
+            playerViewController?.player?.actionAtItemEnd = .pause
+        }
     }
     
     //The embed segue that places the AVPlayerViewController in the ContainerVC
