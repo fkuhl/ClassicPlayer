@@ -32,7 +32,7 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
     @IBOutlet weak var artist: UILabel!
     @IBOutlet weak var movementTable: UITableView!
     var playerViewController: AVPlayerViewController?
-    var selectedPiece: Piece?
+    weak var selectedPiece: Piece?
     var movements: NSOrderedSet?
     var currentlyPlayingIndex = 0 //what's next in the player
     var firstIndexInPlayer = 0    //index of first movement in player
@@ -142,6 +142,8 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
         tableView.reloadData()
         playerViewController?.player?.play() //Tap on the table, it starts to play
     }
+
+    // MARK: - Player management
 
     private func setQueuePlayer(items: [AVPlayerItem]) {
         playerViewController?.player = AVQueuePlayer(items: items)

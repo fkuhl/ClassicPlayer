@@ -6,6 +6,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -42,16 +43,16 @@
                                                         <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="tHc-5q-dD9">
                                                             <rect key="frame" x="-8" y="0.0" width="0.0" height="73"/>
                                                             <subviews>
-                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalCompressionResistancePriority="751" text="title" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7Pe-Jd-NZP" userLabel="title">
-                                                                    <rect key="frame" x="0.0" y="0.0" width="0.0" height="18"/>
-                                                                    <fontDescription key="fontDescription" style="UICTFontTextStyleSubhead"/>
-                                                                    <nil key="textColor"/>
-                                                                    <nil key="highlightedColor"/>
-                                                                </label>
                                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" text="Composer" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="D4v-xC-3ei">
-                                                                    <rect key="frame" x="0.0" y="22" width="0.0" height="14.333333333333336"/>
+                                                                    <rect key="frame" x="0.0" y="0.0" width="0.0" height="14.333333333333334"/>
                                                                     <fontDescription key="fontDescription" style="UICTFontTextStyleCaption1"/>
                                                                     <color key="textColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                                    <nil key="highlightedColor"/>
+                                                                </label>
+                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalCompressionResistancePriority="751" text="title" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7Pe-Jd-NZP" userLabel="title">
+                                                                    <rect key="frame" x="0.0" y="18.333333333333332" width="0.0" height="17.999999999999996"/>
+                                                                    <fontDescription key="fontDescription" style="UICTFontTextStyleSubhead"/>
+                                                                    <color key="textColor" name="TheBlue"/>
                                                                     <nil key="highlightedColor"/>
                                                                 </label>
                                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalCompressionResistancePriority="751" text="artist" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="USZ-yJ-Gjb" userLabel="artist">
@@ -601,11 +602,11 @@
                                             <constraint firstAttribute="width" constant="120" id="uR4-Ww-s85"/>
                                         </constraints>
                                     </imageView>
-                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="top" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="cMz-Kb-SE9">
-                                        <rect key="frame" x="124" y="0.0" width="414" height="54.666666666666664"/>
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="cMz-Kb-SE9">
+                                        <rect key="frame" x="124" y="0.0" width="414" height="73"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" text="Composer" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="weU-43-vOm">
-                                                <rect key="frame" x="0.0" y="0.0" width="58.333333333333336" height="14.333333333333334"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="414" height="14.333333333333334"/>
                                                 <fontDescription key="fontDescription" style="UICTFontTextStyleCaption1"/>
                                                 <color key="textColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <nil key="highlightedColor"/>
@@ -613,15 +614,32 @@
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1vn-GI-7Rz">
                                                 <rect key="frame" x="0.0" y="18.333333333333329" width="414" height="18"/>
                                                 <fontDescription key="fontDescription" style="UICTFontTextStyleSubhead"/>
-                                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                                <color key="textColor" name="TheBlue"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" text="Artist" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="b2W-ho-dsV">
-                                                <rect key="frame" x="0.0" y="40.333333333333329" width="31" height="14.333333333333336"/>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" text="Artist" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="b2W-ho-dsV">
+                                                <rect key="frame" x="0.0" y="40.333333333333329" width="414" height="14.333333333333336"/>
                                                 <fontDescription key="fontDescription" style="UICTFontTextStyleCaption1"/>
                                                 <color key="textColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
+                                            <stackView opaque="NO" contentMode="scaleToFill" verticalCompressionResistancePriority="751" distribution="equalSpacing" alignment="firstBaseline" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="ZD6-oL-LtN">
+                                                <rect key="frame" x="0.0" y="58.666666666666679" width="414" height="14.333333333333336"/>
+                                                <subviews>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" text="year" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PQ2-IR-tkK" userLabel="year">
+                                                        <rect key="frame" x="0.0" y="0.0" width="24.333333333333332" height="14.333333333333334"/>
+                                                        <fontDescription key="fontDescription" style="UICTFontTextStyleCaption1"/>
+                                                        <color key="textColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" text="tracks" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="P8c-G3-Hef">
+                                                        <rect key="frame" x="286" y="0.0" width="35" height="14.333333333333334"/>
+                                                        <fontDescription key="fontDescription" style="UICTFontTextStyleCaption1"/>
+                                                        <color key="textColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                </subviews>
+                                            </stackView>
                                         </subviews>
                                         <viewLayoutGuide key="safeArea" id="ObZ-jI-YHP"/>
                                     </stackView>
@@ -666,7 +684,6 @@
                                         </tableViewCellContentView>
                                         <connections>
                                             <outlet property="indicator" destination="eZf-eq-zIp" id="rC3-Ji-nKy"/>
-                                            <outlet property="movementTitle" destination="OdL-Uj-NmY" id="E5x-30-d2t"/>
                                             <outlet property="title" destination="OdL-Uj-NmY" id="st8-It-jFp"/>
                                         </connections>
                                     </tableViewCell>
@@ -678,7 +695,7 @@
                                     <constraint firstAttribute="height" constant="100" id="Inp-Qy-TUG"/>
                                 </constraints>
                                 <connections>
-                                    <segue destination="lUG-gc-0lH" kind="embed" id="uf9-QD-NDw"/>
+                                    <segue destination="lUG-gc-0lH" kind="embed" identifier="PlayTracks" id="uf9-QD-NDw"/>
                                 </connections>
                             </containerView>
                         </subviews>
@@ -703,8 +720,9 @@
                         <outlet property="artist" destination="b2W-ho-dsV" id="UJM-uI-fK0"/>
                         <outlet property="artwork" destination="H3d-pz-QcX" id="b5R-iw-cpg"/>
                         <outlet property="composer" destination="weU-43-vOm" id="JHk-P5-0F1"/>
-                        <outlet property="movementTable" destination="rrY-Dj-fv5" id="of8-QY-u3W"/>
-                        <outlet property="pieceTitle" destination="1vn-GI-7Rz" id="Vex-y1-TAU"/>
+                        <outlet property="trackTable" destination="rrY-Dj-fv5" id="of8-QY-u3W"/>
+                        <outlet property="tracks" destination="P8c-G3-Hef" id="Ojv-2M-W03"/>
+                        <outlet property="year" destination="PQ2-IR-tkK" id="lnS-S2-hTf"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jfn-a4-fcJ" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -718,6 +736,9 @@
         <image name="1649-music-playlist" width="21" height="21"/>
         <image name="1656-piano" width="23" height="19"/>
         <image name="1706-music-note" width="19" height="23"/>
+        <namedColor name="TheBlue">
+            <color red="0.074509803921568626" green="0.14509803921568629" blue="0.4823529411764706" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="uf9-QD-NDw"/>

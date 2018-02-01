@@ -44,28 +44,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var audioBarSet: [UIImage]?
     var audioPaused: UIImage?
     var audioNotCurrent: UIImage?
-    
-    private static var _defaultImage: UIImage? = nil
-    
-    static var defaultImage: UIImage {
-        get {
-            if _defaultImage == nil {
-                _defaultImage = UIImage(named: "default-album", in: nil, compatibleWith: nil)
-            }
-            return _defaultImage!
-        }
-    }
-    
-    private static var _brandColor: UIColor? = nil
-    
-    static var brandColor: UIColor {
-        get {
-            if _brandColor == nil {
-                _brandColor = UIColor(named: "TheBlue")
-            }
-            return _brandColor!
-        }
-    }
 
     // MARK: - App delegate
 
@@ -344,6 +322,30 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return piece
     }
     
+    // MARK: - Graphics
+    
+    private static var _defaultImage: UIImage? = nil
+    
+    static var defaultImage: UIImage {
+        get {
+            if _defaultImage == nil {
+                _defaultImage = UIImage(named: "default-album", in: nil, compatibleWith: nil)
+            }
+            return _defaultImage!
+        }
+    }
+    
+    private static var _brandColor: UIColor? = nil
+    
+    static var brandColor: UIColor {
+        get {
+            if _brandColor == nil {
+                _brandColor = UIColor(named: "TheBlue")
+            }
+            return _brandColor!
+        }
+    }
+
     static func artworkFor(album: String) -> UIImage? {
         let query = MPMediaQuery.albums()
         let idVal = AppDelegate.decodeIDFrom(coreDataRepresentation: album)
