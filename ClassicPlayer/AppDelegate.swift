@@ -276,28 +276,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return nil
     }
 
-
-    private func storeMovement(from item: MPMediaItem, for piece: Piece, into context: NSManagedObjectContext) {
-        let songTitle = item.title!
-        let movementTitle: String
-        if piece.title!.count < songTitle.count { //guard against erroneous parse
-            let movementTitleIndex = songTitle.index(songTitle.startIndex, offsetBy: piece.title!.count)
-            movementTitle = String(songTitle.suffix(from: movementTitleIndex))
-        } else {
-            movementTitle = ""
-        }
-        let mov = NSEntityDescription.insertNewObject(forEntityName: "Movement", into: context) as! Movement
-        mov.title = movementTitle
-        mov.trackID = AppDelegate.encodeForCoreData(id: item.persistentID)
-        piece.addToMovements(mov)
-        print("    \(mov.title ?? "")")
-    }
-
     private func storeMovement(from item: MPMediaItem, named: String, for piece: Piece, into context: NSManagedObjectContext) {
         let mov = NSEntityDescription.insertNewObject(forEntityName: "Movement", into: context) as! Movement
         mov.title = named
         mov.trackID = AppDelegate.encodeForCoreData(id: item.persistentID)
         mov.trackURL = item.assetURL
+        mov.duration = AppDelegate.durationAsString(item.playbackDuration)
         piece.addToMovements(mov)
         print("    '\(mov.title ?? "")'")
     }
@@ -381,6 +365,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         audioPaused = UIImage(named:"bars-paused")
         audioNotCurrent = UIImage(named:"bars-not-current")
+    }
+    
+    static func durationAsString(_ duration: TimeInterval) -> String {
+        let min = Int(duration/60.0)
+        let sec = Int(CGFloat(duration).truncatingRemainder(dividingBy: 60.0))
+        return String(format: "%d:%02d", min, sec)
     }
     
     // MARK: - Core Data stack

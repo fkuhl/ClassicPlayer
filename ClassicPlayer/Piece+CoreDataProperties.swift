@@ -2,7 +2,7 @@
 //  Piece+CoreDataProperties.swift
 //  ClassicPlayer
 //
-//  Created by Frederick Kuhl on 1/6/18.
+//  Created by Frederick Kuhl on 2/3/18.
 //  Copyright © 2018 TyndaleSoft LLC. All rights reserved.
 //
 //

@@ -20,10 +20,8 @@
             <entry key="com.apple.syncservices.IdentityProperties" value=""/>
         </userInfo>
     </entity>
-    <entity name="Event" representedClassName="Event" syncable="YES" codeGenerationType="class">
-        <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
-    </entity>
     <entity name="Movement" representedClassName="Movement" syncable="YES">
+        <attribute name="duration" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="trackID" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="trackURL" optional="YES" attributeType="URI" syncable="YES"/>
@@ -62,8 +60,7 @@
     </entity>
     <elements>
         <element name="Album" positionX="108" positionY="117" width="128" height="163"/>
-        <element name="Event" positionX="315" positionY="198" width="128" height="60"/>
-        <element name="Movement" positionX="529" positionY="126" width="128" height="105"/>
+        <element name="Movement" positionX="529" positionY="126" width="128" height="120"/>
         <element name="Piece" positionX="342" positionY="123" width="128" height="210"/>
     </elements>
 </model>

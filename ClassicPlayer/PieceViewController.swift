@@ -13,6 +13,7 @@ import AVKit
 class MovementTableViewCell: UITableViewCell {
     @IBOutlet weak var movementTitle: UILabel!
     @IBOutlet weak var indicator: UIImageView!
+    @IBOutlet weak var duration: UILabel!
 }
 
 /*
@@ -123,6 +124,7 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
         }
         let movementEntry = movements![indexPath.row]
         cell.movementTitle.text = (movementEntry as? Movement)?.title
+        cell.duration.text = (movementEntry as? Movement)?.duration
         return cell
     }
  

@@ -2,7 +2,7 @@
 //  Movement+CoreDataProperties.swift
 //  ClassicPlayer
 //
-//  Created by Frederick Kuhl on 1/8/18.
+//  Created by Frederick Kuhl on 2/3/18.
 //  Copyright © 2018 TyndaleSoft LLC. All rights reserved.
 //
 //
@@ -20,6 +20,7 @@ extension Movement {
     @NSManaged public var title: String?
     @NSManaged public var trackID: String?
     @NSManaged public var trackURL: URL?
+    @NSManaged public var duration: String?
     @NSManaged public var piece: Piece?
 
 }

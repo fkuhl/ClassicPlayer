@@ -14,6 +14,7 @@ import MediaPlayer
 class TrackTableViewCell: UITableViewCell {
     @IBOutlet weak var indicator: UIImageView!
     @IBOutlet weak var title: UILabel!
+    @IBOutlet weak var duration: UILabel!
 }
 
 class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
@@ -139,6 +140,7 @@ class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableV
         }
         let trackEntry = trackData![indexPath.row]
         cell.title.text = trackEntry.title
+        cell.duration.text = AppDelegate.durationAsString(trackEntry.playbackDuration)
         return cell
     }
 
