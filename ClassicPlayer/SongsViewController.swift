@@ -21,8 +21,7 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     @IBOutlet weak var trackTable: UITableView!
     var playerViewController: AVPlayerViewController?
     var trackData: [MPMediaItem]?
-    var currentlyPlayingIndex = 0 //what's next in the player
-    var firstIndexInPlayer = 0    //index of first movement in player
+    var currentlyPlayingIndex = 0 //what's in the player
     var playerRate: Float = 0.0
     var contextString = "some stuff"
 
@@ -35,25 +34,61 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
         trackTable.dataSource = self
         trackTable.rowHeight = UITableViewAutomaticDimension
         trackTable.estimatedRowHeight = 64.0
-        loadTracks()
+        DispatchQueue.global(qos: .userInitiated).async {
+            self.loadTracks()
+            DispatchQueue.main.async {
+                self.trackTable.reloadData()
+            }
+        }
     }
     
+    /* It turns out it's vastly faster to load songs by album, than
+       to do a MPMediaQuery.songs(). Even with a sort by title afterward.
+    */
     private func loadTracks() {
-        let query = MPMediaQuery.songs()
+        let query = MPMediaQuery.albums()
         trackData = []
         for collection in query.collections! {
-            let possibleItem = collection.items.first
-            if let item = possibleItem {
+            for item in collection.items {
                 if item.assetURL != nil { trackData?.append(item) } //iTunes LPs have nil URLs!!
             }
         }
-        print("songs retrieved \(query.collections!.count)")
+        print("songs retrieved \(trackData?.count ?? 0)")
+        //Sort by song title
+        if let data = trackData {
+            trackData = data.sorted{
+                song1, song2 in
+                if let t1 = song1.title {
+                    if let t2 = song2.title {
+                        return t1 < t2
+                    } else {
+                        return false
+                    }
+                } else {
+                    return true
+                }
+            }
+        }
     }
     
+//    private func loadTracks() {
+//        let query = MPMediaQuery.songs()
+//        trackData = []
+//        for collection in query.collections! {
+//            let possibleItem = collection.items.first
+//            if let item = possibleItem {
+//                if item.assetURL != nil { trackData?.append(item) } //iTunes LPs have nil URLs!!
+//            }
+//        }
+//        print("songs retrieved \(query.collections!.count)")
+//    }
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        print("SongsVC.vWA")
         //Could be returning from
         if playerViewController?.player == nil {
+            currentlyPlayingIndex = 0
             installPlayer()
             playerRate = 0.0 //On such a return the player is paused
             trackTable.reloadData()
@@ -99,57 +134,29 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     // MARK: - UITableViewDelegate
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        firstIndexInPlayer = indexPath.row
         currentlyPlayingIndex = indexPath.row
-        let partialList = trackData![indexPath.row...]
-        let playerItems: [AVPlayerItem] = partialList.map {
-            item in
-            return AVPlayerItem(url: item.assetURL!)
-        }
-        setQueuePlayer(items: playerItems)
-        if currentlyPlayingIndex == trackData!.count - 1 {
-            //Just pause after last item, rather than searching for stuff.
-            playerViewController?.player?.actionAtItemEnd = .pause
-        }
+        installPlayer()
         tableView.reloadData()
         playerViewController?.player?.play() //Tap on the table, it starts to play
     }
 
     // MARK: - Player management
-
-    private func setQueuePlayer(items: [AVPlayerItem]) {
-        playerViewController?.player = AVQueuePlayer(items: items)
-        playerViewController?.player?.addObserver(self,
-                                                  forKeyPath: #keyPath(AVPlayer.currentItem),
-                                                  options: [.old, .new],
-                                                  context: &contextString)
-        playerViewController?.player?.addObserver(self,
-                                                  forKeyPath: #keyPath(AVPlayer.rate),
-                                                  options: [.old, .new],
-                                                  context: &contextString)
-        if items.count == 1 {
-            playerViewController?.player?.actionAtItemEnd = .pause
-        }
-    }
     
     //The embed segue that places the AVPlayerViewController in the ContainerVC
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "PlayTracks" {
             print("SongsVC.prepareForSegue")
             self.playerViewController = segue.destination as? AVPlayerViewController
-            installPlayer()
         }
     }
 
     private func installPlayer() {
         if trackData != nil && trackData!.count > 0 {
-            let playerItems: [AVPlayerItem] = trackData!.map {
-                item in
-                return AVPlayerItem(url: item.assetURL!)
-            }
-            firstIndexInPlayer = 0 //start with all movements
-            currentlyPlayingIndex = 0
-            setQueuePlayer(items: playerItems)
+            playerViewController?.player = AVPlayer(url: (trackData?[currentlyPlayingIndex].assetURL)!)
+            playerViewController?.player?.addObserver(self,
+                                                      forKeyPath: #keyPath(AVPlayer.rate),
+                                                      options: [.old, .new],
+                                                      context: &contextString)
         }
     }
     
@@ -163,27 +170,6 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
                                change: change,
                                context: context)
             return
-        }
-        if keyPath == #keyPath(AVPlayer.currentItem) {
-            if let currentItem = change?[.newKey] as? AVPlayerItem {
-                currentlyPlayingIndex += 1
-                print("new currentItem, index \(currentlyPlayingIndex) \(currentItem)")
-                if currentlyPlayingIndex == trackData!.count - 1 {
-                    //Just pause after last item, rather than searching for stuff.
-                    (object as? AVPlayer)?.actionAtItemEnd = .pause
-                }
-                DispatchQueue.main.async { self.trackTable.reloadData() }
-                //As of iOS 11, the scroll seems to need a little delay.
-                let deadlineTime = DispatchTime.now() + .milliseconds(100)
-                DispatchQueue.main.asyncAfter(deadline: deadlineTime) {
-                    if let visibleIndexPaths = self.trackTable.indexPathsForVisibleRows {
-                        let currentPath = IndexPath(indexes: [0, self.currentlyPlayingIndex])
-                        if !visibleIndexPaths.contains(currentPath) {
-                            self.trackTable.scrollToRow(at: currentPath, at: .bottom, animated: true)
-                        }
-                    }
-                }
-            }
         }
         if keyPath == #keyPath(AVPlayer.rate) {
             if let rate = change?[.newKey] as? NSNumber {
