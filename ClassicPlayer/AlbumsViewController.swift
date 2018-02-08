@@ -164,16 +164,7 @@ class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         cell.trackCount?.text = "tracks: \(albumEntry.trackCount)"
         let id = albumEntry.albumID
         if let realID = id {
-            let returnedArtwork = AppDelegate.artworkFor(album: realID)
-            if returnedArtwork != nil {
-                cell.artwork.image = returnedArtwork
-                cell.artwork.isOpaque = true
-                cell.artwork.alpha = 1.0
-            } else {
-                cell.artwork.image = AppDelegate.defaultImage
-                cell.artwork.isOpaque = false
-                cell.artwork.alpha = 0.3
-            }
+            cell.artwork.image = AppDelegate.artworkFor(album: realID)
         }
         //Priority lowered on artwork height to prevent unsatisfiable constraint.
         //As of 1/31/2018, a change in text size in medias res causes the cells to re-layout

@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		270B337920192365007D1E35 /* AlbumsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 270B337820192365007D1E35 /* AlbumsViewController.swift */; };
 		27188EAB201D238B00CB5427 /* AlbumTracksViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27188EAA201D238B00CB5427 /* AlbumTracksViewController.swift */; };
+		271D2E23202CD7E4005FE857 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 271D2E22202CD7E4005FE857 /* Settings.bundle */; };
 		2733A60C1FE5FDE000E1EE77 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2733A60B1FE5FDE000E1EE77 /* AppDelegate.swift */; };
 		2733A60F1FE5FDE000E1EE77 /* ClassicPlayer.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2733A60D1FE5FDE000E1EE77 /* ClassicPlayer.xcdatamodeld */; };
 		2733A6161FE5FDE000E1EE77 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2733A6141FE5FDE000E1EE77 /* Main.storyboard */; };
@@ -44,6 +45,7 @@
 /* Begin PBXFileReference section */
 		270B337820192365007D1E35 /* AlbumsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumsViewController.swift; sourceTree = "<group>"; };
 		27188EAA201D238B00CB5427 /* AlbumTracksViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumTracksViewController.swift; sourceTree = "<group>"; };
+		271D2E22202CD7E4005FE857 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		2733A6081FE5FDE000E1EE77 /* ClassicPlayer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClassicPlayer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2733A60B1FE5FDE000E1EE77 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		2733A60E1FE5FDE000E1EE77 /* ClassicPlayer.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ClassicPlayer.xcdatamodel; sourceTree = "<group>"; };
@@ -134,6 +136,7 @@
 				2733A6301FE5FE8600E1EE77 /* README.md */,
 				27DAEB9F20264B3B00F8D5DA /* SongSortViewController.swift */,
 				27DAEBA120264BE700F8D5DA /* SongsViewController.swift */,
+				271D2E22202CD7E4005FE857 /* Settings.bundle */,
 			);
 			path = ClassicPlayer;
 			sourceTree = "<group>";
@@ -239,6 +242,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				271D2E23202CD7E4005FE857 /* Settings.bundle in Resources */,
 				2733A61B1FE5FDE000E1EE77 /* LaunchScreen.storyboard in Resources */,
 				2733A6181FE5FDE000E1EE77 /* Assets.xcassets in Resources */,
 				2733A6161FE5FDE000E1EE77 /* Main.storyboard in Resources */,

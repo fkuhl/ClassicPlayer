@@ -16,6 +16,7 @@ extension Notification.Name {
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
+    private static let displayArtworkKey = "display_artwork_preference"
     private static let parsedGenres = ["Classical", "Opera"]
     private static let showParses = false
     private static let separator: Character = "|"
@@ -330,30 +331,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
 
-    static func artworkFor(album: String) -> UIImage? {
+    static func artworkFor(album: String) -> UIImage {
+        if !UserDefaults.standard.bool(forKey: displayArtworkKey) {
+            return AppDelegate.defaultImage
+        }
         let query = MPMediaQuery.albums()
         let idVal = AppDelegate.decodeIDFrom(coreDataRepresentation: album)
         let predicate = MPMediaPropertyPredicate(value: idVal, forProperty: MPMediaItemPropertyAlbumPersistentID)
         query.filterPredicates = Set([ predicate ])
-        if query.collections == nil {
-            print("album query produced nil")
-            return nil
+        if let results = query.collections {
+            if results.count >= 1 {
+                let result = results[0].items[0]
+                let propertyVal = result.value(forProperty: MPMediaItemPropertyArtwork)
+                let artwork = propertyVal as? MPMediaItemArtwork
+                let returnedImage = artwork?.image(at: CGSize(width: 30, height: 30))
+                //What's returned is (see docs) "smallest image at least as large as specified"--
+                //which turns out to be 600 x 600, with no discernible difference for the albums
+                //with iTunes LPs.
+                return returnedImage != nil ? returnedImage! : AppDelegate.defaultImage
+            }
         }
-        let results = query.collections!
-        if results.count < 1 {
-            print("album query had no hits")
-            return nil
-        }
-        if results.count > 1 { print("album query had \(results.count) hits") }
-        let result = results[0].items[0]
-        let propertyVal = result.value(forProperty: MPMediaItemPropertyArtwork)
-        let artwork = propertyVal as? MPMediaItemArtwork
-        let returnedImage = artwork?.image(at: CGSize(width: 30, height: 30))
-        //What's returned is (see docs) "smallest image at least as large as specified"--
-        //which turns out to be 600 x 600, with no discernible difference for the albums
-        //with iTunes LPs.
-        return returnedImage
-   }
+        return AppDelegate.defaultImage
+    }
     
     private func makeAudioBarSet() {
         audioBarSet = [UIImage]()

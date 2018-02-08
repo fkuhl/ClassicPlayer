@@ -58,16 +58,7 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
         self.movements = selectedPiece?.movements
         let id = selectedPiece?.albumID
         if let realID = id {
-            let returnedArtwork = AppDelegate.artworkFor(album: realID)
-            if returnedArtwork != nil {
-                self.artwork.image = returnedArtwork
-                self.artwork.isOpaque = true
-                self.artwork.alpha = 1.0
-            } else {
-                self.artwork.image = UIImage(named: "1706-music-note", in: nil, compatibleWith: nil)
-                self.artwork.isOpaque = false
-                self.artwork.alpha = 0.3
-            }
+            self.artwork.image = AppDelegate.artworkFor(album: realID)
         }
         //Priority lowered on artwork height to prevent unsatisfiable constraint.
         if UIApplication.shared.preferredContentSizeCategory > .extraExtraLarge {

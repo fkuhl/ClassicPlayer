@@ -90,16 +90,7 @@ class PiecesFromComposerViewController: UIViewController, NSFetchedResultsContro
         cell.pieceArtist?.text = pieceEntry.ensemble
         let id = pieceEntry.albumID
         if let realID = id {
-            let returnedArtwork = AppDelegate.artworkFor(album: realID)
-            if returnedArtwork != nil {
-                cell.artwork.image = returnedArtwork
-                cell.artwork.isOpaque = true
-                cell.artwork.alpha = 1.0
-           } else {
-                cell.artwork.image = AppDelegate.defaultImage
-                cell.artwork.isOpaque = false
-                cell.artwork.alpha = 0.3
-            }
+            cell.artwork.image = AppDelegate.artworkFor(album: realID)
         }
         //Priority lowered on artwork height to prevent unsatisfiable constraint.
         if UIApplication.shared.preferredContentSizeCategory > .extraExtraLarge {
