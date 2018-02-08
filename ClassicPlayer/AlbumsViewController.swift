@@ -152,14 +152,7 @@ class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         cell.albumTitle?.text = albumEntry.title
         cell.composer?.text = albumEntry.composer ?? "[]"
         cell.albumArtist?.text = albumEntry.artist
-        let yearText: String
-        if let timeInterval = albumEntry.releaseDate?.timeIntervalSince1970 {
-            let releaseDate = Date(timeIntervalSince1970: timeInterval)
-            let calendar = Calendar.current
-            yearText = "\(calendar.component(.year, from: releaseDate))"
-        } else {
-            yearText = "[n.d.]"
-        }
+        let yearText = AppDelegate.yearFrom(releaseDate: albumEntry.releaseDate)
         cell.year?.text = "\(yearText) • \(albumEntry.genre ?? "")"
         cell.trackCount?.text = "tracks: \(albumEntry.trackCount)"
         let id = albumEntry.albumID

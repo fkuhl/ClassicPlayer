@@ -332,12 +332,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     static func artworkFor(album: String) -> UIImage {
+        let idVal = AppDelegate.decodeIDFrom(coreDataRepresentation: album)
+        return AppDelegate.artworkFor(album: idVal)
+    }
+    
+    static func artworkFor(album: MPMediaEntityPersistentID) -> UIImage {
         if !UserDefaults.standard.bool(forKey: displayArtworkKey) {
             return AppDelegate.defaultImage
         }
         let query = MPMediaQuery.albums()
-        let idVal = AppDelegate.decodeIDFrom(coreDataRepresentation: album)
-        let predicate = MPMediaPropertyPredicate(value: idVal, forProperty: MPMediaItemPropertyAlbumPersistentID)
+        let predicate = MPMediaPropertyPredicate(value: album, forProperty: MPMediaItemPropertyAlbumPersistentID)
         query.filterPredicates = Set([ predicate ])
         if let results = query.collections {
             if results.count >= 1 {
@@ -370,6 +374,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let min = Int(duration/60.0)
         let sec = Int(CGFloat(duration).truncatingRemainder(dividingBy: 60.0))
         return String(format: "%d:%02d", min, sec)
+    }
+    
+    static func yearFrom(releaseDate: NSDate?) -> String {
+        let yearText: String
+        if let timeInterval = releaseDate?.timeIntervalSince1970 {
+            let releaseDate = Date(timeIntervalSince1970: timeInterval)
+            let calendar = Calendar.current
+            yearText = "\(calendar.component(.year, from: releaseDate))"
+        } else {
+            yearText = "[n.d.]"
+        }
+        return yearText
     }
     
     // MARK: - Core Data stack

@@ -98,6 +98,12 @@ class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableV
             trackTable.reloadData()
         }
     }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        print("PieceVC.viewWillDisappear")
+        playerViewController?.player = nil
+    }
 
     // MARK: - UITableViewDataSource
     

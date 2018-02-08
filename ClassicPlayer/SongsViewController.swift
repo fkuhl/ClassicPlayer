@@ -12,8 +12,12 @@ import AVKit
 import MediaPlayer
 
 class SongTableViewCell: UITableViewCell {
+    @IBOutlet weak var artAndLabelsStack: UIStackView!
+    @IBOutlet weak var artwork: UIImageView!
     @IBOutlet weak var indicator: UIImageView!
     @IBOutlet weak var title: UILabel!
+    @IBOutlet weak var artist: UILabel!
+    @IBOutlet weak var year: UILabel!
     @IBOutlet weak var duration: UILabel!
 }
 
@@ -33,7 +37,7 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
         trackTable.delegate = self
         trackTable.dataSource = self
         trackTable.rowHeight = UITableViewAutomaticDimension
-        trackTable.estimatedRowHeight = 64.0
+        trackTable.estimatedRowHeight = 128.0
         DispatchQueue.global(qos: .userInitiated).async {
             self.loadTracks()
             DispatchQueue.main.async {
@@ -70,29 +74,23 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
             }
         }
     }
-    
-//    private func loadTracks() {
-//        let query = MPMediaQuery.songs()
-//        trackData = []
-//        for collection in query.collections! {
-//            let possibleItem = collection.items.first
-//            if let item = possibleItem {
-//                if item.assetURL != nil { trackData?.append(item) } //iTunes LPs have nil URLs!!
-//            }
-//        }
-//        print("songs retrieved \(query.collections!.count)")
-//    }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         print("SongsVC.vWA")
         //Could be returning from
         if playerViewController?.player == nil {
-            currentlyPlayingIndex = 0
+            //currentlyPlayingIndex = 0
             installPlayer()
             playerRate = 0.0 //On such a return the player is paused
             trackTable.reloadData()
         }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        print("PieceVC.viewWillDisappear")
+        playerViewController?.player = nil
     }
 
     // MARK: - UITableViewDataSource
@@ -120,14 +118,31 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
                 cell.indicator.animationDuration = 0.6  //sec
                 cell.indicator.startAnimating()
             }
-        } else {
+            cell.artwork.isOpaque = false
+            cell.artwork.alpha = 0.5
+       } else {
             cell.indicator.stopAnimating()
             cell.indicator.animationImages = nil
             cell.indicator.image = appDelegate.audioNotCurrent
+            cell.artwork.isOpaque = true
+            cell.artwork.alpha = 1.0
         }
         let trackEntry = trackData![indexPath.row]
+        let id = trackEntry.albumPersistentID
+        cell.artwork.image = AppDelegate.artworkFor(album: id)
         cell.title.text = trackEntry.title
+        cell.artist.text = trackEntry.artist
         cell.duration.text = AppDelegate.durationAsString(trackEntry.playbackDuration)
+        //Priority lowered on artwork height to prevent unsatisfiable constraint.
+        if UIApplication.shared.preferredContentSizeCategory > .extraExtraLarge {
+            cell.artAndLabelsStack.axis = .vertical
+            cell.artAndLabelsStack.alignment = .leading
+        } else {
+            cell.artAndLabelsStack.axis = .horizontal
+            cell.artAndLabelsStack.alignment = .top
+            //Content hugging priority lowered on text fields so they expand across the cell.
+            cell.artAndLabelsStack.distribution = .fill
+        }
         return cell
     }
 
