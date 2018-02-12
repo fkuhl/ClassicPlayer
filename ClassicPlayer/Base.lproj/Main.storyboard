@@ -501,8 +501,12 @@
                                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="aT7-hX-DtO">
                                                             <rect key="frame" x="0.0" y="0.0" width="0.0" height="47.666666666666664"/>
                                                             <subviews>
-                                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="RLc-rO-9Jv" userLabel="artwork">
-                                                                    <rect key="frame" x="0.0" y="0.0" width="0.0" height="47.666666666666664"/>
+                                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="750" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="RLc-rO-9Jv" userLabel="artwork">
+                                                                    <rect key="frame" x="0.0" y="0.0" width="80" height="80"/>
+                                                                    <constraints>
+                                                                        <constraint firstAttribute="width" constant="80" id="JBn-GL-RHQ"/>
+                                                                        <constraint firstAttribute="height" constant="80" id="URR-bC-fKm"/>
+                                                                    </constraints>
                                                                 </imageView>
                                                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="1000" verticalHuggingPriority="1000" horizontalCompressionResistancePriority="1000" verticalCompressionResistancePriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="R1w-gj-bIR" userLabel="Indicator">
                                                                     <rect key="frame" x="-16.333333333333336" y="8" width="32" height="32"/>
@@ -514,14 +518,12 @@
                                                             </subviews>
                                                             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                             <constraints>
-                                                                <constraint firstAttribute="bottom" secondItem="RLc-rO-9Jv" secondAttribute="bottom" id="6mp-58-zRz"/>
                                                                 <constraint firstItem="R1w-gj-bIR" firstAttribute="centerY" secondItem="aT7-hX-DtO" secondAttribute="centerY" id="9iW-Py-6Vx"/>
                                                                 <constraint firstItem="RLc-rO-9Jv" firstAttribute="top" secondItem="aT7-hX-DtO" secondAttribute="top" id="AnQ-Bi-AK9"/>
-                                                                <constraint firstAttribute="width" constant="80" id="HR4-kO-Tfg"/>
+                                                                <constraint firstAttribute="width" priority="750" constant="80" id="HR4-kO-Tfg"/>
                                                                 <constraint firstItem="R1w-gj-bIR" firstAttribute="centerX" secondItem="aT7-hX-DtO" secondAttribute="centerX" id="YlF-ej-FH2"/>
                                                                 <constraint firstItem="RLc-rO-9Jv" firstAttribute="leading" secondItem="aT7-hX-DtO" secondAttribute="leading" id="ZuS-Md-saf"/>
                                                                 <constraint firstAttribute="height" priority="750" constant="80" id="c2f-Rz-wR1"/>
-                                                                <constraint firstAttribute="trailing" secondItem="RLc-rO-9Jv" secondAttribute="trailing" id="eEy-RH-c3f"/>
                                                             </constraints>
                                                         </view>
                                                         <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="top" translatesAutoresizingMaskIntoConstraints="NO" id="b9E-al-qdD">
