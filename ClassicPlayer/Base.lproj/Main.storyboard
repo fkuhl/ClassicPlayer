@@ -485,7 +485,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="nU8-aq-vaf">
-                                <rect key="frame" x="0.0" y="116" width="414" height="463"/>
+                                <rect key="frame" x="0.0" y="116" width="414" height="419"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="Track" rowHeight="64" id="pWN-t8-ra3" customClass="SongTableViewCell" customModule="ClassicPlayer" customModuleProvider="target">
@@ -571,7 +571,7 @@
                                 </prototypes>
                             </tableView>
                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="L14-hI-Gf1" userLabel="Player Container">
-                                <rect key="frame" x="0.0" y="587" width="414" height="100"/>
+                                <rect key="frame" x="0.0" y="543" width="414" height="100"/>
                                 <constraints>
                                     <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="100" id="EOh-uw-fHo"/>
                                     <constraint firstAttribute="height" constant="100" id="bAk-R3-p1d"/>
@@ -594,8 +594,22 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="IUO-BQ-mJ3"/>
                     </view>
-                    <navigationItem key="navigationItem" title="Songs" id="WlO-GM-0PD"/>
+                    <toolbarItems/>
+                    <navigationItem key="navigationItem" title="Songs" id="WlO-GM-0PD">
+                        <barButtonItem key="rightBarButtonItem" id="xRN-oi-qya">
+                            <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="3iV-Fp-g3w">
+                                <rect key="frame" x="302" y="7" width="92" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Sort"/>
+                                <connections>
+                                    <action selector="sortButtonTapped:" destination="Pbu-Q0-gxw" eventType="touchUpInside" id="VCJ-VM-9Rq"/>
+                                </connections>
+                            </button>
+                        </barButtonItem>
+                    </navigationItem>
+                    <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
+                        <outlet property="sortButton" destination="xRN-oi-qya" id="nt0-q4-6Wi"/>
                         <outlet property="trackTable" destination="nU8-aq-vaf" id="CxK-aB-FOd"/>
                     </connections>
                 </viewController>
@@ -872,6 +886,49 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="69b-tc-9JA" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-3834.7826086956525" y="-1073.6413043478262"/>
+        </scene>
+        <!--Song Sort View Controller-->
+        <scene sceneID="Ayd-T9-Oys">
+            <objects>
+                <viewController storyboardIdentifier="SongsSortController" id="Eac-oM-D04" customClass="SongSortViewController" customModule="ClassicPlayer" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="MCH-Q7-SFJ">
+                        <rect key="frame" x="0.0" y="0.0" width="200" height="200"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="Sorting" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="H6M-MW-2fh">
+                                <rect key="frame" x="8" y="8" width="184" height="184"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <prototypes>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="Sorting" id="H1j-2o-aX9">
+                                        <rect key="frame" x="0.0" y="28" width="184" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="H1j-2o-aX9" id="bn3-lB-Uom">
+                                            <rect key="frame" x="0.0" y="0.0" width="184" height="43.666666666666664"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </prototypes>
+                                <sections/>
+                            </tableView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="H6M-MW-2fh" secondAttribute="trailing" constant="8" id="6vd-j0-qfd"/>
+                            <constraint firstItem="H6M-MW-2fh" firstAttribute="leading" secondItem="MCH-Q7-SFJ" secondAttribute="leading" constant="8" id="GZo-v7-vsp"/>
+                            <constraint firstItem="H6M-MW-2fh" firstAttribute="top" secondItem="VVf-2e-D34" secondAttribute="top" constant="8" id="M7D-Rn-kqC"/>
+                            <constraint firstItem="VVf-2e-D34" firstAttribute="bottom" secondItem="H6M-MW-2fh" secondAttribute="bottom" constant="8" id="uPe-cw-7Sr"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="VVf-2e-D34"/>
+                    </view>
+                    <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+                    <size key="freeformSize" width="200" height="200"/>
+                    <connections>
+                        <outlet property="tableView" destination="H6M-MW-2fh" id="vQO-w3-8ms"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="YnI-68-Com" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-2568" y="-1293"/>
         </scene>
     </scenes>
     <resources>

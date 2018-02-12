@@ -7,46 +7,38 @@
 //
 
 import UIKit
+import AVFoundation
+import AVKit
+import MediaPlayer
 
 
 enum SongSorts: Int {
     case title
-    case composer
     case artist
-    case genre
     
     var dropDownDisplayName: String {
         get {
             switch self {
             case .title:
                 return "Title"
-            case.composer:
-                return "Composer"
            case .artist:
                 return "Artist"
-            case .genre:
-                return "Genre"
             }
         }
     }
     
-    var sortDescriptor: String {
-        get {
-            switch self {
-            case .title:
-                return "title"
-            case .composer:
-                return "composer"
-            case .artist:
-                return "artist"
-            case .genre:
-                return "genre"
-            }
+    func sortField(from item: MPMediaItem) -> String {
+        switch self {
+        case .title:
+            return item.title ?? ""
+        case .artist:
+            return item.artist ?? ""
         }
     }
 }
 
 class SongSortViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+    weak var songsViewController: SongsViewController?
     @IBOutlet weak var tableView: UITableView!
     
 
@@ -74,7 +66,7 @@ class SongSortViewController: UIViewController, UITableViewDelegate, UITableView
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Sorting", for: indexPath)
-        cell.textLabel?.text = AlbumSorts(rawValue: indexPath.row)?.dropDownDisplayName
+        cell.textLabel?.text = SongSorts(rawValue: indexPath.row)?.dropDownDisplayName
         cell.textLabel?.textColor = AppDelegate.brandColor
         return cell
     }
@@ -82,6 +74,8 @@ class SongSortViewController: UIViewController, UITableViewDelegate, UITableView
     // MARK: - UITableViewDelegate
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        //TODO
+        if let newSort = SongSorts(rawValue: indexPath.row) {
+            songsViewController?.userDidChoose(sort: newSort)
+        }
     }
 }

@@ -13,7 +13,7 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
     @IBOutlet weak var tableView: UITableView!
     private var tableIsLoaded = false
     
-    static var indexedSectionCount = 27  //A magic number; that's how many sections any UITableView index can have.
+    private static var indexedSectionCount = 27  //A magic number; that's how many sections any UITableView index can have.
     private var composerObjects: [NSDictionary]?
     private var sectionCount = 1
     private var sectionSize = 0

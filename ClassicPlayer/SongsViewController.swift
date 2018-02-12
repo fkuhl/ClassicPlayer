@@ -1,5 +1,5 @@
 //
-//  AlbumTracksViewController.swift
+//  SongsViewController.swift
 //  ClassicPlayer
 //
 //  Created by Frederick Kuhl on 1/27/18.
@@ -22,12 +22,18 @@ class SongTableViewCell: UITableViewCell {
 }
 
 class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+    @IBOutlet weak var sortButton: UIBarButtonItem!
     @IBOutlet weak var trackTable: UITableView!
     var playerViewController: AVPlayerViewController?
     var trackData: [MPMediaItem]?
     var currentlyPlayingIndex = 0 //what's in the player
     var playerRate: Float = 0.0
     var contextString = "some stuff"
+    
+    private static var indexedSectionCount = 27  //A magic number; that's how many sections any UITableView index can have.
+    private var sectionCount = 1
+    private var sectionSize = 0
+    private var sectionTitles: [String]?
 
     // MARK: - UIViewController
 
@@ -40,6 +46,7 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
         trackTable.estimatedRowHeight = 128.0
         DispatchQueue.global(qos: .userInitiated).async {
             self.loadTracks()
+            self.sortTracksBy(.title)
             DispatchQueue.main.async {
                 self.trackTable.reloadData()
             }
@@ -58,19 +65,35 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
             }
         }
         print("songs retrieved \(trackData?.count ?? 0)")
-        //Sort by song title
+    }
+    
+    private func sortTracksBy(_ sort: SongSorts) {
         if let data = trackData {
             trackData = data.sorted{
                 song1, song2 in
-                if let t1 = song1.title {
-                    if let t2 = song2.title {
-                        return t1 < t2
-                    } else {
-                        return false
-                    }
-                } else {
-                    return true
-                }
+                return sort.sortField(from: song1) < sort.sortField(from: song2)
+            }
+        }
+        computeSections(forSort: sort)
+    }
+    
+    private func computeSections(forSort sort: SongSorts) {
+        guard let unwrappedTracks = trackData else {
+            return
+        }
+        if unwrappedTracks.count < SongsViewController.indexedSectionCount {
+            sectionCount = 1
+            sectionSize = unwrappedTracks.count
+            sectionTitles = []
+        } else {
+            sectionCount = SongsViewController.indexedSectionCount
+            sectionSize = unwrappedTracks.count / SongsViewController.indexedSectionCount
+            sectionTitles = []
+            for i in 0 ..< SongsViewController.indexedSectionCount {
+                let track = unwrappedTracks[i * sectionSize]
+                let indexString = sort.sortField(from: track)
+                let indexEntry = indexString.prefix(2)
+                sectionTitles?.append(String(indexEntry))
             }
         }
     }
@@ -92,21 +115,49 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
         print("PieceVC.viewWillDisappear")
         playerViewController?.player = nil
     }
+    
+    // MARK: - Sort popover
+    
+    @IBAction func sortButtonTapped(_ sender: Any) {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let sortVC = storyboard.instantiateViewController(withIdentifier: "SongsSortController")
+            as! SongSortViewController
+        sortVC.songsViewController = self
+        sortVC.preferredContentSize = CGSize(width: 200, height: 200)
+        sortVC.modalPresentationStyle = .popover
+        sortVC.popoverPresentationController?.barButtonItem = sortButton
+        self.present(sortVC, animated: true) { }
+    }
+    
+    func userDidChoose(sort: SongSorts) {
+        self.dismiss(animated: true) { }
+        sortTracksBy(sort)
+        trackTable.reloadData()
+    }
 
     // MARK: - UITableViewDataSource
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+        return sectionCount
     }
     
     func tableView(_: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return trackData?.count ?? 0
+        if section < SongsViewController.indexedSectionCount - 1 {
+            return sectionSize
+        } else {
+            //that pesky last section
+            return trackData!.count - SongsViewController.indexedSectionCount * sectionSize
+        }
     }
     
+    func sectionIndexTitles(for tableView: UITableView) -> [String]? {
+        return sectionTitles
+    }
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Track", for: indexPath) as! SongTableViewCell
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        if indexPath.row == currentlyPlayingIndex {
+        if indexPath.section * sectionSize + indexPath.row == currentlyPlayingIndex {
             if playerRate < 0.5 {
                 cell.indicator.stopAnimating()
                 cell.indicator.animationImages = nil
@@ -127,7 +178,7 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
             cell.artwork.isOpaque = true
             cell.artwork.alpha = 1.0
         }
-        let trackEntry = trackData![indexPath.row]
+        let trackEntry = trackData![indexPath.section * sectionSize + indexPath.row]
         let id = trackEntry.albumPersistentID
         cell.artwork.image = AppDelegate.artworkFor(album: id)
         cell.title.text = trackEntry.title
@@ -149,7 +200,7 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     // MARK: - UITableViewDelegate
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        currentlyPlayingIndex = indexPath.row
+        currentlyPlayingIndex = indexPath.section * sectionSize + indexPath.row
         installPlayer()
         tableView.reloadData()
         playerViewController?.player?.play() //Tap on the table, it starts to play
@@ -160,7 +211,7 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     //The embed segue that places the AVPlayerViewController in the ContainerVC
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "PlayTracks" {
-            print("SongsVC.prepareForSegue")
+            //print("SongsVC.prepareForSegue")
             self.playerViewController = segue.destination as? AVPlayerViewController
         }
     }

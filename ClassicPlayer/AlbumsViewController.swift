@@ -25,7 +25,7 @@ class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     private var collectionIsLoaded = false
     private var albums: [Album]?
     
-    static var indexedSectionCount = 27  //A magic number; that's how many sections any UITableView index can have.
+    private static var indexedSectionCount = 27  //A magic number; that's how many sections any UITableView index can have.
     private var sectionCount = 1
     private var sectionSize = 0
     private var sectionTitles: [String]?
@@ -86,7 +86,7 @@ class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             sectionTitles = []
         } else {
             sectionCount = AlbumsViewController.indexedSectionCount
-            sectionSize = unwrappedAlbums.count / ComposersViewController.indexedSectionCount
+            sectionSize = unwrappedAlbums.count / AlbumsViewController.indexedSectionCount
             sectionTitles = []
             for i in 0 ..< AlbumsViewController.indexedSectionCount {
                 let album = albums?[i * sectionSize]
@@ -146,6 +146,10 @@ class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         }
     }
     
+    func sectionIndexTitles(for tableView: UITableView) -> [String]? {
+        return sectionTitles
+    }
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Album", for: indexPath) as! AlbumCell
         let albumEntry = albums![indexPath.section * sectionSize + indexPath.row]
@@ -172,10 +176,6 @@ class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             cell.artAndLabelsStack.distribution = .fill
         }
         return cell
-    }
-    
-    func sectionIndexTitles(for tableView: UITableView) -> [String]? {
-        return sectionTitles
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
