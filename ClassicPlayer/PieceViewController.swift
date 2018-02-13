@@ -19,7 +19,7 @@ class MovementTableViewCell: UITableViewCell {
 /*
  To avoid the dread "Detected a case where constraints ambiguously suggest a height of zero"
  complaint regarding table view cell heights, the trick is to ensure that the contents are
- constrained to ALL 4 EDGES. The StackView odes the trick here.
+ constrained to ALL 4 EDGES. The StackView does the trick here.
  */
 
 class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
@@ -39,14 +39,20 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
     var firstIndexInPlayer = 0    //index of first movement in player
     var playerRate: Float = 0.0
     var contextString = "some stuff"
-    
+ 
+    // MARK: - UIViewController
+
     override func viewDidLoad() {
         super.viewDidLoad()
         self.movementTable.delegate = self
         self.movementTable.dataSource = self
         self.movementTable.rowHeight = UITableViewAutomaticDimension
         self.movementTable.estimatedRowHeight = 64.0
-    }
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(fontSizeChanged),
+                                               name: .UIContentSizeCategoryDidChange,
+                                               object: nil)
+   }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -61,15 +67,7 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
             self.artwork.image = AppDelegate.artworkFor(album: realID)
         }
         //Priority lowered on artwork height to prevent unsatisfiable constraint.
-        if UIApplication.shared.preferredContentSizeCategory > .extraExtraLarge {
-            self.artAndLabelsStack.axis = .vertical
-            self.artAndLabelsStack.alignment = .leading
-        } else {
-            self.artAndLabelsStack.axis = .horizontal
-            self.artAndLabelsStack.alignment = .top
-            //Content hugging priority lowered on text fields so they expand across the cell.
-            self.artAndLabelsStack.distribution = .fill
-        }
+        adjustStack()
         if (selectedPiece?.movements) != nil && (selectedPiece?.movements)!.count > 0 {
             movementTable?.isHidden = false
         } else {
@@ -89,6 +87,28 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
         playerViewController?.player = nil
     }
     
+    @objc private func fontSizeChanged() {
+        DispatchQueue.main.async {
+            self.adjustStack()
+            self.view.setNeedsLayout()
+            self.view.layoutIfNeeded()
+        }
+    }
+    
+    private func adjustStack() {
+        if UIApplication.shared.preferredContentSizeCategory > .extraExtraLarge {
+            self.artAndLabelsStack.axis = .vertical
+            self.artAndLabelsStack.alignment = .leading
+        } else {
+            self.artAndLabelsStack.axis = .horizontal
+            self.artAndLabelsStack.alignment = .top
+            //Content hugging priority lowered on text fields so they expand across the cell.
+            self.artAndLabelsStack.distribution = .fill
+        }
+    }
+
+    // MARK: - UITableViewDataSource
+
     func tableView(_: UITableView, numberOfRowsInSection section: Int) -> Int {
         return movements?.count ?? 0
     }

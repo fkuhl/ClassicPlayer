@@ -46,6 +46,10 @@ class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableV
         trackTable.dataSource = self
         trackTable.rowHeight = UITableViewAutomaticDimension
         trackTable.estimatedRowHeight = 64.0
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(fontSizeChanged),
+                                               name: .UIContentSizeCategoryDidChange,
+                                               object: nil)
     }
     
     private func loadTracks() {
@@ -82,15 +86,7 @@ class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableV
         year?.text = "\(yearText) • \(album?.genre ?? "")"
         tracks?.text = "tracks: \(album?.trackCount ?? 0)"
         //Priority lowered on artwork height to prevent unsatisfiable constraint.
-        if UIApplication.shared.preferredContentSizeCategory > .extraExtraLarge {
-            self.artAndLabelsStack.axis = .vertical
-            self.artAndLabelsStack.alignment = .leading
-        } else {
-            self.artAndLabelsStack.axis = .horizontal
-            self.artAndLabelsStack.alignment = .top
-            //Content hugging priority lowered on text fields so they expand across the cell.
-            self.artAndLabelsStack.distribution = .fill
-        }
+        adjustStack()
         //Could be returning from
         if playerViewController?.player == nil {
             installPlayer()
@@ -103,6 +99,26 @@ class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableV
         super.viewWillDisappear(animated)
         print("PieceVC.viewWillDisappear")
         playerViewController?.player = nil
+    }
+    
+    @objc private func fontSizeChanged() {
+        DispatchQueue.main.async {
+            self.adjustStack()
+            self.view.setNeedsLayout()
+            self.view.layoutIfNeeded()
+        }
+    }
+    
+    private func adjustStack() {
+        if UIApplication.shared.preferredContentSizeCategory > .extraExtraLarge {
+            self.artAndLabelsStack.axis = .vertical
+            self.artAndLabelsStack.alignment = .leading
+        } else {
+            self.artAndLabelsStack.axis = .horizontal
+            self.artAndLabelsStack.alignment = .top
+            //Content hugging priority lowered on text fields so they expand across the cell.
+            self.artAndLabelsStack.distribution = .fill
+        }
     }
 
     // MARK: - UITableViewDataSource

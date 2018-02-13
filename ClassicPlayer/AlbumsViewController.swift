@@ -164,8 +164,6 @@ class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             cell.artwork.image = AppDelegate.artworkFor(album: realID)
         }
         //Priority lowered on artwork height to prevent unsatisfiable constraint.
-        //As of 1/31/2018, a change in text size in medias res causes the cells to re-layout
-        //properly but the text itself doesn't change size!
         if UIApplication.shared.preferredContentSizeCategory > .extraExtraLarge {
             cell.artAndLabelsStack.axis = .vertical
             cell.artAndLabelsStack.alignment = .leading

@@ -47,7 +47,8 @@ class PiecesFromComposerViewController: UIViewController, NSFetchedResultsContro
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+        //I don't need to remove myself as notification observer
+        //because as of iOS 9, the NotificationCenter removes me if I disappear.
     }
     
     private func updateUI() {
