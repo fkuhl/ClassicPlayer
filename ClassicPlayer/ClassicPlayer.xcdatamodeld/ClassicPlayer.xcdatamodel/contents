@@ -29,19 +29,14 @@
     </entity>
     <entity name="Piece" representedClassName="Piece">
         <attribute name="albumID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="artist" optional="YES" attributeType="String">
+            <userInfo/>
+        </attribute>
+        <attribute name="artistID" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="composer" attributeType="String">
             <userInfo/>
         </attribute>
-        <attribute name="director" optional="YES" attributeType="String">
-            <userInfo/>
-        </attribute>
-        <attribute name="ensemble" optional="YES" attributeType="String">
-            <userInfo/>
-        </attribute>
         <attribute name="genre" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="soloists" optional="YES" attributeType="String">
-            <userInfo/>
-        </attribute>
         <attribute name="title" attributeType="String">
             <userInfo/>
         </attribute>
@@ -61,6 +56,6 @@
     <elements>
         <element name="Album" positionX="108" positionY="117" width="128" height="163"/>
         <element name="Movement" positionX="529" positionY="126" width="128" height="120"/>
-        <element name="Piece" positionX="342" positionY="123" width="128" height="210"/>
+        <element name="Piece" positionX="342" positionY="123" width="128" height="195"/>
     </elements>
 </model>

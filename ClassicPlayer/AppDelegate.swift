@@ -295,10 +295,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let piece = NSEntityDescription.insertNewObject(forEntityName: "Piece", into: context) as! Piece
         piece.albumID =  AppDelegate.encodeForCoreData(id: mediaItem.albumPersistentID)
         piece.composer = mediaItem.composer ?? ""
-        piece.director = ""
-        piece.ensemble = mediaItem.artist ?? ""
+        piece.artist = mediaItem.artist ?? ""
+        piece.artistID = AppDelegate.encodeForCoreData(id: mediaItem.artistPersistentID)
         piece.genre = mediaItem.genre ?? ""
-        piece.soloists = ""
         piece.title = title
         piece.album = album
         piece.trackID = AppDelegate.encodeForCoreData(id: mediaItem.persistentID)

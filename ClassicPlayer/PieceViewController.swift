@@ -60,7 +60,7 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
         self.title = selectedPiece?.title
         self.composer.text = selectedPiece?.composer
         self.pieceTitle.text = selectedPiece?.title
-        self.artist.text = selectedPiece?.ensemble
+        self.artist.text = selectedPiece?.artist
         self.movements = selectedPiece?.movements
         let id = selectedPiece?.albumID
         if let realID = id {

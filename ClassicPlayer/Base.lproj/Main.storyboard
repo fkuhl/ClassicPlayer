@@ -468,7 +468,7 @@
                         <segue destination="hLs-Ij-OdU" kind="relationship" relationship="viewControllers" id="wvY-NO-bMI"/>
                         <segue destination="Q8w-Uo-PWf" kind="relationship" relationship="viewControllers" id="ozY-DO-2hZ"/>
                         <segue destination="MhH-Hw-5cU" kind="relationship" relationship="viewControllers" id="YSS-XU-KXe"/>
-                        <segue destination="nHo-oZ-P6U" kind="relationship" relationship="viewControllers" id="dhR-LG-sqM"/>
+                        <segue destination="nfY-Pk-VTT" kind="relationship" relationship="viewControllers" id="dhR-LG-sqM"/>
                         <segue destination="nte-NW-VYQ" kind="relationship" relationship="viewControllers" id="xu9-pg-zNC"/>
                     </connections>
                 </tabBarController>
@@ -620,27 +620,52 @@
         <!--Artists-->
         <scene sceneID="pdJ-Ij-9En">
             <objects>
-                <viewController id="nHo-oZ-P6U" sceneMemberID="viewController">
+                <viewController id="nHo-oZ-P6U" customClass="ArtistsViewController" customModule="ClassicPlayer" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="yi9-4V-12a">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Artists" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dX4-d5-NiM">
-                                <rect key="frame" x="155" y="323" width="64" height="21"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="nVm-Np-mEQ">
+                                <rect key="frame" x="0.0" y="116" width="414" height="571"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <prototypes>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="Artist" textLabel="LyJ-lu-CN8" style="IBUITableViewCellStyleDefault" id="iLv-mL-lCG">
+                                        <rect key="frame" x="0.0" y="28" width="414" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="iLv-mL-lCG" id="hJO-SF-KCs">
+                                            <rect key="frame" x="0.0" y="0.0" width="414" height="43.666666666666664"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="LyJ-lu-CN8">
+                                                    <rect key="frame" x="15" y="0.0" width="384" height="43.666666666666664"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <fontDescription key="fontDescription" style="UICTFontTextStyleCallout"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </prototypes>
+                            </tableView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="nVm-Np-mEQ" firstAttribute="top" secondItem="i1X-vV-JiZ" secondAttribute="top" id="VSx-wv-5nT"/>
+                            <constraint firstItem="i1X-vV-JiZ" firstAttribute="trailing" secondItem="nVm-Np-mEQ" secondAttribute="trailing" id="WSc-Mc-Ef2"/>
+                            <constraint firstItem="i1X-vV-JiZ" firstAttribute="bottom" secondItem="nVm-Np-mEQ" secondAttribute="bottom" id="iTu-14-PPn"/>
+                            <constraint firstItem="nVm-Np-mEQ" firstAttribute="leading" secondItem="i1X-vV-JiZ" secondAttribute="leading" id="lqd-9y-6NA"/>
+                        </constraints>
                         <viewLayoutGuide key="safeArea" id="i1X-vV-JiZ"/>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Artists" image="1656-piano" landscapeImage="1656-piano" selectedImage="1656-piano" id="TOT-2A-Rrh"/>
+                    <navigationItem key="navigationItem" title="Artists" id="EGl-JO-29J"/>
+                    <connections>
+                        <outlet property="tableView" destination="nVm-Np-mEQ" id="f4j-Vi-2Yv"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="8Qn-jl-Pz7" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-3834" y="-339"/>
+            <point key="canvasLocation" x="-3117" y="-339"/>
         </scene>
         <!--Playlists-->
         <scene sceneID="2UD-SN-VbS">
@@ -928,6 +953,25 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="YnI-68-Com" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-2568" y="-1293"/>
+        </scene>
+        <!--Artists-->
+        <scene sceneID="N3G-q0-ILd">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="nfY-Pk-VTT" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Artists" image="1656-piano" landscapeImage="1656-piano" selectedImage="1656-piano" id="TOT-2A-Rrh"/>
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" largeTitles="YES" id="9Aa-Hy-W3F">
+                        <rect key="frame" x="0.0" y="20" width="414" height="96"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="nHo-oZ-P6U" kind="relationship" relationship="rootViewController" id="h0d-5d-X1K"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="RQA-pk-g8l" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-3834.7826086956525" y="-339.13043478260875"/>
         </scene>
     </scenes>
     <resources>

@@ -88,7 +88,7 @@ class PiecesFromComposerViewController: UIViewController, NSFetchedResultsContro
         let cell = tableView.dequeueReusableCell(withIdentifier: "Piece", for: indexPath) as! PieceTableViewCell
         let pieceEntry = pieces![indexPath.row]
         cell.pieceTitle?.text = pieceEntry.title
-        cell.pieceArtist?.text = pieceEntry.ensemble
+        cell.pieceArtist?.text = pieceEntry.artist
         let id = pieceEntry.albumID
         if let realID = id {
             cell.artwork.image = AppDelegate.artworkFor(album: realID)

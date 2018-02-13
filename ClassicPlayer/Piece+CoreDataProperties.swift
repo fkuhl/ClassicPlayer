@@ -2,7 +2,7 @@
 //  Piece+CoreDataProperties.swift
 //  ClassicPlayer
 //
-//  Created by Frederick Kuhl on 2/3/18.
+//  Created by Frederick Kuhl on 2/13/18.
 //  Copyright © 2018 TyndaleSoft LLC. All rights reserved.
 //
 //
@@ -19,13 +19,12 @@ extension Piece {
 
     @NSManaged public var albumID: String?
     @NSManaged public var composer: String?
-    @NSManaged public var director: String?
-    @NSManaged public var ensemble: String?
+    @NSManaged public var artist: String?
     @NSManaged public var genre: String?
-    @NSManaged public var soloists: String?
     @NSManaged public var title: String?
     @NSManaged public var trackID: String?
     @NSManaged public var trackURL: URL?
+    @NSManaged public var artistID: String?
     @NSManaged public var album: Album?
     @NSManaged public var movements: NSOrderedSet?
 
