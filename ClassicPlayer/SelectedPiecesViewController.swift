@@ -1,5 +1,5 @@
 //
-//  PiecesFromComposerViewController.swift
+//  SelectedPiecesViewController.swift
 //  ClassicPlayer
 //
 //  Created by Frederick Kuhl on 12/26/17.
@@ -19,7 +19,9 @@ class PieceTableViewCell: UITableViewCell {
 
 class SelectedPiecesViewController: UIViewController, NSFetchedResultsControllerDelegate, UITableViewDelegate, UITableViewDataSource {
     @IBOutlet weak var tableView: UITableView!
-    var selectedComposer: String?
+    var selectionValue: String?
+    var selectionField: String?
+    var displayTitle:   String?
     private var tableIsLoaded = false
     private var pieces: [Piece]?
 
@@ -52,11 +54,11 @@ class SelectedPiecesViewController: UIViewController, NSFetchedResultsController
     }
     
     private func updateUI() {
-        self.title = selectedComposer
+        self.title = displayTitle
         let context:NSManagedObjectContext! = (UIApplication.shared.delegate as! AppDelegate).context
         let request = NSFetchRequest<Piece>()
         request.entity = NSEntityDescription.entity(forEntityName: "Piece", in:context)
-        request.predicate = NSPredicate(format: "composer == %@", selectedComposer!)
+        request.predicate = NSPredicate(format: "%K == %@", selectionField!, selectionValue!)
         request.resultType = .managedObjectResultType
         request.returnsDistinctResults = true
         request.sortDescriptors = [ NSSortDescriptor(key: "title", ascending: true) ]

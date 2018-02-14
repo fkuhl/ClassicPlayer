@@ -83,7 +83,6 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        print("PieceVC.viewWillDisappear")
         playerViewController?.player = nil
     }
     

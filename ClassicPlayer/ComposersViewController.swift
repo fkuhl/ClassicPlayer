@@ -120,10 +120,12 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "ComposerSelected" {
-            let secondViewController = segue.destination as! PiecesFromComposerViewController
+            let secondViewController = segue.destination as! SelectedPiecesViewController
             if let selected = tableView?.indexPathForSelectedRow {
-                secondViewController.selectedComposer =
-                    composerObjects![selected.section * sectionSize + selected.row]["composer"] as? String
+                secondViewController.selectionField = "composer"
+                let composerName = composerObjects![selected.section * sectionSize + selected.row]["composer"] as? String
+                secondViewController.selectionValue = composerName
+                secondViewController.displayTitle = composerName
             }
         }
     }

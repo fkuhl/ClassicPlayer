@@ -67,7 +67,6 @@ class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         let context:NSManagedObjectContext! = (UIApplication.shared.delegate as! AppDelegate).context
         let request = NSFetchRequest<Album>()
         request.entity = NSEntityDescription.entity(forEntityName: "Album", in:context)
-        //request.predicate = NSPredicate(format: "composer == %@", selectedComposer!)
         request.resultType = .managedObjectResultType
         request.returnsDistinctResults = true
         request.sortDescriptors = [ NSSortDescriptor(key: sort.sortDescriptor, ascending: true) ]

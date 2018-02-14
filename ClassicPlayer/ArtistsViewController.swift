@@ -40,7 +40,12 @@ class ArtistsViewController: UIViewController, UITableViewDelegate, UITableViewD
                 artistObjects?.append(item)
             }
         }
-        //TODO sort artists
+        //Artists are returned in "sort" order, so "The Beatles" sorts as "Beatles"
+        //If I sort here, it's on "The Beatles"
+//        artistObjects = artistObjects?.sorted {
+//            ao1, ao2 in
+//            return ao1.artist ?? "" < ao2.artist ?? ""
+//        }
         print("found \(query.collections!.count) artists")
     }
     
@@ -100,14 +105,17 @@ class ArtistsViewController: UIViewController, UITableViewDelegate, UITableViewD
         return sectionTitles
     }
     
-//    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-//        if segue.identifier == "ComposerSelected" {
-//            let secondViewController = segue.destination as! PiecesFromComposerViewController
-//            if let selected = tableView?.indexPathForSelectedRow {
-//                secondViewController.selectedComposer =
-//                    artistObjects![selected.section * sectionSize + selected.row]["artist"] as? String
-//            }
-//        }
-//    }
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "ArtistSelected" {
+            let secondViewController = segue.destination as! SelectedPiecesViewController
+            if let selected = tableView?.indexPathForSelectedRow {
+                secondViewController.selectionField = "artistID"
+                let selectedArtist = artistObjects![selected.section * sectionSize + selected.row]
+                let artistID = selectedArtist.artistPersistentID
+                secondViewController.selectionValue = AppDelegate.encodeForCoreData(id: artistID)
+                secondViewController.displayTitle = selectedArtist.artist
+            }
+        }
+    }
 }
 

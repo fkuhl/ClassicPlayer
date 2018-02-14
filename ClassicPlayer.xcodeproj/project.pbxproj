@@ -28,7 +28,7 @@
 		27CC6FB720337DEB00614150 /* ArtistsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27CC6FB620337DEB00614150 /* ArtistsViewController.swift */; };
 		27DAEBA020264B3B00F8D5DA /* SongSortViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27DAEB9F20264B3B00F8D5DA /* SongSortViewController.swift */; };
 		27DAEBA220264BE700F8D5DA /* SongsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27DAEBA120264BE700F8D5DA /* SongsViewController.swift */; };
-		27FCDED81FF2B0BB001D81CE /* PiecesFromComposerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27FCDED71FF2B0BB001D81CE /* PiecesFromComposerViewController.swift */; };
+		27FCDED81FF2B0BB001D81CE /* SelectedPiecesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27FCDED71FF2B0BB001D81CE /* SelectedPiecesViewController.swift */; };
 		27FCDEDC1FF2D220001D81CE /* ComposersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27FCDEDB1FF2D220001D81CE /* ComposersViewController.swift */; };
 		27FCDEDE1FF2D8D6001D81CE /* PieceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27FCDEDD1FF2D8D6001D81CE /* PieceViewController.swift */; };
 /* End PBXBuildFile section */
@@ -70,7 +70,7 @@
 		27CC6FB620337DEB00614150 /* ArtistsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArtistsViewController.swift; sourceTree = "<group>"; };
 		27DAEB9F20264B3B00F8D5DA /* SongSortViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SongSortViewController.swift; sourceTree = "<group>"; };
 		27DAEBA120264BE700F8D5DA /* SongsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SongsViewController.swift; sourceTree = "<group>"; };
-		27FCDED71FF2B0BB001D81CE /* PiecesFromComposerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PiecesFromComposerViewController.swift; sourceTree = "<group>"; };
+		27FCDED71FF2B0BB001D81CE /* SelectedPiecesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedPiecesViewController.swift; sourceTree = "<group>"; };
 		27FCDEDB1FF2D220001D81CE /* ComposersViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComposersViewController.swift; sourceTree = "<group>"; };
 		27FCDEDD1FF2D8D6001D81CE /* PieceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PieceViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -134,7 +134,7 @@
 				2733A61C1FE5FDE000E1EE77 /* Info.plist */,
 				2733A6191FE5FDE000E1EE77 /* LaunchScreen.storyboard */,
 				2733A6141FE5FDE000E1EE77 /* Main.storyboard */,
-				27FCDED71FF2B0BB001D81CE /* PiecesFromComposerViewController.swift */,
+				27FCDED71FF2B0BB001D81CE /* SelectedPiecesViewController.swift */,
 				27FCDEDD1FF2D8D6001D81CE /* PieceViewController.swift */,
 				2733A6301FE5FE8600E1EE77 /* README.md */,
 				27DAEB9F20264B3B00F8D5DA /* SongSortViewController.swift */,
@@ -276,7 +276,7 @@
 				27FCDEDE1FF2D8D6001D81CE /* PieceViewController.swift in Sources */,
 				2733A60F1FE5FDE000E1EE77 /* ClassicPlayer.xcdatamodeld in Sources */,
 				27CC6FB720337DEB00614150 /* ArtistsViewController.swift in Sources */,
-				27FCDED81FF2B0BB001D81CE /* PiecesFromComposerViewController.swift in Sources */,
+				27FCDED81FF2B0BB001D81CE /* SelectedPiecesViewController.swift in Sources */,
 				2755D7301FE9629C006F49AE /* Piece+CoreDataProperties.swift in Sources */,
 				270B337920192365007D1E35 /* AlbumsViewController.swift in Sources */,
 				2755D7321FE9629C006F49AE /* Album+CoreDataProperties.swift in Sources */,
