@@ -26,6 +26,7 @@
 		2776973720013BCF002B2963 /* AVKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2776973620013BCF002B2963 /* AVKit.framework */; };
 		277B21E1202258F20052DF42 /* AlbumSortViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 277B21E0202258F20052DF42 /* AlbumSortViewController.swift */; };
 		27CC6FB720337DEB00614150 /* ArtistsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27CC6FB620337DEB00614150 /* ArtistsViewController.swift */; };
+		27CFA1582034D35D00D6F613 /* PlaylistsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27CFA1572034D35D00D6F613 /* PlaylistsViewController.swift */; };
 		27DAEBA020264B3B00F8D5DA /* SongSortViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27DAEB9F20264B3B00F8D5DA /* SongSortViewController.swift */; };
 		27DAEBA220264BE700F8D5DA /* SongsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27DAEBA120264BE700F8D5DA /* SongsViewController.swift */; };
 		27FCDED81FF2B0BB001D81CE /* SelectedPiecesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27FCDED71FF2B0BB001D81CE /* SelectedPiecesViewController.swift */; };
@@ -68,6 +69,7 @@
 		2776973620013BCF002B2963 /* AVKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVKit.framework; path = System/Library/Frameworks/AVKit.framework; sourceTree = SDKROOT; };
 		277B21E0202258F20052DF42 /* AlbumSortViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumSortViewController.swift; sourceTree = "<group>"; };
 		27CC6FB620337DEB00614150 /* ArtistsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArtistsViewController.swift; sourceTree = "<group>"; };
+		27CFA1572034D35D00D6F613 /* PlaylistsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlaylistsViewController.swift; sourceTree = "<group>"; };
 		27DAEB9F20264B3B00F8D5DA /* SongSortViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SongSortViewController.swift; sourceTree = "<group>"; };
 		27DAEBA120264BE700F8D5DA /* SongsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SongsViewController.swift; sourceTree = "<group>"; };
 		27FCDED71FF2B0BB001D81CE /* SelectedPiecesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedPiecesViewController.swift; sourceTree = "<group>"; };
@@ -124,8 +126,8 @@
 			isa = PBXGroup;
 			children = (
 				277B21E0202258F20052DF42 /* AlbumSortViewController.swift */,
-				27188EAA201D238B00CB5427 /* AlbumTracksViewController.swift */,
 				270B337820192365007D1E35 /* AlbumsViewController.swift */,
+				27188EAA201D238B00CB5427 /* AlbumTracksViewController.swift */,
 				2733A60B1FE5FDE000E1EE77 /* AppDelegate.swift */,
 				27CC6FB620337DEB00614150 /* ArtistsViewController.swift */,
 				2733A6171FE5FDE000E1EE77 /* Assets.xcassets */,
@@ -134,12 +136,13 @@
 				2733A61C1FE5FDE000E1EE77 /* Info.plist */,
 				2733A6191FE5FDE000E1EE77 /* LaunchScreen.storyboard */,
 				2733A6141FE5FDE000E1EE77 /* Main.storyboard */,
-				27FCDED71FF2B0BB001D81CE /* SelectedPiecesViewController.swift */,
 				27FCDEDD1FF2D8D6001D81CE /* PieceViewController.swift */,
+				27CFA1572034D35D00D6F613 /* PlaylistsViewController.swift */,
 				2733A6301FE5FE8600E1EE77 /* README.md */,
+				27FCDED71FF2B0BB001D81CE /* SelectedPiecesViewController.swift */,
+				271D2E22202CD7E4005FE857 /* Settings.bundle */,
 				27DAEB9F20264B3B00F8D5DA /* SongSortViewController.swift */,
 				27DAEBA120264BE700F8D5DA /* SongsViewController.swift */,
-				271D2E22202CD7E4005FE857 /* Settings.bundle */,
 			);
 			path = ClassicPlayer;
 			sourceTree = "<group>";
@@ -270,6 +273,7 @@
 				2755D7341FE9629C006F49AE /* Movement+CoreDataProperties.swift in Sources */,
 				2755D72F1FE9629C006F49AE /* Piece+CoreDataClass.swift in Sources */,
 				2733A60C1FE5FDE000E1EE77 /* AppDelegate.swift in Sources */,
+				27CFA1582034D35D00D6F613 /* PlaylistsViewController.swift in Sources */,
 				277B21E1202258F20052DF42 /* AlbumSortViewController.swift in Sources */,
 				27188EAB201D238B00CB5427 /* AlbumTracksViewController.swift in Sources */,
 				27DAEBA020264B3B00F8D5DA /* SongSortViewController.swift in Sources */,

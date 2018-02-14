@@ -194,14 +194,14 @@
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="Composer" textLabel="yar-Db-ec7" style="IBUITableViewCellStyleDefault" id="FCg-FN-Rpl">
-                                        <rect key="frame" x="0.0" y="28" width="600" height="44"/>
+                                        <rect key="frame" x="0.0" y="28" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="FCg-FN-Rpl" id="IgV-HC-aLb">
-                                            <rect key="frame" x="0.0" y="0.0" width="600" height="43.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" id="yar-Db-ec7">
-                                                    <rect key="frame" x="15" y="0.0" width="570" height="43.5"/>
+                                                    <rect key="frame" x="15" y="0.0" width="345" height="43.5"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <fontDescription key="fontDescription" style="UICTFontTextStyleCallout"/>
                                                     <nil key="textColor"/>
@@ -469,7 +469,7 @@
                         <segue destination="Q8w-Uo-PWf" kind="relationship" relationship="viewControllers" id="ozY-DO-2hZ"/>
                         <segue destination="MhH-Hw-5cU" kind="relationship" relationship="viewControllers" id="YSS-XU-KXe"/>
                         <segue destination="nfY-Pk-VTT" kind="relationship" relationship="viewControllers" id="dhR-LG-sqM"/>
-                        <segue destination="nte-NW-VYQ" kind="relationship" relationship="viewControllers" id="xu9-pg-zNC"/>
+                        <segue destination="6kv-xn-BYR" kind="relationship" relationship="viewControllers" id="xu9-pg-zNC"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="MfW-X7-4TJ" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -673,18 +673,43 @@
         <!--Playlists-->
         <scene sceneID="2UD-SN-VbS">
             <objects>
-                <viewController id="nte-NW-VYQ" sceneMemberID="viewController">
+                <viewController id="nte-NW-VYQ" customClass="PlaylistsViewController" customModule="ClassicPlayer" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="PHz-I2-CDo">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="iiN-OG-mzG">
+                                <rect key="frame" x="0.0" y="116" width="375" height="502"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <prototypes>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="Playlist" id="lix-s7-0dz" customClass="PlaylistTableViewCell" customModule="ClassicPlayer" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="28" width="375" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="lix-s7-0dz" id="iCC-l7-Kzg">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </prototypes>
+                            </tableView>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="kXH-OR-Taf" firstAttribute="trailing" secondItem="iiN-OG-mzG" secondAttribute="trailing" id="5gA-ck-dMH"/>
+                            <constraint firstItem="kXH-OR-Taf" firstAttribute="bottom" secondItem="iiN-OG-mzG" secondAttribute="bottom" id="DIC-lF-GHK"/>
+                            <constraint firstItem="iiN-OG-mzG" firstAttribute="leading" secondItem="kXH-OR-Taf" secondAttribute="leading" id="FuF-jM-BfX"/>
+                            <constraint firstItem="iiN-OG-mzG" firstAttribute="top" secondItem="kXH-OR-Taf" secondAttribute="top" id="XFa-cK-2al"/>
+                        </constraints>
                         <viewLayoutGuide key="safeArea" id="kXH-OR-Taf"/>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Playlists" image="1649-music-playlist" landscapeImage="1649-music-playlist" id="Eiv-3g-5bH"/>
+                    <navigationItem key="navigationItem" title="Playlists" id="AAU-hd-X0N"/>
+                    <connections>
+                        <outlet property="tableView" destination="iiN-OG-mzG" id="CkO-pi-12d"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="qMp-vJ-M76" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-3834" y="338"/>
+            <point key="canvasLocation" x="-3118" y="337"/>
         </scene>
         <!--Composers-->
         <scene sceneID="Tz6-7U-flC">
@@ -805,10 +830,10 @@
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="Track" rowHeight="64" id="2NJ-Sh-qWY" customClass="TrackTableViewCell" customModule="ClassicPlayer" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="28" width="600" height="64"/>
+                                        <rect key="frame" x="0.0" y="28" width="375" height="64"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="2NJ-Sh-qWY" id="UEA-ZT-3Kd">
-                                            <rect key="frame" x="0.0" y="0.0" width="600" height="63.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="63.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" alignment="top" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="x8P-cm-6kX">
@@ -975,6 +1000,25 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="RQA-pk-g8l" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-3834.7826086956525" y="-339.13043478260875"/>
+        </scene>
+        <!--Playlists-->
+        <scene sceneID="Ztu-bt-35u">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="6kv-xn-BYR" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Playlists" image="1649-music-playlist" landscapeImage="1649-music-playlist" id="Eiv-3g-5bH"/>
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" largeTitles="YES" id="N9S-pl-CWa">
+                        <rect key="frame" x="0.0" y="20" width="375" height="96"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="nte-NW-VYQ" kind="relationship" relationship="rootViewController" id="3uw-0b-kqL"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="YjN-c0-ufM" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-3835.1999999999998" y="337.33133433283359"/>
         </scene>
     </scenes>
     <resources>
