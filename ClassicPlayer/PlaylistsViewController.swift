@@ -14,7 +14,7 @@ import MediaPlayer
 class PlaylistTableViewCell: UITableViewCell {
     @IBOutlet weak var artAndLabelsStack: UIStackView!
     @IBOutlet weak var artwork: UIImageView!
-    @IBOutlet weak var playlistTitle: UILabel!
+    @IBOutlet weak var playlistName: UILabel!
 }
 
 class PlaylistsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
@@ -31,8 +31,7 @@ class PlaylistsViewController: UIViewController, UITableViewDelegate, UITableVie
     var selectionValue: String?
     var selectionField: String?
     var displayTitle:   String?
-    private var tableIsLoaded = false
-    private var playlists: [MPMediaItemCollection]?
+    private var playlists: [MPMediaPlaylist]?
 
     // MARK: - UIViewController
 
@@ -42,32 +41,34 @@ class PlaylistsViewController: UIViewController, UITableViewDelegate, UITableVie
         self.tableView.dataSource = self
         self.tableView.rowHeight = UITableViewAutomaticDimension
         self.tableView.estimatedRowHeight = 72.0
+        loadLists()
+        tableView.reloadData()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        if !tableIsLoaded {
-            updateUI()
-            tableIsLoaded = true
-        }
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-    }
-    
-    private func updateUI() {
+    private func loadLists() {
+        playlists = []
         let query = MPMediaQuery.playlists()
         for collection in query.collections! {
             if let playlist = collection as? MPMediaPlaylist {
                 if !PlaylistsViewController.uninterestingPlaylists.contains(playlist.name!) && playlist.items.count > 0 {
-                    print("playlist \(playlist.name ?? "[n.n.]")")
-                    for item in playlist.items {
-                        print("   item: \(item.title ?? "[n.t.]")")
-                    }
+                    playlists?.append(playlist)
                 }
+//                if !PlaylistsViewController.uninterestingPlaylists.contains(playlist.name!) && playlist.items.count > 0 {
+//                    print("playlist \(playlist.name ?? "[n.n.]")")
+//                    for item in playlist.items {
+//                        print("   item: \(item.title ?? "[n.t.]")")
+//                    }
+//                }
             }
         }
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+    }
+
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
     }
 
     // MARK: - UITableViewDataSource
@@ -77,24 +78,24 @@ class PlaylistsViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "Playlist", for: indexPath) as! PieceTableViewCell
-//        let pieceEntry = pieces![indexPath.row]
-//        cell.pieceTitle?.text = pieceEntry.title
-//        cell.pieceArtist?.text = pieceEntry.artist
-//        let id = pieceEntry.albumID
-//        if let realID = id {
-//            cell.artwork.image = AppDelegate.artworkFor(album: realID)
-//        }
-//        //Priority lowered on artwork height to prevent unsatisfiable constraint.
-//        if UIApplication.shared.preferredContentSizeCategory > .extraExtraLarge {
-//            cell.artAndLabelsStack.axis = .vertical
-//            cell.artAndLabelsStack.alignment = .leading
-//        } else {
-//            cell.artAndLabelsStack.axis = .horizontal
-//            cell.artAndLabelsStack.alignment = .top
-//            //Content hugging priority lowered on text fields so they expand across the cell.
-//            cell.artAndLabelsStack.distribution = .fill
-//        }
+        let cell = tableView.dequeueReusableCell(withIdentifier: "Playlist", for: indexPath) as! PlaylistTableViewCell
+        let playlistEntry = playlists![indexPath.row]
+        cell.playlistName.text = playlistEntry.name
+        let id = playlistEntry.representativeItem?.albumPersistentID
+        if let realID = id {
+            //Someday we might elaborate the displayed artwork
+            cell.artwork.image = AppDelegate.artworkFor(album: realID)
+        }
+        //Priority lowered on artwork height to prevent unsatisfiable constraint.
+        if UIApplication.shared.preferredContentSizeCategory > .extraExtraLarge {
+            cell.artAndLabelsStack.axis = .vertical
+            cell.artAndLabelsStack.alignment = .leading
+        } else {
+            cell.artAndLabelsStack.axis = .horizontal
+            cell.artAndLabelsStack.alignment = .top
+            //Content hugging priority lowered on text fields so they expand across the cell.
+            cell.artAndLabelsStack.distribution = .fill
+        }
         return cell
     }
     
