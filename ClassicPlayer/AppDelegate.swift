@@ -11,7 +11,9 @@ import CoreData
 import MediaPlayer
 
 extension Notification.Name {
-    static let dataAvailable = Notification.Name("DataAvailable")
+    static let dataAvailable =                Notification.Name("com.tyndalesoft.ClassicPlayer.DataAvailable")
+    static let classicPlayerMediaRestricted = Notification.Name("com.tyndalesoft.ClassicPlayer.MediaRestricted")
+    static let classicPlayerMediaDenied =     Notification.Name("com.tyndalesoft.ClassicPlayer.MediaDenied")
 }
 
 @UIApplicationMain
@@ -88,42 +90,60 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         } catch {
             print("Setting category to AVAudioSessionCategoryPlayback failed.")
         }
-        //You can check permission; if you don't have it, the user must go to settings, so end
+        clearOldData(from: self.context)
+        //Check authorization to access media library
         switch MPMediaLibrary.authorizationStatus() {
         case .authorized:
             self.persistentContainer.performBackgroundTask { context in
-                self.clearAndLoad(into: context)
+                self.loadCurrentLibrary(into: context)
             }
         default:
-            MPMediaLibrary.requestAuthorization { status in
-                switch status {
-                case .authorized:
-                    //TODO This occurs if app wasn't installed: app asks for permission. When it gets it, the media are read, but UI isn't updated, because ComposersVC has already appeared.
-                    self.persistentContainer.performBackgroundTask { context in
-                        self.clearAndLoad(into: context)
-                    }
-                default:
-                    //TODO App is installed, but user (apparently) revoked permission. Need to ask again?›
-                    print("no permission")
-                    exit(1)
-                }
-            }
+            requestPermission()
         }
         makeAudioBarSet()
     }
     
-    private func clearAndLoad(into context: NSManagedObjectContext) {
+    private func requestPermission() {
+        MPMediaLibrary.requestAuthorization { status in
+            switch status {
+            case .notDetermined:
+                fallthrough //This should not happen here
+            case .authorized:
+                self.persistentContainer.performBackgroundTask { context in
+                    self.loadCurrentLibrary(into: context)
+                }
+            case .restricted:
+                NotificationCenter.default.post(Notification(name: .classicPlayerMediaRestricted))
+                NSLog("media restricted")
+            case .denied:
+                NSLog("media denied")
+                DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
+                NotificationCenter.default.post(Notification(name: .classicPlayerMediaDenied))
+                }
+            }
+        }
+    }
+    
+    private func clearOldData(from context: NSManagedObjectContext) {
         do {
             try clearEntities(ofType: "Movement", from: context)
             try clearEntities(ofType: "Piece", from: context)
             try clearEntities(ofType: "Album", from: context)
             try context.save()
+        } catch {
+            let nserror = error as NSError
+            fatalError("Error clearing old data: \(nserror), \(nserror.userInfo)")
+        }
+    }
+    
+    private func loadCurrentLibrary(into context: NSManagedObjectContext) {
+        do {
             self.loadFromMedia(into: context)
             try context.save()
             NotificationCenter.default.post(Notification(name: .dataAvailable))
         } catch {
             let nserror = error as NSError
-            fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
+            fatalError("Error loading current data: \(nserror), \(nserror.userInfo)")
         }
     }
     
@@ -133,8 +153,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let deleteRequest = NSBatchDeleteRequest(fetchRequest: request)
         request.predicate = NSPredicate(format: "title MATCHES %@", ".*")
         deleteRequest.resultType = .resultTypeCount
-        let deleteResult = try context.execute(deleteRequest) as? NSBatchDeleteResult
-        print("deleted \(deleteResult?.result ?? "<nil>") \(type)")
+        let /*deleteResult*/ _ = try context.execute(deleteRequest) as? NSBatchDeleteResult
+        //print("deleted \(deleteResult?.result ?? "<nil>") \(type)")
     }
     
     private func isGenreToParse(_ optionalGenre: String?) -> Bool {
@@ -185,7 +205,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             print("saved \(albumCount) discs and \(pieceCount) pieces")
         } catch { // note, by default catch catches any error into a local variable called error
             let nserror = error as NSError //because JSONDecoder.decode and context.save both use NSError
-            fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
+            fatalError("Error loading media: \(nserror), \(nserror.userInfo)")
         }
     }
     

@@ -29,6 +29,14 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
                                                selector: #selector(updateUI),
                                                name: .dataAvailable,
                                                object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(mediaDenied),
+                                               name: .classicPlayerMediaDenied,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(mediaRestricted),
+                                               name: .classicPlayerMediaRestricted,
+                                               object: nil)
     }
     
     @objc
@@ -57,6 +65,27 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
         }
     }
     
+    @objc
+    private func mediaRestricted() {
+        alertAndExit(message: "Media library access restricted by corporate or parental controls")
+    }
+    
+    @objc
+    private func mediaDenied() {
+        alertAndExit(message: "Media library access denied by user")
+    }
+    
+    @objc
+    private func alertAndExit(message: String) {
+        DispatchQueue.main.async {
+            let alert = UIAlertController(title: "No Access to Media Library", message: message, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "Quit App", style: .default, handler: { _ in
+                exit(1)
+            }))
+            self.present(alert, animated: true)
+        }
+    }
+
     private func computeSections() {
         if let composers = composerObjects {
             if composers.count < ComposersViewController.indexedSectionCount {
