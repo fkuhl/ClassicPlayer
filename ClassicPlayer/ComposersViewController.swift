@@ -82,6 +82,9 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
             alert.addAction(UIAlertAction(title: "Quit App", style: .default, handler: { _ in
                 exit(1)
             }))
+            alert.addAction(UIAlertAction(title: "Go to Settings", style: .cancel, handler: { _ in
+                UIApplication.shared.open(URL(string: UIApplicationOpenSettingsURLString)!, options: [:], completionHandler: nil)
+            }))
             self.present(alert, animated: true)
         }
     }

@@ -21,6 +21,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     private static let displayArtworkKey = "display_artwork_preference"
     private static let parsedGenres = ["Classical", "Opera"]
     private static let showParses = false
+    private static let showPieces = false
     private static let separator: Character = "|"
     private static let composerColonWorkDashMovement = try! NSRegularExpression(pattern: "[A-Z][a-z]+:\\s*([^-]+) -\\s+(.+)", options: [])
     private static let composerColonWorkNrMovement =
@@ -113,12 +114,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     self.loadCurrentLibrary(into: context)
                 }
             case .restricted:
-                NotificationCenter.default.post(Notification(name: .classicPlayerMediaRestricted))
                 NSLog("media restricted")
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                    NotificationCenter.default.post(Notification(name: .classicPlayerMediaRestricted))
+                }
             case .denied:
                 NSLog("media denied")
-                DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
-                NotificationCenter.default.post(Notification(name: .classicPlayerMediaDenied))
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                    NotificationCenter.default.post(Notification(name: .classicPlayerMediaDenied))
                 }
             }
         }
@@ -173,7 +176,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
             for mediaCollection in mediaStuff.collections! {
                 let items = mediaCollection.items
-                if isGenreToParse(items[0].genre) {
+                if AppDelegate.showPieces && isGenreToParse(items[0].genre) {
                     print("Album: \(items[0].value(forProperty: MPMediaItemPropertyComposer) ?? "<anon>"): "
                         + "\(items[0].value(forProperty: MPMediaItemPropertyAlbumTrackCount) ?? "") "
                         + "\(items[0].value(forProperty: MPMediaItemPropertyAlbumTitle) ?? "<no title>")"
@@ -304,11 +307,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         mov.trackURL = item.assetURL
         mov.duration = AppDelegate.durationAsString(item.playbackDuration)
         piece.addToMovements(mov)
-        print("    '\(mov.title ?? "")'")
+        if AppDelegate.showPieces { print("    '\(mov.title ?? "")'") }
     }
 
     private func storePiece(from mediaItem: MPMediaItem, entitled title: String, to album: Album, into context: NSManagedObjectContext) -> Piece {
-        if mediaItem.genre == "Classical" {
+        if AppDelegate.showPieces && mediaItem.genre == "Classical" {
             let genreMark = (mediaItem.genre == "Classical") ? "!" : ""
             print("  \(genreMark)|\(mediaItem.composer ?? "<anon>")| \(title)")
         }

@@ -153,7 +153,7 @@ class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         let cell = tableView.dequeueReusableCell(withIdentifier: "Album", for: indexPath) as! AlbumCell
         let albumEntry = albums![indexPath.section * sectionSize + indexPath.row]
         cell.albumTitle?.text = albumEntry.title
-        cell.composer?.text = albumEntry.composer ?? "[]"
+        cell.composer?.text = albumEntry.composer ?? ""
         cell.albumArtist?.text = albumEntry.artist
         let yearText = AppDelegate.yearFrom(releaseDate: albumEntry.releaseDate)
         cell.year?.text = "\(yearText) • \(albumEntry.genre ?? "")"
