@@ -100,11 +100,11 @@ class PlaylistsViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "PieceSelected" {
-//            let secondViewController = segue.destination as! PieceViewController
-//            if let selected = tableView?.indexPathForSelectedRow {
-//                secondViewController.selectedPiece = pieces![selected.row]
-//            }
+        if segue.identifier == "PlaylistSelected" {
+            let secondViewController = segue.destination as! PlaylistViewController
+            if let selected = tableView?.indexPathForSelectedRow {
+                secondViewController.playlist = playlists![selected.row]
+            }
         }
     }
 

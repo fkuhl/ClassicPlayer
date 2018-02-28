@@ -11,16 +11,6 @@ import AVFoundation
 import AVKit
 import MediaPlayer
 
-class SongTableViewCell: UITableViewCell {
-    @IBOutlet weak var artAndLabelsStack: UIStackView!
-    @IBOutlet weak var artwork: UIImageView!
-    @IBOutlet weak var indicator: UIImageView!
-    @IBOutlet weak var title: UILabel!
-    @IBOutlet weak var artist: UILabel!
-    @IBOutlet weak var year: UILabel!
-    @IBOutlet weak var duration: UILabel!
-}
-
 class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     @IBOutlet weak var sortButton: UIBarButtonItem!
     @IBOutlet weak var trackTable: UITableView!

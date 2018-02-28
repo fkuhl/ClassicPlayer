@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		270B337920192365007D1E35 /* AlbumsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 270B337820192365007D1E35 /* AlbumsViewController.swift */; };
+		270CA5D2203B7D7100325862 /* PlaylistViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 270CA5D1203B7D7100325862 /* PlaylistViewController.swift */; };
 		27188EAB201D238B00CB5427 /* AlbumTracksViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27188EAA201D238B00CB5427 /* AlbumTracksViewController.swift */; };
 		271D2E23202CD7E4005FE857 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 271D2E22202CD7E4005FE857 /* Settings.bundle */; };
 		2733A60C1FE5FDE000E1EE77 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2733A60B1FE5FDE000E1EE77 /* AppDelegate.swift */; };
@@ -27,6 +28,7 @@
 		277B21E1202258F20052DF42 /* AlbumSortViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 277B21E0202258F20052DF42 /* AlbumSortViewController.swift */; };
 		27CC6FB720337DEB00614150 /* ArtistsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27CC6FB620337DEB00614150 /* ArtistsViewController.swift */; };
 		27CFA1582034D35D00D6F613 /* PlaylistsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27CFA1572034D35D00D6F613 /* PlaylistsViewController.swift */; };
+		27D61043203E1EF6001075BF /* SongTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27D61042203E1EF6001075BF /* SongTableViewCell.swift */; };
 		27DAEBA020264B3B00F8D5DA /* SongSortViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27DAEB9F20264B3B00F8D5DA /* SongSortViewController.swift */; };
 		27DAEBA220264BE700F8D5DA /* SongsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27DAEBA120264BE700F8D5DA /* SongsViewController.swift */; };
 		27FCDED81FF2B0BB001D81CE /* SelectedPiecesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27FCDED71FF2B0BB001D81CE /* SelectedPiecesViewController.swift */; };
@@ -46,6 +48,7 @@
 
 /* Begin PBXFileReference section */
 		270B337820192365007D1E35 /* AlbumsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumsViewController.swift; sourceTree = "<group>"; };
+		270CA5D1203B7D7100325862 /* PlaylistViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlaylistViewController.swift; sourceTree = "<group>"; };
 		27188EAA201D238B00CB5427 /* AlbumTracksViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumTracksViewController.swift; sourceTree = "<group>"; };
 		271D2E22202CD7E4005FE857 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		2733A6081FE5FDE000E1EE77 /* ClassicPlayer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClassicPlayer.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -70,6 +73,7 @@
 		277B21E0202258F20052DF42 /* AlbumSortViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumSortViewController.swift; sourceTree = "<group>"; };
 		27CC6FB620337DEB00614150 /* ArtistsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArtistsViewController.swift; sourceTree = "<group>"; };
 		27CFA1572034D35D00D6F613 /* PlaylistsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlaylistsViewController.swift; sourceTree = "<group>"; };
+		27D61042203E1EF6001075BF /* SongTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongTableViewCell.swift; sourceTree = "<group>"; };
 		27DAEB9F20264B3B00F8D5DA /* SongSortViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SongSortViewController.swift; sourceTree = "<group>"; };
 		27DAEBA120264BE700F8D5DA /* SongsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SongsViewController.swift; sourceTree = "<group>"; };
 		27FCDED71FF2B0BB001D81CE /* SelectedPiecesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedPiecesViewController.swift; sourceTree = "<group>"; };
@@ -138,11 +142,13 @@
 				2733A6141FE5FDE000E1EE77 /* Main.storyboard */,
 				27FCDEDD1FF2D8D6001D81CE /* PieceViewController.swift */,
 				27CFA1572034D35D00D6F613 /* PlaylistsViewController.swift */,
+				270CA5D1203B7D7100325862 /* PlaylistViewController.swift */,
 				2733A6301FE5FE8600E1EE77 /* README.md */,
 				27FCDED71FF2B0BB001D81CE /* SelectedPiecesViewController.swift */,
 				271D2E22202CD7E4005FE857 /* Settings.bundle */,
 				27DAEB9F20264B3B00F8D5DA /* SongSortViewController.swift */,
 				27DAEBA120264BE700F8D5DA /* SongsViewController.swift */,
+				27D61042203E1EF6001075BF /* SongTableViewCell.swift */,
 			);
 			path = ClassicPlayer;
 			sourceTree = "<group>";
@@ -269,6 +275,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				270CA5D2203B7D7100325862 /* PlaylistViewController.swift in Sources */,
 				27FCDEDC1FF2D220001D81CE /* ComposersViewController.swift in Sources */,
 				2755D7341FE9629C006F49AE /* Movement+CoreDataProperties.swift in Sources */,
 				2755D72F1FE9629C006F49AE /* Piece+CoreDataClass.swift in Sources */,
@@ -280,6 +287,7 @@
 				27FCDEDE1FF2D8D6001D81CE /* PieceViewController.swift in Sources */,
 				2733A60F1FE5FDE000E1EE77 /* ClassicPlayer.xcdatamodeld in Sources */,
 				27CC6FB720337DEB00614150 /* ArtistsViewController.swift in Sources */,
+				27D61043203E1EF6001075BF /* SongTableViewCell.swift in Sources */,
 				27FCDED81FF2B0BB001D81CE /* SelectedPiecesViewController.swift in Sources */,
 				2755D7301FE9629C006F49AE /* Piece+CoreDataProperties.swift in Sources */,
 				270B337920192365007D1E35 /* AlbumsViewController.swift in Sources */,
