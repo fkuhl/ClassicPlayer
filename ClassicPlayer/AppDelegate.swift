@@ -12,8 +12,6 @@ import MediaPlayer
 
 extension Notification.Name {
     static let dataAvailable =                Notification.Name("com.tyndalesoft.ClassicPlayer.DataAvailable")
-    static let classicPlayerMediaRestricted = Notification.Name("com.tyndalesoft.ClassicPlayer.MediaRestricted")
-    static let classicPlayerMediaDenied =     Notification.Name("com.tyndalesoft.ClassicPlayer.MediaDenied")
 }
 
 @UIApplicationMain
@@ -94,37 +92,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         clearOldData(from: self.context)
         //Check authorization to access media library
         switch MPMediaLibrary.authorizationStatus() {
+        case .notDetermined:
+            break //Will be handled when ComposersView comes up
         case .authorized:
-            self.persistentContainer.performBackgroundTask { context in
-                self.loadCurrentLibrary(into: context)
-            }
-        default:
-            requestPermission()
+            loadLibrary()
+        case .restricted:
+            NSLog("media restricted")
+        case .denied:
+            NSLog("media denied")
         }
         makeAudioBarSet()
-    }
-    
-    private func requestPermission() {
-        MPMediaLibrary.requestAuthorization { status in
-            switch status {
-            case .notDetermined:
-                fallthrough //This should not happen here
-            case .authorized:
-                self.persistentContainer.performBackgroundTask { context in
-                    self.loadCurrentLibrary(into: context)
-                }
-            case .restricted:
-                NSLog("media restricted")
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                    NotificationCenter.default.post(Notification(name: .classicPlayerMediaRestricted))
-                }
-            case .denied:
-                NSLog("media denied")
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                    NotificationCenter.default.post(Notification(name: .classicPlayerMediaDenied))
-                }
-            }
-        }
     }
     
     private func clearOldData(from context: NSManagedObjectContext) {
@@ -136,6 +113,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         } catch {
             let nserror = error as NSError
             fatalError("Error clearing old data: \(nserror), \(nserror.userInfo)")
+        }
+    }
+    
+    //ComposersView may need to call this after authorization gained to access library
+    func loadLibrary() {
+        self.persistentContainer.performBackgroundTask { context in
+            self.loadCurrentLibrary(into: context)
         }
     }
     

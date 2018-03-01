@@ -8,10 +8,12 @@
 
 import UIKit
 import CoreData
+import MediaPlayer
 
 class ComposersViewController: UIViewController, NSFetchedResultsControllerDelegate, UITableViewDelegate, UITableViewDataSource {
     @IBOutlet weak var tableView: UITableView!
     private var tableIsLoaded = false
+    private var libraryAccessChecked = false
     
     private static var indexedSectionCount = 27  //A magic number; that's how many sections any UITableView index can have.
     private var composerObjects: [NSDictionary]?
@@ -29,14 +31,23 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
                                                selector: #selector(updateUI),
                                                name: .dataAvailable,
                                                object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(mediaDenied),
-                                               name: .classicPlayerMediaDenied,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(mediaRestricted),
-                                               name: .classicPlayerMediaRestricted,
-                                               object: nil)
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        if libraryAccessChecked { return }
+        //Check authorization to access media library
+        MPMediaLibrary.requestAuthorization { status in
+            switch status {
+            case .notDetermined, .authorized:
+                break
+            case .restricted:
+                self.alertAndExit(message: "Media library access restricted by corporate or parental controls")
+            case .denied:
+                self.alertAndExit(message: "Media library access denied by user")
+            }
+        }
+        libraryAccessChecked = true
     }
     
     @objc
@@ -66,23 +77,13 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
     }
     
     @objc
-    private func mediaRestricted() {
-        alertAndExit(message: "Media library access restricted by corporate or parental controls")
-    }
-    
-    @objc
-    private func mediaDenied() {
-        alertAndExit(message: "Media library access denied by user")
-    }
-    
-    @objc
     private func alertAndExit(message: String) {
         DispatchQueue.main.async {
             let alert = UIAlertController(title: "No Access to Media Library", message: message, preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "Quit App", style: .default, handler: { _ in
-                exit(1)
-            }))
-            alert.addAction(UIAlertAction(title: "Go to Settings", style: .cancel, handler: { _ in
+//            alert.addAction(UIAlertAction(title: "Quit App", style: .default, handler: { _ in
+//                exit(1)
+//            }))
+            alert.addAction(UIAlertAction(title: "Go to Settings", style: .default, handler: { _ in
                 UIApplication.shared.open(URL(string: UIApplicationOpenSettingsURLString)!, options: [:], completionHandler: nil)
             }))
             self.present(alert, animated: true)
