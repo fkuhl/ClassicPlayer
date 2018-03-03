@@ -31,6 +31,22 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
                                                selector: #selector(updateUI),
                                                name: .dataAvailable,
                                                object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(handleClearingError),
+                                               name: .clearingError,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(handleLoadingError),
+                                               name: .loadingError,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(handleSavingError),
+                                               name: .savingError,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(handleStoreError),
+                                               name: .storeError,
+                                               object: nil)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -39,12 +55,14 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
         //Check authorization to access media library
         MPMediaLibrary.requestAuthorization { status in
             switch status {
-            case .notDetermined, .authorized:
-                break
+            case .notDetermined:
+                break //not clear how you'd ever get here, as the request will determine authorization
+            case .authorized:
+                (UIApplication.shared.delegate as! AppDelegate).loadLibrary()
             case .restricted:
-                self.alertAndExit(message: "Media library access restricted by corporate or parental controls")
+                self.alertAndGoToSettings(message: "Media library access restricted by corporate or parental controls")
             case .denied:
-                self.alertAndExit(message: "Media library access denied by user")
+                self.alertAndGoToSettings(message: "Media library access denied by user")
             }
         }
         libraryAccessChecked = true
@@ -77,7 +95,7 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
     }
     
     @objc
-    private func alertAndExit(message: String) {
+    private func alertAndGoToSettings(message: String) {
         DispatchQueue.main.async {
             let alert = UIAlertController(title: "No Access to Media Library", message: message, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "Go to Settings", style: .default, handler: { _ in
@@ -85,6 +103,41 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
             }))
             self.present(alert, animated: true)
             //...aaand somehow the app is relaunching after this...
+        }
+    }
+    
+    @objc
+    private func handleClearingError(notification: NSNotification) {
+        let message = "\(String(describing: notification.userInfo))"
+        alertAndExit(title: "Error Clearing Old Media", message: message)
+    }
+    
+    @objc
+    private func handleLoadingError(notification: NSNotification) {
+        let message = "\(String(describing: notification.userInfo))"
+        alertAndExit(title: "Error Loading Current Media", message: message)
+    }
+    
+    @objc
+    private func handleSavingError(notification: NSNotification) {
+        let message = "\(String(describing: notification.userInfo))"
+        alertAndExit(title: "Error Saving Current Media", message: message)
+    }
+    
+    @objc
+    private func handleStoreError(notification: NSNotification) {
+        let message = "\(String(describing: notification.userInfo))"
+        alertAndExit(title: "Error In Obtaining Local Storage", message: message)
+    }
+
+    @objc
+    private func alertAndExit(title: String, message: String) {
+        DispatchQueue.main.async {
+            let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "Exit App", style: .default, handler: { _ in
+                exit(1)
+            }))
+            self.present(alert, animated: true)
         }
     }
 

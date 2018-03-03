@@ -11,7 +11,11 @@ import CoreData
 import MediaPlayer
 
 extension Notification.Name {
-    static let dataAvailable =                Notification.Name("com.tyndalesoft.ClassicPlayer.DataAvailable")
+    static let dataAvailable = Notification.Name("com.tyndalesoft.ClassicPlayer.DataAvailable")
+    static let clearingError = Notification.Name("com.tyndalesoft.ClassicPlayer.ClearingError")
+    static let loadingError  = Notification.Name("com.tyndalesoft.ClassicPlayer.LoadingError")
+    static let savingError   = Notification.Name("com.tyndalesoft.ClassicPlayer.SavingError")
+    static let storeError    = Notification.Name("com.tyndalesoft.ClassicPlayer.StoreError")
 }
 
 @UIApplicationMain
@@ -87,20 +91,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             //with an "audio" ("app plays audio ... AirPlay") entry.
             try audioSession.setCategory(AVAudioSessionCategoryPlayback)
         } catch {
-            print("Setting category to AVAudioSessionCategoryPlayback failed.")
+            //TODO
+            //print("Setting category to AVAudioSessionCategoryPlayback failed.")
         }
         clearOldData(from: self.context)
-        //Check authorization to access media library
-        switch MPMediaLibrary.authorizationStatus() {
-        case .notDetermined:
-            break //Will be handled when ComposersView comes up
-        case .authorized:
-            loadLibrary()
-        case .restricted:
-            NSLog("media restricted")
-        case .denied:
-            NSLog("media denied")
-        }
         makeAudioBarSet()
     }
     
@@ -111,26 +105,29 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             try clearEntities(ofType: "Album", from: context)
             try context.save()
         } catch {
-            let nserror = error as NSError
-            fatalError("Error clearing old data: \(nserror), \(nserror.userInfo)")
+            let error = error as NSError
+            //ComposersVC probably won't be up to respond to this...
+            NotificationCenter.default.post(Notification(name: .clearingError,
+                                                         object: self,
+                                                         userInfo: error.userInfo))
+            NSLog("error clearing old data: \(error), \(error.userInfo)")
         }
     }
     
-    //ComposersView may need to call this after authorization gained to access library
+    //ComposersView will call this after authorization gained to access library
     func loadLibrary() {
         self.persistentContainer.performBackgroundTask { context in
-            self.loadCurrentLibrary(into: context)
-        }
-    }
-    
-    private func loadCurrentLibrary(into context: NSManagedObjectContext) {
-        do {
-            self.loadFromMedia(into: context)
-            try context.save()
-            NotificationCenter.default.post(Notification(name: .dataAvailable))
-        } catch {
-            let nserror = error as NSError
-            fatalError("Error loading current data: \(nserror), \(nserror.userInfo)")
+            do {
+                self.loadFromMedia(into: context)
+                try context.save()
+                NotificationCenter.default.post(Notification(name: .dataAvailable))
+            } catch {
+                let error = error as NSError
+                NotificationCenter.default.post(Notification(name: .loadingError,
+                                                             object: self,
+                                                             userInfo: error.userInfo))
+                NSLog("error loading library: \(error), \(error.userInfo)")
+            }
         }
     }
     
@@ -152,48 +149,41 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     private func loadFromMedia(into context: NSManagedObjectContext) {
-        do {
-            var albumCount = 0, pieceCount = 0
-            let mediaStuff = MPMediaQuery.albums()
-            if mediaStuff.collections == nil {
-                throw NSError(domain: "me", code: 1776, userInfo: ["a" : "something bombed"])
+        var albumCount = 0, pieceCount = 0
+        let mediaStuff = MPMediaQuery.albums()
+        if mediaStuff.collections == nil { return }
+        for mediaCollection in mediaStuff.collections! {
+            let items = mediaCollection.items
+            if AppDelegate.showPieces && isGenreToParse(items[0].genre) {
+                print("Album: \(items[0].value(forProperty: MPMediaItemPropertyComposer) ?? "<anon>"): "
+                    + "\(items[0].value(forProperty: MPMediaItemPropertyAlbumTrackCount) ?? "") "
+                    + "\(items[0].value(forProperty: MPMediaItemPropertyAlbumTitle) ?? "<no title>")"
+                    + " | \(items[0].value(forProperty: MPMediaItemPropertyAlbumArtist) ?? "<no artist>") ")
             }
-            for mediaCollection in mediaStuff.collections! {
-                let items = mediaCollection.items
-                if AppDelegate.showPieces && isGenreToParse(items[0].genre) {
-                    print("Album: \(items[0].value(forProperty: MPMediaItemPropertyComposer) ?? "<anon>"): "
-                        + "\(items[0].value(forProperty: MPMediaItemPropertyAlbumTrackCount) ?? "") "
-                        + "\(items[0].value(forProperty: MPMediaItemPropertyAlbumTitle) ?? "<no title>")"
-                        + " | \(items[0].value(forProperty: MPMediaItemPropertyAlbumArtist) ?? "<no artist>") ")
-                }
-                let album = NSEntityDescription.insertNewObject(forEntityName: "Album", into: context) as! Album
-                //Someday we may purpose "artist" as a composite field containing ensemble, director, soloists
-                album.artist = items[0].albumArtist
-                album.title = items[0].albumTitle
-                album.composer = items[0].composer
-                album.genre = items[0].genre
-                album.trackCount = Int32(items[0].albumTrackCount)
-                album.albumID = AppDelegate.encodeForCoreData(id: items[0].albumPersistentID)
-                if let timeInterval = items[0].releaseDate?.timeIntervalSince1970 {
-                    album.releaseDate = NSDate(timeIntervalSince1970: timeInterval)
-                } else {
-                    album.releaseDate = nil
-                }
-                if isGenreToParse(album.genre) {
-                    pieceCount += loadAndCountPieces(for: album, from: items, into: context)
-                } else {
-                    loadSongs(for: album, from: items, into: context)
-                    pieceCount += items.count
-                }
-                albumCount += 1
+            let album = NSEntityDescription.insertNewObject(forEntityName: "Album", into: context) as! Album
+            //Someday we may purpose "artist" as a composite field containing ensemble, director, soloists
+            album.artist = items[0].albumArtist
+            album.title = items[0].albumTitle
+            album.composer = items[0].composer
+            album.genre = items[0].genre
+            album.trackCount = Int32(items[0].albumTrackCount)
+            album.albumID = AppDelegate.encodeForCoreData(id: items[0].albumPersistentID)
+            if let timeInterval = items[0].releaseDate?.timeIntervalSince1970 {
+                album.releaseDate = NSDate(timeIntervalSince1970: timeInterval)
+            } else {
+                album.releaseDate = nil
             }
-            print("found \(albumCount) discs, \(pieceCount) pieces")
-            try context.save()
-            print("saved \(albumCount) discs and \(pieceCount) pieces")
-        } catch { // note, by default catch catches any error into a local variable called error
-            let nserror = error as NSError //because JSONDecoder.decode and context.save both use NSError
-            fatalError("Error loading media: \(nserror), \(nserror.userInfo)")
+            if isGenreToParse(album.genre) {
+                pieceCount += loadAndCountPieces(for: album, from: items, into: context)
+            } else {
+                loadSongs(for: album, from: items, into: context)
+                pieceCount += items.count
+            }
+            albumCount += 1
         }
+        print("found \(albumCount) discs, \(pieceCount) pieces")
+        saveContext()
+        print("saved \(albumCount) discs and \(pieceCount) pieces")
     }
     
     private func loadSongs(for album: Album, from collection: [MPMediaItem], into context: NSManagedObjectContext) {
@@ -415,10 +405,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let container = NSPersistentContainer(name: "ClassicPlayer")
         container.loadPersistentStores(completionHandler: { (storeDescription, error) in
             if let error = error as NSError? {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                 
-                /*
+                 /*
                  Typical reasons for an error here include:
                  * The parent directory does not exist, cannot be created, or disallows writing.
                  * The persistent store is not accessible, due to permissions or data protection when the device is locked.
@@ -426,7 +413,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                  * The store could not be migrated to the current model version.
                  Check the error message to determine what the actual problem was.
                  */
-                fatalError("Unresolved error \(error), \(error.userInfo)")
+                NotificationCenter.default.post(Notification(name: .storeError,
+                                                             object: self,
+                                                             userInfo: error.userInfo))
+                NSLog("store error \(error), \(error.userInfo)")
             }
         })
         return container
@@ -444,10 +434,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             do {
                 try context.save()
             } catch {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                let nserror = error as NSError
-                fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
+                let error = error as NSError
+                NotificationCenter.default.post(Notification(name: .storeError,
+                                                             object: self,
+                                                             userInfo: error.userInfo))
+                NSLog("store error \(error), \(error.userInfo)")
             }
         }
     }

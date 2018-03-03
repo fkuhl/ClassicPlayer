@@ -67,7 +67,6 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        print("PieceVC.viewWillDisappear")
         playerViewController?.player = nil
     }
     
@@ -183,7 +182,6 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
     //The embed segue that places the AVPlayerViewController in the ContainerVC
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "PlayTracks" {
-            print("PlaylistVC.prepareForSegue")
             self.playerViewController = segue.destination as? AVPlayerViewController
             installPlayer()
         }
@@ -213,9 +211,9 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
             return
         }
         if keyPath == #keyPath(AVPlayer.currentItem) {
-            if let currentItem = change?[.newKey] as? AVPlayerItem {
+            if let /*currentItem*/ _ = change?[.newKey] as? AVPlayerItem {
                 currentlyPlayingIndex += 1
-                print("new currentItem, index \(currentlyPlayingIndex) \(currentItem)")
+                //print("new currentItem, index \(currentlyPlayingIndex) \(currentItem)")
                 if currentlyPlayingIndex == trackData!.count - 1 {
                     //Just pause after last item, rather than searching for stuff.
                     (object as? AVPlayer)?.actionAtItemEnd = .pause

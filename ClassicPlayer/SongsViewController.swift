@@ -90,7 +90,7 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        print("SongsVC.vWA")
+        //print("SongsVC.vWA")
         //Could be returning from
         if playerViewController?.player == nil {
             //currentlyPlayingIndex = 0
@@ -102,7 +102,7 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        print("PieceVC.viewWillDisappear")
+        //print("PieceVC.viewWillDisappear")
         playerViewController?.player = nil
     }
     
