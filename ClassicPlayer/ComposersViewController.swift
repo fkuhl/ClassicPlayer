@@ -52,7 +52,7 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
     
     @objc
     private func updateUI() {
-        DispatchQueue.main.async { //This is getting called off the thread that handles notifications
+        DispatchQueue.main.async { //This may be called off the thread that handles notifications
             let context:NSManagedObjectContext! = (UIApplication.shared.delegate as! AppDelegate).context
             let request = NSFetchRequest<NSDictionary>()
             request.entity = NSEntityDescription.entity(forEntityName: "Piece", in:context!)
@@ -80,13 +80,11 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
     private func alertAndExit(message: String) {
         DispatchQueue.main.async {
             let alert = UIAlertController(title: "No Access to Media Library", message: message, preferredStyle: .alert)
-//            alert.addAction(UIAlertAction(title: "Quit App", style: .default, handler: { _ in
-//                exit(1)
-//            }))
             alert.addAction(UIAlertAction(title: "Go to Settings", style: .default, handler: { _ in
                 UIApplication.shared.open(URL(string: UIApplicationOpenSettingsURLString)!, options: [:], completionHandler: nil)
             }))
             self.present(alert, animated: true)
+            //...aaand somehow the app is relaunching after this...
         }
     }
 
