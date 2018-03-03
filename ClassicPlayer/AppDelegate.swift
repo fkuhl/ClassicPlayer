@@ -50,6 +50,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var audioBarSet: [UIImage]?
     var audioPaused: UIImage?
     var audioNotCurrent: UIImage?
+    
+    var libraryAlbumCount = 0
+    var libraryTrackCount = 0
+    var libraryPieceCount = 0
+    var libraryMovementCount = 0
 
     // MARK: - App delegate
 
@@ -181,6 +186,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
             albumCount += 1
         }
+        libraryAlbumCount = albumCount
+        libraryPieceCount = pieceCount
         print("found \(albumCount) discs, \(pieceCount) pieces")
         saveContext()
         print("saved \(albumCount) discs and \(pieceCount) pieces")

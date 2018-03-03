@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		270B337920192365007D1E35 /* AlbumsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 270B337820192365007D1E35 /* AlbumsViewController.swift */; };
 		270CA5D2203B7D7100325862 /* PlaylistViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 270CA5D1203B7D7100325862 /* PlaylistViewController.swift */; };
+		2718224A204B4678003345C0 /* InfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27182249204B4678003345C0 /* InfoViewController.swift */; };
 		27188EAB201D238B00CB5427 /* AlbumTracksViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27188EAA201D238B00CB5427 /* AlbumTracksViewController.swift */; };
 		271D2E23202CD7E4005FE857 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 271D2E22202CD7E4005FE857 /* Settings.bundle */; };
 		2733A60C1FE5FDE000E1EE77 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2733A60B1FE5FDE000E1EE77 /* AppDelegate.swift */; };
@@ -49,6 +50,7 @@
 /* Begin PBXFileReference section */
 		270B337820192365007D1E35 /* AlbumsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumsViewController.swift; sourceTree = "<group>"; };
 		270CA5D1203B7D7100325862 /* PlaylistViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlaylistViewController.swift; sourceTree = "<group>"; };
+		27182249204B4678003345C0 /* InfoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InfoViewController.swift; sourceTree = "<group>"; };
 		27188EAA201D238B00CB5427 /* AlbumTracksViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumTracksViewController.swift; sourceTree = "<group>"; };
 		271D2E22202CD7E4005FE857 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		2733A6081FE5FDE000E1EE77 /* ClassicPlayer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClassicPlayer.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -138,6 +140,7 @@
 				2733A60D1FE5FDE000E1EE77 /* ClassicPlayer.xcdatamodeld */,
 				27FCDEDB1FF2D220001D81CE /* ComposersViewController.swift */,
 				2733A61C1FE5FDE000E1EE77 /* Info.plist */,
+				27182249204B4678003345C0 /* InfoViewController.swift */,
 				2733A6191FE5FDE000E1EE77 /* LaunchScreen.storyboard */,
 				2733A6141FE5FDE000E1EE77 /* Main.storyboard */,
 				27FCDEDD1FF2D8D6001D81CE /* PieceViewController.swift */,
@@ -285,6 +288,7 @@
 				27188EAB201D238B00CB5427 /* AlbumTracksViewController.swift in Sources */,
 				27DAEBA020264B3B00F8D5DA /* SongSortViewController.swift in Sources */,
 				27FCDEDE1FF2D8D6001D81CE /* PieceViewController.swift in Sources */,
+				2718224A204B4678003345C0 /* InfoViewController.swift in Sources */,
 				2733A60F1FE5FDE000E1EE77 /* ClassicPlayer.xcdatamodeld in Sources */,
 				27CC6FB720337DEB00614150 /* ArtistsViewController.swift in Sources */,
 				27D61043203E1EF6001075BF /* SongTableViewCell.swift in Sources */,
