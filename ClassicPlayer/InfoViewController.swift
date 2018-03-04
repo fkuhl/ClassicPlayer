@@ -28,9 +28,9 @@ class InfoViewController: UIViewController {
         version?.text = "version \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") ?? "")"
         buildNumber?.text = "build \(Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") ?? "")"
         albums?.text = "Albums: \(appDelegate.libraryAlbumCount)"
-        tracks?.text = "later"
+        tracks?.text = "Tracks: \(appDelegate.libraryTrackCount)"
         pieces?.text = "Pieces: \(appDelegate.libraryPieceCount)"
-        movements?.text = "later"
+        movements?.text = "Movements: \(appDelegate.libraryMovementCount)"
     }
 }
 

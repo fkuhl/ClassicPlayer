@@ -154,11 +154,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     private func loadFromMedia(into context: NSManagedObjectContext) {
-        var albumCount = 0, pieceCount = 0
+        libraryAlbumCount = 0
+        libraryPieceCount = 0
+        libraryTrackCount = 0
+        libraryMovementCount = 0
         let mediaStuff = MPMediaQuery.albums()
         if mediaStuff.collections == nil { return }
         for mediaCollection in mediaStuff.collections! {
             let items = mediaCollection.items
+            libraryAlbumCount += 1
+            libraryTrackCount += items.count
             if AppDelegate.showPieces && isGenreToParse(items[0].genre) {
                 print("Album: \(items[0].value(forProperty: MPMediaItemPropertyComposer) ?? "<anon>"): "
                     + "\(items[0].value(forProperty: MPMediaItemPropertyAlbumTrackCount) ?? "") "
@@ -179,18 +184,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 album.releaseDate = nil
             }
             if isGenreToParse(album.genre) {
-                pieceCount += loadAndCountPieces(for: album, from: items, into: context)
+                loadPieces(for: album, from: items, into: context)
             } else {
                 loadSongs(for: album, from: items, into: context)
-                pieceCount += items.count
             }
-            albumCount += 1
         }
-        libraryAlbumCount = albumCount
-        libraryPieceCount = pieceCount
-        print("found \(albumCount) discs, \(pieceCount) pieces")
+        print("found \(libraryAlbumCount) discs, \(libraryPieceCount) pieces")
         saveContext()
-        print("saved \(albumCount) discs and \(pieceCount) pieces")
+        print("saved \(libraryAlbumCount) discs and \(libraryPieceCount) pieces")
     }
     
     private func loadSongs(for album: Album, from collection: [MPMediaItem], into context: NSManagedObjectContext) {
@@ -204,14 +205,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         case continuePiece
     }
     
-    private func loadAndCountPieces(for album: Album, from collection: [MPMediaItem], into context: NSManagedObjectContext) -> Int {
-        if collection.count < 1 { return 0 }
+    private func loadPieces(for album: Album, from collection: [MPMediaItem], into context: NSManagedObjectContext) {
+        if collection.count < 1 { return }
         if collection.count < 2 {
             _ = storePiece(from: collection[0], entitled: collection[0].title ?? "", to: album, into: context)
-            return 1
+            return
         }
-        var piecesAdded = 0
-        var movementsAdded = 0
         var state = LoadingState.beginPiece
         var i = 0
         var piece: Piece?
@@ -225,7 +224,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     //no more songs to be movements
                     //so piece name is the track name
                     piece = storePiece(from: collection[i], entitled: unwrappedTitle, to: album, into: context)
-                    piecesAdded += 1
                     i += 1
                     continue
                 }
@@ -234,10 +232,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     //at least two movements: record piece, then first two movements
                     let pieceTitle = parsed?.pieceTitle ?? unwrappedTitle
                     piece = storePiece(from: collection[i], entitled: pieceTitle, to: album, into: context)
-                    piecesAdded += 1
                     storeMovement(from: collection[i],     named: parsed!.movementTitle,     for: piece!, into: context)
                     storeMovement(from: collection[i + 1], named: nextParsed!.movementTitle, for: piece!, into: context)
-                    movementsAdded += 2
                     //see what other movement you can find
                     i += 2
                     state = .continuePiece
@@ -245,7 +241,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     //next is different piece
                     //so piece name is the track name
                     piece = storePiece(from: collection[i], entitled: unwrappedTitle, to: album, into: context)
-                    piecesAdded += 1
                     i += 1
                     state = .beginPiece
                 }
@@ -253,14 +248,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 if i >= collection.count { continue }
                 if parsed != nil && piece!.title == parsed!.pieceTitle {
                     storeMovement(from: collection[i], named: parsed!.movementTitle, for: piece!, into: context)
-                    movementsAdded += 1
                     i += 1
                 } else {
                     state = .beginPiece //don't increment i
                 }
             }
         } while i < collection.count
-        return piecesAdded
     }
     
     private func checkParses(in raw: String)-> (pieceTitle: String, movementTitle: String)? {
@@ -287,6 +280,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         mov.trackID = AppDelegate.encodeForCoreData(id: item.persistentID)
         mov.trackURL = item.assetURL
         mov.duration = AppDelegate.durationAsString(item.playbackDuration)
+        libraryMovementCount += 1
         piece.addToMovements(mov)
         if AppDelegate.showPieces { print("    '\(mov.title ?? "")'") }
     }
@@ -298,6 +292,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         let piece = NSEntityDescription.insertNewObject(forEntityName: "Piece", into: context) as! Piece
         piece.albumID =  AppDelegate.encodeForCoreData(id: mediaItem.albumPersistentID)
+        libraryPieceCount += 1
         piece.composer = mediaItem.composer ?? ""
         piece.artist = mediaItem.artist ?? ""
         piece.artistID = AppDelegate.encodeForCoreData(id: mediaItem.artistPersistentID)
