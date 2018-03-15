@@ -75,41 +75,60 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
     
     @objc
     private func updateUI() {
-        //appDelegate.persistentContainer.performBackgroundTask { context in
-            let context:NSManagedObjectContext! = self.appDelegate.context
-            let request = NSFetchRequest<NSDictionary>()
-            request.entity = NSEntityDescription.entity(forEntityName: "Piece", in:context!)
-            request.resultType = .dictionaryResultType
-            request.returnsDistinctResults = true
-            request.propertiesToFetch = [ "composer" ]
-            request.predicate = NSPredicate(format: "composer <> %@", "") //No blank composers!
-            request.sortDescriptors = [ NSSortDescriptor(key: "composer", ascending: true) ]
-            do {
-                self.composerObjects = try context!.fetch(request)
-                NSLog("fetch returned \(self.composerObjects!.count) composer things")
-                self.computeSections()
-                DispatchQueue.main.async {
-                    self.tableView.reloadData()
-                }
+        let context:NSManagedObjectContext! = self.appDelegate.context
+        let request = NSFetchRequest<NSDictionary>()
+        request.entity = NSEntityDescription.entity(forEntityName: "Piece", in:context!)
+        request.resultType = .dictionaryResultType
+        request.returnsDistinctResults = true
+        request.propertiesToFetch = [ "composer" ]
+        request.predicate = NSPredicate(format: "composer <> %@", "") //No blank composers!
+        request.sortDescriptors = [ NSSortDescriptor(key: "composer", ascending: true) ]
+        do {
+            self.composerObjects = try context!.fetch(request)
+            //NSLog("fetch returned \(self.composerObjects!.count) composer things")
+            self.computeSections()
+            DispatchQueue.main.async {
+                self.tableView.reloadData()
             }
-            catch {
-                let nserror = error as NSError
-                fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
-            }
-        //}
+        }
+        catch {
+            let nserror = error as NSError
+            fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
+        }
     }
     
     @objc
     private func libraryDidChange() {
-        appDelegate.replaceLibrary()
+        DispatchQueue.main.async {
+            //The actions are dispatched async to avoid the dread "_BSMachError"
+            let alert = UIAlertController(title: "Media Library Changed",
+                                          message: "Load newest media?",
+                                          preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "Load newest media", style: .destructive, handler: { _ in
+                DispatchQueue.main.async {
+                    self.appDelegate.replaceAppLibraryWithMedia()
+                }
+            }))
+            alert.addAction(UIAlertAction(title: "Skip the load for now", style: .cancel, handler: { _ in
+                DispatchQueue.main.async {
+                    self.updateUI()
+                }
+            }))
+            self.present(alert, animated: true)
+        }
     }
     
     @objc
     private func alertAndGoToSettings(message: String) {
         DispatchQueue.main.async {
+            //The action is dispatched async to avoid the dread "_BSMachError"
             let alert = UIAlertController(title: "No Access to Media Library", message: message, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "Go to Settings", style: .default, handler: { _ in
-                UIApplication.shared.open(URL(string: UIApplicationOpenSettingsURLString)!, options: [:], completionHandler: nil)
+                DispatchQueue.main.async {
+                    UIApplication.shared.open(URL(string: UIApplicationOpenSettingsURLString)!,
+                                              options: [:],
+                                              completionHandler: nil)
+                }
             }))
             self.present(alert, animated: true)
             //...aaand somehow the app is relaunching after this...

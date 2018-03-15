@@ -107,19 +107,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func checkLibraryChanged() {
         let libraryInfos = getMediaLibraryInfo()
         if libraryInfos.count < 1 {
-            loadExistingLibrary()
+            NSLog("No app library found: load media lib to app")
+            loadMediaLibraryToApp()
             return
         }
         if let storedLastModDate = libraryInfos[0].lastModifiedDate {
             if MPMediaLibrary.default().lastModifiedDate <= storedLastModDate {
                 //use current data
-                NSLog("curr lib stored \(MPMediaLibrary.default().lastModifiedDate), curr core data \(storedLastModDate): use what you have")
-                logCurrentNumberOfAlbums()
+                NSLog("media lib stored \(MPMediaLibrary.default().lastModifiedDate), app lib stored \(storedLastModDate): use current app lib")
+                //logCurrentNumberOfAlbums()
                 NotificationCenter.default.post(Notification(name: .dataAvailable))
                 return
             }  else {
-                NSLog("curr lib stored \(MPMediaLibrary.default().lastModifiedDate), curr core data \(storedLastModDate): lib changed")
-                logCurrentNumberOfAlbums()
+                NSLog("media lib stored \(MPMediaLibrary.default().lastModifiedDate), app lib data \(storedLastModDate): media lib changed, replace app lib")
+                //logCurrentNumberOfAlbums()
                NotificationCenter.default.post(Notification(name: .libraryChanged))
                 return
             }
@@ -154,13 +155,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     //ComposersView will call this after authorization gained to access library
-    func loadExistingLibrary() {
+    func loadMediaLibraryToApp() {
         self.loadFromMedia(into: context)
         NotificationCenter.default.post(Notification(name: .dataAvailable))
     }
 
     //ComposersView will call this after authorization gained to access library
-    func replaceLibrary() {
+    func replaceAppLibraryWithMedia() {
         self.clearOldData(from: self.context)
         self.loadFromMedia(into: self.context)
         NotificationCenter.default.post(Notification(name: .dataAvailable))
@@ -482,6 +483,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return container
     }()
     
+    //All CoreData operations should use this context!
     lazy var context: NSManagedObjectContext = {
         return persistentContainer.viewContext
     }()
