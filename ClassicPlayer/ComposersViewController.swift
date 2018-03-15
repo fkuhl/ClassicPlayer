@@ -12,6 +12,8 @@ import MediaPlayer
 
 class ComposersViewController: UIViewController, NSFetchedResultsControllerDelegate, UITableViewDelegate, UITableViewDataSource {
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var activityBackground: UIView!
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     private var tableIsLoaded = false
     private var libraryAccessChecked = false
     
@@ -28,6 +30,8 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
         super.viewDidLoad()
         self.tableView.delegate = self
         self.tableView.dataSource = self
+        self.activityBackground.isHidden = true
+        self.activityIndicator.isHidden = true
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(updateUI),
                                                name: .dataAvailable,
@@ -89,7 +93,11 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
             self.computeSections()
             DispatchQueue.main.async {
                 self.tableView.reloadData()
-            }
+                NSLog("stopping animation")
+                self.activityIndicator.stopAnimating()
+                self.activityBackground.isHidden = true
+                self.activityIndicator.isHidden = true
+           }
         }
         catch {
             let nserror = error as NSError
@@ -106,7 +114,14 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
                                           preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "Load newest media", style: .destructive, handler: { _ in
                 DispatchQueue.main.async {
+                    self.activityBackground.isHidden = false
+                    self.activityIndicator.isHidden = false
+                    self.activityIndicator.startAnimating()
+                    self.view.setNeedsDisplay()
+                    NSLog("started animation")
+                    //DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(5), execute: {
                     self.appDelegate.replaceAppLibraryWithMedia()
+                    //})
                 }
             }))
             alert.addAction(UIAlertAction(title: "Skip the load for now", style: .cancel, handler: { _ in
