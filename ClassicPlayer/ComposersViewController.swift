@@ -16,6 +16,7 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
     private var libraryAccessChecked = false
     
     private static var indexedSectionCount = 27  //A magic number; that's how many sections any UITableView index can have.
+    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var composerObjects: [NSDictionary]?
     private var sectionCount = 1
     private var sectionSize = 0
@@ -30,6 +31,10 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(updateUI),
                                                name: .dataAvailable,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(libraryDidChange),
+                                               name: .libraryChanged,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(handleClearingError),
@@ -58,20 +63,20 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
             case .notDetermined:
                 break //not clear how you'd ever get here, as the request will determine authorization
             case .authorized:
-                (UIApplication.shared.delegate as! AppDelegate).loadLibrary()
+                self.appDelegate.checkLibraryChanged()
             case .restricted:
                 self.alertAndGoToSettings(message: "Media library access restricted by corporate or parental controls")
             case .denied:
                 self.alertAndGoToSettings(message: "Media library access denied by user")
             }
-        }
-        libraryAccessChecked = true
+            self.libraryAccessChecked = true
+       }
     }
     
     @objc
     private func updateUI() {
-        DispatchQueue.main.async { //This may be called off the thread that handles notifications
-            let context:NSManagedObjectContext! = (UIApplication.shared.delegate as! AppDelegate).context
+        //appDelegate.persistentContainer.performBackgroundTask { context in
+            let context:NSManagedObjectContext! = self.appDelegate.context
             let request = NSFetchRequest<NSDictionary>()
             request.entity = NSEntityDescription.entity(forEntityName: "Piece", in:context!)
             request.resultType = .dictionaryResultType
@@ -81,7 +86,7 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
             request.sortDescriptors = [ NSSortDescriptor(key: "composer", ascending: true) ]
             do {
                 self.composerObjects = try context!.fetch(request)
-                //print("fetch returned \(self.composerObjects!.count) composer things")
+                NSLog("fetch returned \(self.composerObjects!.count) composer things")
                 self.computeSections()
                 DispatchQueue.main.async {
                     self.tableView.reloadData()
@@ -91,7 +96,12 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
                 let nserror = error as NSError
                 fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
             }
-        }
+        //}
+    }
+    
+    @objc
+    private func libraryDidChange() {
+        appDelegate.replaceLibrary()
     }
     
     @objc

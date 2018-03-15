@@ -11,17 +11,18 @@ import CoreData
 import MediaPlayer
 
 extension Notification.Name {
-    static let dataAvailable = Notification.Name("com.tyndalesoft.ClassicPlayer.DataAvailable")
-    static let clearingError = Notification.Name("com.tyndalesoft.ClassicPlayer.ClearingError")
-    static let loadingError  = Notification.Name("com.tyndalesoft.ClassicPlayer.LoadingError")
-    static let savingError   = Notification.Name("com.tyndalesoft.ClassicPlayer.SavingError")
-    static let storeError    = Notification.Name("com.tyndalesoft.ClassicPlayer.StoreError")
+    static let dataAvailable  = Notification.Name("com.tyndalesoft.ClassicPlayer.DataAvailable")
+    static let libraryChanged = Notification.Name("com.tyndalesoft.ClassicPlayer.LibraryChanged")
+    static let clearingError  = Notification.Name("com.tyndalesoft.ClassicPlayer.ClearingError")
+    static let loadingError   = Notification.Name("com.tyndalesoft.ClassicPlayer.LoadingError")
+    static let savingError    = Notification.Name("com.tyndalesoft.ClassicPlayer.SavingError")
+    static let storeError     = Notification.Name("com.tyndalesoft.ClassicPlayer.StoreError")
 }
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     private static let displayArtworkKey = "display_artwork_preference"
-    private static let parsedGenres = ["Classical", "Opera"]
+    private static let parsedGenres = ["Classical", "Opera", "Church"]
     private static let showParses = false
     private static let showPieces = false
     private static let separator: Character = "|"
@@ -51,10 +52,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var audioPaused: UIImage?
     var audioNotCurrent: UIImage?
     
-    var libraryAlbumCount = 0
-    var libraryTrackCount = 0
-    var libraryPieceCount = 0
-    var libraryMovementCount = 0
+    var libraryAlbumCount: Int32 = 0
+    var libraryTrackCount: Int32 = 0
+    var libraryPieceCount: Int32 = 0
+    var libraryMovementCount: Int32 = 0
+    var mediaLibraryInfo: MediaLibraryInfo?
 
     // MARK: - App delegate
 
@@ -97,10 +99,71 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             try audioSession.setCategory(AVAudioSessionCategoryPlayback)
         } catch {
             //TODO
-            //print("Setting category to AVAudioSessionCategoryPlayback failed.")
+            fatalError("Setting category to AVAudioSessionCategoryPlayback failed.")
         }
-        clearOldData(from: self.context)
         makeAudioBarSet()
+    }
+    
+    func checkLibraryChanged() {
+        let libraryInfos = getMediaLibraryInfo()
+        if libraryInfos.count < 1 {
+            loadExistingLibrary()
+            return
+        }
+        if let storedLastModDate = libraryInfos[0].lastModifiedDate {
+            if MPMediaLibrary.default().lastModifiedDate <= storedLastModDate {
+                //use current data
+                NSLog("curr lib stored \(MPMediaLibrary.default().lastModifiedDate), curr core data \(storedLastModDate): use what you have")
+                logCurrentNumberOfAlbums()
+                NotificationCenter.default.post(Notification(name: .dataAvailable))
+                return
+            }  else {
+                NSLog("curr lib stored \(MPMediaLibrary.default().lastModifiedDate), curr core data \(storedLastModDate): lib changed")
+                logCurrentNumberOfAlbums()
+               NotificationCenter.default.post(Notification(name: .libraryChanged))
+                return
+            }
+        } else {
+            fatalError("somehow last mod date not set on MediaLibraryInfo")
+        }
+    }
+    
+    private func getMediaLibraryInfo() -> [MediaLibraryInfo] {
+        let request = NSFetchRequest<MediaLibraryInfo>()
+        request.entity = NSEntityDescription.entity(forEntityName: "MediaLibraryInfo", in: context)
+        request.resultType = .managedObjectResultType
+        do {
+            return try context.fetch(request)
+        } catch {
+            let nserror = error as NSError
+            fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
+        }
+    }
+    
+    private func logCurrentNumberOfAlbums() {
+        let request = NSFetchRequest<Album>()
+        request.entity = NSEntityDescription.entity(forEntityName: "Album", in: context)
+        request.resultType = .managedObjectResultType
+        do {
+            let albums = try context.fetch(request)
+            NSLog("\(albums.count) albums")
+        } catch {
+            let nserror = error as NSError
+            fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
+        }
+    }
+
+    //ComposersView will call this after authorization gained to access library
+    func loadExistingLibrary() {
+        self.loadFromMedia(into: context)
+        NotificationCenter.default.post(Notification(name: .dataAvailable))
+    }
+
+    //ComposersView will call this after authorization gained to access library
+    func replaceLibrary() {
+        self.clearOldData(from: self.context)
+        self.loadFromMedia(into: self.context)
+        NotificationCenter.default.post(Notification(name: .dataAvailable))
     }
     
     private func clearOldData(from context: NSManagedObjectContext) {
@@ -108,7 +171,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             try clearEntities(ofType: "Movement", from: context)
             try clearEntities(ofType: "Piece", from: context)
             try clearEntities(ofType: "Album", from: context)
-            try context.save()
+            saveContext()
         } catch {
             let error = error as NSError
             //ComposersVC probably won't be up to respond to this...
@@ -118,32 +181,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             NSLog("error clearing old data: \(error), \(error.userInfo)")
         }
     }
-    
-    //ComposersView will call this after authorization gained to access library
-    func loadLibrary() {
-        self.persistentContainer.performBackgroundTask { context in
-            do {
-                self.loadFromMedia(into: context)
-                try context.save()
-                NotificationCenter.default.post(Notification(name: .dataAvailable))
-            } catch {
-                let error = error as NSError
-                NotificationCenter.default.post(Notification(name: .loadingError,
-                                                             object: self,
-                                                             userInfo: error.userInfo))
-                NSLog("error loading library: \(error), \(error.userInfo)")
-            }
-        }
-    }
-    
+
     private func clearEntities(ofType type: String, from context: NSManagedObjectContext) throws {
         let request: NSFetchRequest<NSFetchRequestResult> = NSFetchRequest<NSFetchRequestResult>()
         request.entity = NSEntityDescription.entity(forEntityName: type, in:context)
         let deleteRequest = NSBatchDeleteRequest(fetchRequest: request)
         request.predicate = NSPredicate(format: "title MATCHES %@", ".*")
         deleteRequest.resultType = .resultTypeCount
-        let /*deleteResult*/ _ = try context.execute(deleteRequest) as? NSBatchDeleteResult
-        //print("deleted \(deleteResult?.result ?? "<nil>") \(type)")
+        let deleteResult = try context.execute(deleteRequest) as? NSBatchDeleteResult
+        NSLog("deleted \(deleteResult?.result ?? "<nil>") \(type)")
     }
     
     private func isGenreToParse(_ optionalGenre: String?) -> Bool {
@@ -163,7 +209,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         for mediaCollection in mediaStuff.collections! {
             let items = mediaCollection.items
             libraryAlbumCount += 1
-            libraryTrackCount += items.count
+            libraryTrackCount += Int32(items.count)
             if AppDelegate.showPieces && isGenreToParse(items[0].genre) {
                 print("Album: \(items[0].value(forProperty: MPMediaItemPropertyComposer) ?? "<anon>"): "
                     + "\(items[0].value(forProperty: MPMediaItemPropertyAlbumTrackCount) ?? "") "
@@ -189,9 +235,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 loadSongs(for: album, from: items, into: context)
             }
         }
-        print("found \(libraryAlbumCount) discs, \(libraryPieceCount) pieces")
+        print("found \(libraryAlbumCount) albums, \(libraryPieceCount) pieces, \(libraryMovementCount) movements, \(libraryTrackCount) tracks")
+        var mediaInfoObject: MediaLibraryInfo
+        let mediaLibraryInfosInStore = getMediaLibraryInfo()
+        if mediaLibraryInfosInStore.count >= 1 {
+            mediaInfoObject = mediaLibraryInfosInStore[0]
+        } else {
+            mediaInfoObject = NSEntityDescription.insertNewObject(forEntityName: "MediaLibraryInfo", into: context) as! MediaLibraryInfo
+        }
+        mediaInfoObject.lastModifiedDate = MPMediaLibrary.default().lastModifiedDate
+        mediaInfoObject.albumCount = libraryAlbumCount
+        mediaInfoObject.movementCount = libraryMovementCount
+        mediaInfoObject.pieceCount = libraryPieceCount
+        mediaInfoObject.trackCount = libraryTrackCount
         saveContext()
-        print("saved \(libraryAlbumCount) discs and \(libraryPieceCount) pieces")
+        print("saved \(libraryAlbumCount) albums and \(libraryPieceCount) pieces for lib at \(mediaInfoObject.lastModifiedDate!)")
     }
     
     private func loadSongs(for album: Album, from collection: [MPMediaItem], into context: NSManagedObjectContext) {
@@ -432,16 +490,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func saveContext () {
         let context = persistentContainer.viewContext
-        if context.hasChanges {
-            do {
-                try context.save()
-            } catch {
-                let error = error as NSError
-                NotificationCenter.default.post(Notification(name: .storeError,
-                                                             object: self,
-                                                             userInfo: error.userInfo))
-                NSLog("store error \(error), \(error.userInfo)")
-            }
+        do {
+            NSLog("Saving changes")
+            try context.save()
+        } catch {
+            let error = error as NSError
+            NotificationCenter.default.post(Notification(name: .storeError,
+                                                         object: self,
+                                                         userInfo: error.userInfo))
+            NSLog("store error \(error), \(error.userInfo)")
         }
     }
 

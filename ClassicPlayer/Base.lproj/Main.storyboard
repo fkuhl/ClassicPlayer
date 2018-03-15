@@ -378,7 +378,7 @@
                                                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="1000" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="hLD-IQ-PaF" userLabel="Indicator">
                                                             <rect key="frame" x="0.0" y="0.0" width="0.0" height="47.5"/>
                                                         </imageView>
-                                                        <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" alignment="firstBaseline" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="7dH-eQ-fEk">
+                                                        <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" alignment="firstBaseline" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="7dH-eQ-fEk">
                                                             <rect key="frame" x="4" y="0.0" width="355" height="18"/>
                                                             <subviews>
                                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" text="title" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FdN-3q-jdO">
@@ -1224,7 +1224,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalSpacing" alignment="top" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="bur-QW-kq5" userLabel="Identity">
-                                <rect key="frame" x="16" y="36" width="0.0" height="208"/>
+                                <rect key="frame" x="16" y="36" width="343" height="208"/>
                                 <subviews>
                                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="info-icon" translatesAutoresizingMaskIntoConstraints="NO" id="NfH-MN-Rze">
                                         <rect key="frame" x="0.0" y="0.0" width="120" height="120"/>
@@ -1254,16 +1254,16 @@
                                 </subviews>
                             </stackView>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="0nH-fX-xe0" userLabel="Build and version">
-                                <rect key="frame" x="16" y="260" width="0.0" height="33"/>
+                                <rect key="frame" x="16" y="260" width="343" height="33"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="version" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1ET-3t-75R">
-                                        <rect key="frame" x="0.0" y="0.0" width="0.0" height="14.5"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="343" height="14.5"/>
                                         <fontDescription key="fontDescription" style="UICTFontTextStyleCaption1"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="buildno" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xQw-1N-ggm">
-                                        <rect key="frame" x="0.0" y="18.5" width="0.0" height="14.5"/>
+                                        <rect key="frame" x="0.0" y="18.5" width="343" height="14.5"/>
                                         <fontDescription key="fontDescription" style="UICTFontTextStyleCaption1"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
@@ -1271,7 +1271,7 @@
                                 </subviews>
                             </stackView>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalSpacing" alignment="top" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="t0z-lA-zLn" userLabel="statistics">
-                                <rect key="frame" x="16" y="309" width="0.0" height="84"/>
+                                <rect key="frame" x="16" y="309" width="343" height="84"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="albums" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rS4-8o-ayz">
                                         <rect key="frame" x="0.0" y="0.0" width="50" height="18"/>
@@ -1340,7 +1340,7 @@
         <image name="info-icon" width="83" height="83"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="q5h-Cp-SQj"/>
+        <segue reference="obt-4U-61W"/>
         <segue reference="ZtY-Y8-VAT"/>
     </inferredMetricsTieBreakers>
     <color key="tintColor" name="TheBlue"/>
