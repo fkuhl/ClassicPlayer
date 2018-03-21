@@ -43,7 +43,7 @@ class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         if !collectionIsLoaded {
-            updateUI()
+            loadAlbumsSortedBy(.title)
             collectionIsLoaded = true
         }
     }
@@ -52,29 +52,33 @@ class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-
-    private func updateUI() {
+    
+    private func loadAlbumsSortedBy(_ sort: AlbumSorts) {
         do {
-            try loadAlbumsSortedBy(.title)
+            let context:NSManagedObjectContext! = (UIApplication.shared.delegate as! AppDelegate).context
+            let request = NSFetchRequest<Album>()
+            request.entity = NSEntityDescription.entity(forEntityName: "Album", in:context)
+            request.resultType = .managedObjectResultType
+            request.returnsDistinctResults = true
+            request.sortDescriptors = [ NSSortDescriptor(key: sort.sortDescriptor,
+                                                         ascending: true,
+                                                         selector: #selector(NSString.localizedCaseInsensitiveCompare)) ]
+            albums = try context.fetch(request)
+            computeSectionsSortedBy(sort)
+            title = "Albums by \(sort.dropDownDisplayName)"
+            tableView.reloadData()
         }
         catch {
-             let nserror = error as NSError
-            fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
+            let nserror = error as NSError
+            let message = "\(String(describing: nserror.userInfo))"
+            DispatchQueue.main.async {
+                let alert = UIAlertController(title: "Error retrieving app data", message: message, preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "Exit App", style: .default, handler: { _ in
+                    exit(1)
+                }))
+                self.present(alert, animated: true)
+            }
         }
-    }
-    
-    private func loadAlbumsSortedBy(_ sort: AlbumSorts) throws {
-        let context:NSManagedObjectContext! = (UIApplication.shared.delegate as! AppDelegate).context
-        let request = NSFetchRequest<Album>()
-        request.entity = NSEntityDescription.entity(forEntityName: "Album", in:context)
-        request.resultType = .managedObjectResultType
-        request.returnsDistinctResults = true
-        request.sortDescriptors = [ NSSortDescriptor(key: sort.sortDescriptor,
-                                                     ascending: true,
-                                                     selector: #selector(NSString.localizedCaseInsensitiveCompare)) ]
-        albums = try context.fetch(request)
-        computeSectionsSortedBy(sort)
-        tableView.reloadData()
     }
     
     private func computeSectionsSortedBy(_ sort: AlbumSorts) {
@@ -123,13 +127,7 @@ class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     func userDidChoose(sort: AlbumSorts) {
         self.dismiss(animated: true) { }
-        do {
-            try loadAlbumsSortedBy(sort)
-        }
-        catch {
-            let nserror = error as NSError
-            fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
-        }
+        loadAlbumsSortedBy(sort)
     }
     
     // MARK: - UITableViewDataSource

@@ -11,12 +11,13 @@ import CoreData
 import MediaPlayer
 
 extension Notification.Name {
-    static let dataAvailable  = Notification.Name("com.tyndalesoft.ClassicPlayer.DataAvailable")
-    static let libraryChanged = Notification.Name("com.tyndalesoft.ClassicPlayer.LibraryChanged")
-    static let clearingError  = Notification.Name("com.tyndalesoft.ClassicPlayer.ClearingError")
-    static let loadingError   = Notification.Name("com.tyndalesoft.ClassicPlayer.LoadingError")
-    static let savingError    = Notification.Name("com.tyndalesoft.ClassicPlayer.SavingError")
-    static let storeError     = Notification.Name("com.tyndalesoft.ClassicPlayer.StoreError")
+    static let dataAvailable       = Notification.Name("com.tyndalesoft.ClassicPlayer.DataAvailable")
+    static let libraryChanged      = Notification.Name("com.tyndalesoft.ClassicPlayer.LibraryChanged")
+    static let clearingError       = Notification.Name("com.tyndalesoft.ClassicPlayer.ClearingError")
+    static let initializingError   = Notification.Name("com.tyndalesoft.ClassicPlayer.InitializingError")
+    static let loadingError        = Notification.Name("com.tyndalesoft.ClassicPlayer.LoadingError")
+    static let savingError         = Notification.Name("com.tyndalesoft.ClassicPlayer.SavingError")
+    static let storeError          = Notification.Name("com.tyndalesoft.ClassicPlayer.StoreError")
 }
 
 @UIApplicationMain
@@ -61,7 +62,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // MARK: - App delegate
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        initializeAudio()
         return true
     }
 
@@ -98,13 +98,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             //with an "audio" ("app plays audio ... AirPlay") entry.
             try audioSession.setCategory(AVAudioSessionCategoryPlayback)
         } catch {
-            //TODO
-            fatalError("Setting category to AVAudioSessionCategoryPlayback failed.")
+            let error = error as NSError
+            NotificationCenter.default.post(Notification(name: .initializingError,
+                                                         object: self,
+                                                         userInfo: error.userInfo))
+            NSLog("error setting category to AVAudioSessionCategoryPlayback: \(error), \(error.userInfo)")
         }
         makeAudioBarSet()
     }
     
     func checkLibraryChanged() {
+        initializeAudio()
         let libraryInfos = getMediaLibraryInfo()
         if libraryInfos.count < 1 {
             NSLog("No app library found: load media lib to app")
@@ -122,11 +126,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }  else {
                 NSLog("media lib stored \(MPMediaLibrary.default().lastModifiedDate), app lib data \(storedLastModDate): media lib changed, replace app lib")
                 //logCurrentNumberOfAlbums()
-               NotificationCenter.default.post(Notification(name: .libraryChanged))
+                NotificationCenter.default.post(Notification(name: .libraryChanged))
                 return
             }
         } else {
-            fatalError("somehow last mod date not set on MediaLibraryInfo")
+            NotificationCenter.default.post(Notification(name: .initializingError,
+                                                         object: self,
+                                                         userInfo: ["message" : "Last modification date not set in media library info"]))
+            NSLog("Last modification date not set in media library info")
         }
     }
     
@@ -137,34 +144,38 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         do {
             return try context.fetch(request)
         } catch {
-            let nserror = error as NSError
-            fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
+            let error = error as NSError
+            NotificationCenter.default.post(Notification(name: .loadingError,
+                                                         object: self,
+                                                         userInfo: error.userInfo))
+            NSLog("error retrieving media library info: \(error), \(error.userInfo)")
+            return []
         }
     }
     
-    private func logCurrentNumberOfAlbums() {
-        let request = NSFetchRequest<Album>()
-        request.entity = NSEntityDescription.entity(forEntityName: "Album", in: context)
-        request.resultType = .managedObjectResultType
-        do {
-            let albums = try context.fetch(request)
-            NSLog("\(albums.count) albums")
-        } catch {
-            let nserror = error as NSError
-            fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
-        }
-    }
+//    private func logCurrentNumberOfAlbums() {
+//        let request = NSFetchRequest<Album>()
+//        request.entity = NSEntityDescription.entity(forEntityName: "Album", in: context)
+//        request.resultType = .managedObjectResultType
+//        do {
+//            let albums = try context.fetch(request)
+//            NSLog("\(albums.count) albums")
+//        } catch {
+//            let nserror = error as NSError
+//            fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
+//        }
+//    }
 
     //ComposersView will call this after authorization gained to access library
     func loadMediaLibraryToApp() {
-        self.loadFromMedia(into: context)
+        self.loadAppFromMediaLibrary(into: context)
         NotificationCenter.default.post(Notification(name: .dataAvailable))
     }
 
     //ComposersView will call this after authorization gained to access library
     func replaceAppLibraryWithMedia() {
         self.clearOldData(from: self.context)
-        self.loadFromMedia(into: self.context)
+        self.loadAppFromMediaLibrary(into: self.context)
         NotificationCenter.default.post(Notification(name: .dataAvailable))
     }
     
@@ -176,7 +187,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             saveContext()
         } catch {
             let error = error as NSError
-            //ComposersVC probably won't be up to respond to this...
             NotificationCenter.default.post(Notification(name: .clearingError,
                                                          object: self,
                                                          userInfo: error.userInfo))
@@ -201,7 +211,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return AppDelegate.parsedGenres.contains(genre)
     }
     
-    private func loadFromMedia(into context: NSManagedObjectContext) {
+    private func loadAppFromMediaLibrary(into context: NSManagedObjectContext) {
         libraryAlbumCount = 0
         libraryPieceCount = 0
         libraryTrackCount = 0

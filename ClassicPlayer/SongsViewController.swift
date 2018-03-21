@@ -38,6 +38,7 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
             self.loadTracks()
             self.sortTracksBy(.title)
             DispatchQueue.main.async {
+                self.title = "Songs by \(SongSorts.title)"
                 self.trackTable.reloadData()
             }
         }
@@ -120,9 +121,10 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
         self.present(sortVC, animated: true) { }
     }
     
-    func userDidChoose(sort: SongSorts) {
+    func userDidChoose(sort: SongSorts) { //this got called off the main thread, right?
         self.dismiss(animated: true) { }
         sortTracksBy(sort)
+        title = "Songs by \(sort.dropDownDisplayName)"
         trackTable.reloadData()
     }
 

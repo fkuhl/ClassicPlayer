@@ -45,6 +45,10 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
                                                name: .clearingError,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
+                                               selector: #selector(handleInitializingError),
+                                               name: .initializingError,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
                                                selector: #selector(handleLoadingError),
                                                name: .loadingError,
                                                object: nil)
@@ -102,8 +106,10 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
            }
         }
         catch {
-            let nserror = error as NSError
-            fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
+            let error = error as NSError
+            let message = "\(String(describing: error.userInfo))"
+            NSLog("error retrieving composers: \(error), \(error.userInfo)")
+            alertAndExit(title: "Error Retrieving Composers", message: message)
         }
     }
     
@@ -159,11 +165,17 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
     }
     
     @objc
+    private func handleInitializingError(notification: NSNotification) {
+        let message = "\(String(describing: notification.userInfo))"
+        alertAndExit(title: "Error Initializing Audio", message: message)
+    }
+    
+    @objc
     private func handleLoadingError(notification: NSNotification) {
         let message = "\(String(describing: notification.userInfo))"
         alertAndExit(title: "Error Loading Current Media", message: message)
     }
-    
+
     @objc
     private func handleSavingError(notification: NSNotification) {
         let message = "\(String(describing: notification.userInfo))"

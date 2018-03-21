@@ -68,8 +68,14 @@ class SelectedPiecesViewController: UIViewController, NSFetchedResultsController
             tableView.reloadData()
         }
         catch {
-            let nserror = error as NSError
-            fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
+            let error = error as NSError
+            let message = "\(String(describing: error.userInfo))"
+            NSLog("error retrieving selected pieces: \(error), \(error.userInfo)")
+            let alert = UIAlertController(title: "Error Retrieving Selected Pieces", message: message, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "Exit App", style: .default, handler: { _ in
+                exit(1)
+            }))
+            self.present(alert, animated: true)
         }
     }
     
