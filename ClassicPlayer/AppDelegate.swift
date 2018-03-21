@@ -52,10 +52,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var audioPaused: UIImage?
     var audioNotCurrent: UIImage?
     
-    var libraryAlbumCount: Int32 = 0
-    var libraryTrackCount: Int32 = 0
-    var libraryPieceCount: Int32 = 0
-    var libraryMovementCount: Int32 = 0
+    private var libraryAlbumCount: Int32 = 0
+    private var libraryTrackCount: Int32 = 0
+    private var libraryPieceCount: Int32 = 0
+    private var libraryMovementCount: Int32 = 0
     var mediaLibraryInfo: MediaLibraryInfo?
 
     // MARK: - App delegate
@@ -111,7 +111,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             loadMediaLibraryToApp()
             return
         }
-        if let storedLastModDate = libraryInfos[0].lastModifiedDate {
+        mediaLibraryInfo = libraryInfos[0]
+        if let storedLastModDate = mediaLibraryInfo!.lastModifiedDate {
             if MPMediaLibrary.default().lastModifiedDate <= storedLastModDate {
                 //use current data
                 NSLog("media lib stored \(MPMediaLibrary.default().lastModifiedDate), app lib stored \(storedLastModDate): use current app lib")

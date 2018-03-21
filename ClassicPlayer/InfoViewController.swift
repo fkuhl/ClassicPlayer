@@ -9,8 +9,10 @@
 import UIKit
 
 class InfoViewController: UIViewController {
+    @IBOutlet weak var buildAndVersionStack: UIStackView!
     @IBOutlet weak var version: UILabel!
     @IBOutlet weak var buildNumber: UILabel!
+    @IBOutlet weak var libraryDate: UILabel!
     @IBOutlet weak var albums: UILabel!
     @IBOutlet weak var tracks: UILabel!
     @IBOutlet weak var pieces: UILabel!
@@ -27,10 +29,12 @@ class InfoViewController: UIViewController {
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         version?.text = "version \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") ?? "")"
         buildNumber?.text = "build \(Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") ?? "")"
-        albums?.text = "Albums: \(appDelegate.libraryAlbumCount)"
-        tracks?.text = "Tracks: \(appDelegate.libraryTrackCount)"
-        pieces?.text = "Pieces: \(appDelegate.libraryPieceCount)"
-        movements?.text = "Movements: \(appDelegate.libraryMovementCount)"
+        let dateString = appDelegate.mediaLibraryInfo?.lastModifiedDate?.description(with: Locale.current) ?? "[n.d.]"
+        libraryDate?.text = "Media library date: \(dateString)"
+        albums?.text = "Albums: \(appDelegate.mediaLibraryInfo?.albumCount ?? -1)"
+        tracks?.text = "Tracks: \(appDelegate.mediaLibraryInfo?.trackCount ?? -1)"
+        pieces?.text = "Pieces: \(appDelegate.mediaLibraryInfo?.pieceCount ?? -1)"
+        movements?.text = "Movements: \(appDelegate.mediaLibraryInfo?.movementCount ?? -1)"
     }
 }
 
