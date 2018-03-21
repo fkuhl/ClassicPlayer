@@ -20,9 +20,9 @@ class PlaylistTableViewCell: UITableViewCell {
 class PlaylistsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     private static let uninterestingPlaylists = [
-        "Recently Added",
-        "Recently Played",
-        "Top 25 Most Played",
+        //"Recently Added",
+        //"Recently Played",
+        //"Top 25 Most Played",
         "iTunes DJ",
         "Purchased"
     ]
@@ -53,12 +53,13 @@ class PlaylistsViewController: UIViewController, UITableViewDelegate, UITableVie
                 if !PlaylistsViewController.uninterestingPlaylists.contains(playlist.name!) && playlist.items.count > 0 {
                     playlists?.append(playlist)
                 }
-//                if !PlaylistsViewController.uninterestingPlaylists.contains(playlist.name!) && playlist.items.count > 0 {
-//                    print("playlist \(playlist.name ?? "[n.n.]")")
-//                    for item in playlist.items {
-//                        print("   item: \(item.title ?? "[n.t.]")")
-//                    }
-//                }
+                let lists = playlists!
+                playlists = lists.sorted {
+                    list1, list2 in
+                    let name1 = list1.name ?? ""
+                    let name2 = list2.name ?? ""
+                    return name1.localizedCaseInsensitiveCompare(name2) == .orderedAscending
+                }
             }
         }
     }

@@ -69,7 +69,9 @@ class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         request.entity = NSEntityDescription.entity(forEntityName: "Album", in:context)
         request.resultType = .managedObjectResultType
         request.returnsDistinctResults = true
-        request.sortDescriptors = [ NSSortDescriptor(key: sort.sortDescriptor, ascending: true) ]
+        request.sortDescriptors = [ NSSortDescriptor(key: sort.sortDescriptor,
+                                                     ascending: true,
+                                                     selector: #selector(NSString.localizedCaseInsensitiveCompare)) ]
         albums = try context.fetch(request)
         computeSectionsSortedBy(sort)
         tableView.reloadData()

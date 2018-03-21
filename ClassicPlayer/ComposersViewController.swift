@@ -86,7 +86,9 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
         request.returnsDistinctResults = true
         request.propertiesToFetch = [ "composer" ]
         request.predicate = NSPredicate(format: "composer <> %@", "") //No blank composers!
-        request.sortDescriptors = [ NSSortDescriptor(key: "composer", ascending: true) ]
+        request.sortDescriptors = [ NSSortDescriptor(key: "composer",
+                                                     ascending: true,
+                                                     selector: #selector(NSString.localizedCaseInsensitiveCompare)) ]
         do {
             self.composerObjects = try context!.fetch(request)
             //NSLog("fetch returned \(self.composerObjects!.count) composer things")

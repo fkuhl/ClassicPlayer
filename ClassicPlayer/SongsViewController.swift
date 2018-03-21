@@ -61,7 +61,8 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
         if let data = trackData {
             trackData = data.sorted{
                 song1, song2 in
-                return sort.sortField(from: song1) < sort.sortField(from: song2)
+                //return sort.sortField(from: song1) < sort.sortField(from: song2)
+                return sort.sortField(from: song1).localizedCaseInsensitiveCompare(sort.sortField(from: song2)) == .orderedAscending
             }
         }
         computeSections(forSort: sort)
