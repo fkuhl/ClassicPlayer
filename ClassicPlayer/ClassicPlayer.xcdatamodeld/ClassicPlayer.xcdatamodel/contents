@@ -60,10 +60,18 @@
             <entry key="com.apple.syncservices.IdentityProperties" value=""/>
         </userInfo>
     </entity>
+    <entity name="Song" representedClassName="Song" syncable="YES" codeGenerationType="class">
+        <attribute name="albumID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="artist" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="duration" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="trackURL" optional="YES" attributeType="URI" syncable="YES"/>
+    </entity>
     <elements>
         <element name="Album" positionX="108" positionY="117" width="128" height="163"/>
         <element name="MediaLibraryInfo" positionX="315" positionY="207" width="128" height="120"/>
         <element name="Movement" positionX="529" positionY="126" width="128" height="120"/>
         <element name="Piece" positionX="342" positionY="123" width="128" height="195"/>
+        <element name="Song" positionX="315" positionY="207" width="128" height="120"/>
     </elements>
 </model>

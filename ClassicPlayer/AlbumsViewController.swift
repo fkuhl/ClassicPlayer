@@ -28,6 +28,7 @@ class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     private var sectionCount = 1
     private var sectionSize = 0
     private var sectionTitles: [String]?
+    private var currentSort: AlbumSorts = .title
  
     // MARK: - UIViewController
 
@@ -45,7 +46,7 @@ class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         //NSLog("AlbumsVC.VWA")
         //This load is fast enough there's no reason not to do it every time,
         //thus dealing with changes to the library since last appearance
-        loadAlbumsSortedBy(.title)
+        loadAlbumsSortedBy(currentSort)
      }
  
     override func didReceiveMemoryWarning() {
@@ -127,7 +128,8 @@ class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     func userDidChoose(sort: AlbumSorts) {
         self.dismiss(animated: true) { }
-        loadAlbumsSortedBy(sort)
+        //sorting and reload will be done in VWA
+        currentSort = sort
     }
     
     // MARK: - UITableViewDataSource

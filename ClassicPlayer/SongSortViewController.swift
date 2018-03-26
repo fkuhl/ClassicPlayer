@@ -1,5 +1,5 @@
 //
-//  AlbumSortViewController.swift
+//  SongSortViewController.swift
 //  ClassicPlayer
 //
 //  Created by Frederick Kuhl on 1/31/18.
@@ -27,12 +27,23 @@ enum SongSorts: Int {
         }
     }
     
-    func sortField(from item: MPMediaItem) -> String {
+    var sortDescriptor: String {
+        get {
+            switch self {
+            case .title:
+                return "title"
+            case .artist:
+                return "artist"
+            }
+        }
+    }
+
+    func sortField(from song: Song) -> String {
         switch self {
         case .title:
-            return item.title ?? ""
+            return song.title ?? ""
         case .artist:
-            return item.artist ?? ""
+            return song.artist ?? ""
         }
     }
 }

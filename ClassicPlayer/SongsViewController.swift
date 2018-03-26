@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreData
 import AVFoundation
 import AVKit
 import MediaPlayer
@@ -15,7 +16,7 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     @IBOutlet weak var sortButton: UIBarButtonItem!
     @IBOutlet weak var trackTable: UITableView!
     var playerViewController: AVPlayerViewController?
-    var trackData: [MPMediaItem]?
+    var songs: [Song]?
     var currentlyPlayingIndex = 0 //what's in the player
     var playerRate: Float = 0.0
     var contextString = "some stuff"
@@ -24,6 +25,7 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     private var sectionCount = 1
     private var sectionSize = 0
     private var sectionTitles: [String]?
+    private var currentSort: SongSorts = .title
 
     // MARK: - UIViewController
 
@@ -34,65 +36,11 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
         trackTable.dataSource = self
         trackTable.rowHeight = UITableViewAutomaticDimension
         trackTable.estimatedRowHeight = 128.0
-        DispatchQueue.global(qos: .userInitiated).async {
-            self.loadTracks()
-            self.sortTracksBy(.title)
-            DispatchQueue.main.async {
-                self.title = "Songs by \(SongSorts.title)"
-                self.trackTable.reloadData()
-            }
-        }
-    }
-    
-    /* It turns out it's vastly faster to load songs by album, than
-       to do a MPMediaQuery.songs(). Even with a sort by title afterward.
-    */
-    private func loadTracks() {
-        let query = MPMediaQuery.albums()
-        trackData = []
-        for collection in query.collections! {
-            for item in collection.items {
-                if item.assetURL != nil { trackData?.append(item) } //iTunes LPs have nil URLs!!
-            }
-        }
-        print("songs retrieved \(trackData?.count ?? 0)")
-    }
-    
-    private func sortTracksBy(_ sort: SongSorts) {
-        if let data = trackData {
-            trackData = data.sorted{
-                song1, song2 in
-                //return sort.sortField(from: song1) < sort.sortField(from: song2)
-                return sort.sortField(from: song1).localizedCaseInsensitiveCompare(sort.sortField(from: song2)) == .orderedAscending
-            }
-        }
-        computeSections(forSort: sort)
-    }
-    
-    private func computeSections(forSort sort: SongSorts) {
-        guard let unwrappedTracks = trackData else {
-            return
-        }
-        if unwrappedTracks.count < SongsViewController.indexedSectionCount {
-            sectionCount = 1
-            sectionSize = unwrappedTracks.count
-            sectionTitles = []
-        } else {
-            sectionCount = SongsViewController.indexedSectionCount
-            sectionSize = unwrappedTracks.count / SongsViewController.indexedSectionCount
-            sectionTitles = []
-            for i in 0 ..< SongsViewController.indexedSectionCount {
-                let track = unwrappedTracks[i * sectionSize]
-                let indexString = sort.sortField(from: track)
-                let indexEntry = indexString.prefix(2)
-                sectionTitles?.append(String(indexEntry))
-            }
-        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        //print("SongsVC.vWA")
+        loadSongsSortedBy(currentSort)
         //Could be returning from
         if playerViewController?.player == nil {
             //currentlyPlayingIndex = 0
@@ -108,6 +56,55 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
         playerViewController?.player = nil
     }
     
+    private func loadSongsSortedBy(_ sort: SongSorts) {
+        do {
+            let context:NSManagedObjectContext! = (UIApplication.shared.delegate as! AppDelegate).context
+            let request = NSFetchRequest<Song>()
+            request.entity = NSEntityDescription.entity(forEntityName: "Song", in:context)
+            request.resultType = .managedObjectResultType
+            request.returnsDistinctResults = true
+            request.sortDescriptors = [ NSSortDescriptor(key: sort.sortDescriptor,
+                                                         ascending: true,
+                                                         selector: #selector(NSString.localizedCaseInsensitiveCompare)) ]
+            songs = try context.fetch(request)
+            computeSections(forSort: sort)
+            title = "Songs by \(sort.dropDownDisplayName)"
+            trackTable.reloadData()
+        }
+        catch {
+            let nserror = error as NSError
+            let message = "\(String(describing: nserror.userInfo))"
+            DispatchQueue.main.async {
+                let alert = UIAlertController(title: "Error retrieving app data", message: message, preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "Exit App", style: .default, handler: { _ in
+                    exit(1)
+                }))
+                self.present(alert, animated: true)
+            }
+        }
+    }
+    
+    private func computeSections(forSort sort: SongSorts) {
+        guard let unwrappedSongs = songs else {
+            return
+        }
+        if unwrappedSongs.count < SongsViewController.indexedSectionCount {
+            sectionCount = 1
+            sectionSize = unwrappedSongs.count
+            sectionTitles = []
+        } else {
+            sectionCount = SongsViewController.indexedSectionCount
+            sectionSize = unwrappedSongs.count / SongsViewController.indexedSectionCount
+            sectionTitles = []
+            for i in 0 ..< SongsViewController.indexedSectionCount {
+                let track = unwrappedSongs[i * sectionSize]
+                let indexString = sort.sortField(from: track)
+                let indexEntry = indexString.prefix(2)
+                sectionTitles?.append(String(indexEntry))
+            }
+        }
+    }
+
     // MARK: - Sort popover
     
     @IBAction func sortButtonTapped(_ sender: Any) {
@@ -123,9 +120,8 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     func userDidChoose(sort: SongSorts) { //this got called off the main thread, right?
         self.dismiss(animated: true) { }
-        sortTracksBy(sort)
-        title = "Songs by \(sort.dropDownDisplayName)"
-        trackTable.reloadData()
+        //sorting and reload will be done in VWA
+        currentSort = sort
     }
 
     // MARK: - UITableViewDataSource
@@ -139,7 +135,7 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
             return sectionSize
         } else {
             //that pesky last section
-            return trackData!.count - SongsViewController.indexedSectionCount * sectionSize
+            return songs!.count - SongsViewController.indexedSectionCount * sectionSize
         }
     }
     
@@ -171,12 +167,12 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
             cell.artwork.isOpaque = true
             cell.artwork.alpha = 1.0
         }
-        let trackEntry = trackData![indexPath.section * sectionSize + indexPath.row]
-        let id = trackEntry.albumPersistentID
-        cell.artwork.image = AppDelegate.artworkFor(album: id)
-        cell.title.text = trackEntry.title
-        cell.artist.text = trackEntry.artist
-        cell.duration.text = AppDelegate.durationAsString(trackEntry.playbackDuration)
+        let song = songs![indexPath.section * sectionSize + indexPath.row]
+        let id = song.albumID
+        cell.artwork.image = AppDelegate.artworkFor(album: id!)
+        cell.title.text = song.title
+        cell.artist.text = song.artist
+        cell.duration.text = song.duration
         //Priority lowered on artwork height to prevent unsatisfiable constraint.
         if UIApplication.shared.preferredContentSizeCategory > .extraExtraLarge {
             cell.artAndLabelsStack.axis = .vertical
@@ -210,8 +206,8 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }
 
     private func installPlayer() {
-        if trackData != nil && trackData!.count > 0 {
-            playerViewController?.player = AVPlayer(url: (trackData?[currentlyPlayingIndex].assetURL)!)
+        if songs != nil && songs!.count > 0 {
+            playerViewController?.player = AVPlayer(url: (songs?[currentlyPlayingIndex].trackURL)!)
             playerViewController?.player?.addObserver(self,
                                                       forKeyPath: #keyPath(AVPlayer.rate),
                                                       options: [.old, .new],

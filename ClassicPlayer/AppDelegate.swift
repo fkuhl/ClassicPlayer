@@ -184,6 +184,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             try clearEntities(ofType: "Movement", from: context)
             try clearEntities(ofType: "Piece", from: context)
             try clearEntities(ofType: "Album", from: context)
+            try clearEntities(ofType: "Song", from: context)
             saveContext()
         } catch {
             let error = error as NSError
@@ -353,6 +354,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         libraryMovementCount += 1
         piece.addToMovements(mov)
         if AppDelegate.showPieces { print("    '\(mov.title ?? "")'") }
+        let song = NSEntityDescription.insertNewObject(forEntityName: "Song", into: context) as! Song
+        song.albumID = AppDelegate.encodeForCoreData(id: item.albumPersistentID)
+        song.artist = item.artist
+        song.duration = AppDelegate.durationAsString(item.playbackDuration)
+        song.title = item.title
+        song.trackURL = item.assetURL
     }
 
     private func storePiece(from mediaItem: MPMediaItem, entitled title: String, to album: Album, into context: NSManagedObjectContext) -> Piece {
@@ -372,6 +379,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         piece.trackID = AppDelegate.encodeForCoreData(id: mediaItem.persistentID)
         piece.trackURL = mediaItem.assetURL
         album.addToPieces(piece)
+        let song = NSEntityDescription.insertNewObject(forEntityName: "Song", into: context) as! Song
+        song.albumID = AppDelegate.encodeForCoreData(id: mediaItem.albumPersistentID)
+        song.artist = mediaItem.artist
+        song.duration = AppDelegate.durationAsString(mediaItem.playbackDuration)
+        song.title = mediaItem.title
+        song.trackURL = mediaItem.assetURL
         return piece
     }
     
