@@ -54,7 +54,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var audioNotCurrent: UIImage?
     
     private var libraryAlbumCount: Int32 = 0
-    private var libraryTrackCount: Int32 = 0
+    private var librarySongCount: Int32 = 0
     private var libraryPieceCount: Int32 = 0
     private var libraryMovementCount: Int32 = 0
     var mediaLibraryInfo: MediaLibraryInfo?
@@ -215,14 +215,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     private func loadAppFromMediaLibrary(into context: NSManagedObjectContext) {
         libraryAlbumCount = 0
         libraryPieceCount = 0
-        libraryTrackCount = 0
+        librarySongCount = 0
         libraryMovementCount = 0
         let mediaStuff = MPMediaQuery.albums()
         if mediaStuff.collections == nil { return }
         for mediaCollection in mediaStuff.collections! {
             let items = mediaCollection.items
             libraryAlbumCount += 1
-            libraryTrackCount += Int32(items.count)
+            //libraryTrackCount += Int32(items.count)
             if AppDelegate.showPieces && isGenreToParse(items[0].genre) {
                 print("Album: \(items[0].value(forProperty: MPMediaItemPropertyComposer) ?? "<anon>"): "
                     + "\(items[0].value(forProperty: MPMediaItemPropertyAlbumTrackCount) ?? "") "
@@ -248,7 +248,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 loadSongs(for: album, from: items, into: context)
             }
         }
-        print("found \(libraryAlbumCount) albums, \(libraryPieceCount) pieces, \(libraryMovementCount) movements, \(libraryTrackCount) tracks")
+        print("found \(libraryAlbumCount) albums, \(libraryPieceCount) pieces, \(libraryMovementCount) movements, \(librarySongCount) tracks")
         var mediaInfoObject: MediaLibraryInfo
         let mediaLibraryInfosInStore = getMediaLibraryInfo()
         if mediaLibraryInfosInStore.count >= 1 {
@@ -260,7 +260,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         mediaInfoObject.albumCount = libraryAlbumCount
         mediaInfoObject.movementCount = libraryMovementCount
         mediaInfoObject.pieceCount = libraryPieceCount
-        mediaInfoObject.trackCount = libraryTrackCount
+        mediaInfoObject.songCount = librarySongCount
         saveContext()
         print("saved \(libraryAlbumCount) albums and \(libraryPieceCount) pieces for lib at \(mediaInfoObject.lastModifiedDate!)")
     }
@@ -360,6 +360,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         song.duration = AppDelegate.durationAsString(item.playbackDuration)
         song.title = item.title
         song.trackURL = item.assetURL
+        librarySongCount += 1
     }
 
     private func storePiece(from mediaItem: MPMediaItem, entitled title: String, to album: Album, into context: NSManagedObjectContext) -> Piece {
@@ -385,6 +386,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         song.duration = AppDelegate.durationAsString(mediaItem.playbackDuration)
         song.title = mediaItem.title
         song.trackURL = mediaItem.assetURL
+        librarySongCount += 1
         return piece
     }
     

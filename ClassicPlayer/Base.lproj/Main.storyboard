@@ -558,7 +558,7 @@
                                                                     <nil key="highlightedColor"/>
                                                                 </label>
                                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalCompressionResistancePriority="250" text="artist" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Awb-4o-cGD">
-                                                                    <rect key="frame" x="0.0" y="18" width="0.0" height="14.5"/>
+                                                                    <rect key="frame" x="0.0" y="18" width="29.5" height="14.5"/>
                                                                     <fontDescription key="fontDescription" style="UICTFontTextStyleCaption1"/>
                                                                     <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                     <nil key="highlightedColor"/>
@@ -1246,7 +1246,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalSpacing" alignment="top" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="JHc-lx-1Ee">
-                                <rect key="frame" x="16" y="36" width="343" height="413.5"/>
+                                <rect key="frame" x="16" y="36" width="0.0" height="459.5"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalSpacing" alignment="top" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="bur-QW-kq5" userLabel="Identity">
                                         <rect key="frame" x="0.0" y="0.0" width="0.0" height="208"/>
@@ -1299,7 +1299,7 @@
                                         </subviews>
                                     </stackView>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="mLy-Kb-lSR" userLabel="separator">
-                                        <rect key="frame" x="0.0" y="273.5" width="343" height="2"/>
+                                        <rect key="frame" x="0.0" y="273.5" width="0.0" height="2"/>
                                         <color key="backgroundColor" name="TheBlue"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="2" id="Xzl-LH-c8D"/>
@@ -1320,8 +1320,8 @@
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="tracks" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KSn-Qg-e6W">
-                                                <rect key="frame" x="0.0" y="52" width="42.5" height="18"/>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="songs (tracks)" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KSn-Qg-e6W">
+                                                <rect key="frame" x="0.0" y="52" width="98.5" height="18"/>
                                                 <fontDescription key="fontDescription" style="UICTFontTextStyleSubhead"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
@@ -1341,6 +1341,14 @@
                                         </subviews>
                                         <color key="backgroundColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     </stackView>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qrn-fo-acw">
+                                        <rect key="frame" x="0.0" y="429.5" width="147" height="30"/>
+                                        <fontDescription key="fontDescription" style="UICTFontTextStyleSubhead"/>
+                                        <state key="normal" title="Reload iTunes Library"/>
+                                        <connections>
+                                            <action selector="reloadLibrary:" destination="NgQ-eN-OD8" eventType="touchUpInside" id="eJt-Mn-I0v"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                                 <constraints>
                                     <constraint firstItem="bur-QW-kq5" firstAttribute="trailing" secondItem="t0z-lA-zLn" secondAttribute="trailing" id="19U-ld-Qmh"/>
@@ -1348,9 +1356,28 @@
                                     <constraint firstItem="mLy-Kb-lSR" firstAttribute="leading" secondItem="JHc-lx-1Ee" secondAttribute="leading" id="mH1-XA-QqZ"/>
                                 </constraints>
                             </stackView>
+                            <view alpha="0.34999999403953552" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8Fx-vq-o8J">
+                                <rect key="frame" x="0.0" y="283" width="72" height="72"/>
+                                <color key="backgroundColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="72" id="Rkv-p3-sED"/>
+                                    <constraint firstAttribute="width" constant="72" id="wlX-Gj-7mb"/>
+                                </constraints>
+                            </view>
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="xmo-Ph-hxt">
+                                <rect key="frame" x="0.0" y="287" width="64" height="64"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="64" id="gQe-S3-lTm"/>
+                                    <constraint firstAttribute="height" constant="64" id="ywM-C0-lBP"/>
+                                </constraints>
+                            </activityIndicatorView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
+                            <constraint firstItem="xmo-Ph-hxt" firstAttribute="centerX" secondItem="dUu-eD-qcu" secondAttribute="centerX" id="8Ke-oe-v6z"/>
+                            <constraint firstItem="8Fx-vq-o8J" firstAttribute="centerX" secondItem="dUu-eD-qcu" secondAttribute="centerX" id="I53-zh-hlh"/>
+                            <constraint firstItem="xmo-Ph-hxt" firstAttribute="centerY" secondItem="dUu-eD-qcu" secondAttribute="centerY" id="Ifq-Dv-TdQ"/>
+                            <constraint firstItem="8Fx-vq-o8J" firstAttribute="centerY" secondItem="dUu-eD-qcu" secondAttribute="centerY" id="OyY-M7-lMe"/>
                             <constraint firstItem="dUu-eD-qcu" firstAttribute="trailing" secondItem="JHc-lx-1Ee" secondAttribute="trailing" constant="16" id="Pc6-EO-t5s"/>
                             <constraint firstItem="JHc-lx-1Ee" firstAttribute="leading" secondItem="dUu-eD-qcu" secondAttribute="leading" constant="16" id="QEb-aC-LX5"/>
                             <constraint firstItem="JHc-lx-1Ee" firstAttribute="top" secondItem="dUu-eD-qcu" secondAttribute="top" constant="16" id="Xw1-FT-Wug"/>
@@ -1360,13 +1387,15 @@
                     <tabBarItem key="tabBarItem" title="Info" image="1548-gear" landscapeImage="1548-gear" selectedImage="1548-gear" id="VlF-4Q-z6e" userLabel="Info"/>
                     <simulatedTabBarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
+                        <outlet property="activityBackground" destination="8Fx-vq-o8J" id="jkd-z1-Uni"/>
+                        <outlet property="activityIndicator" destination="xmo-Ph-hxt" id="J2c-kH-dmW"/>
                         <outlet property="albums" destination="iRn-F0-wHh" id="8Oq-8T-zZk"/>
                         <outlet property="buildAndVersionStack" destination="0nH-fX-xe0" id="Yh6-EV-HuL"/>
                         <outlet property="buildNumber" destination="xQw-1N-ggm" id="0LF-YZ-VFm"/>
                         <outlet property="libraryDate" destination="rS4-8o-ayz" id="xWR-yT-tlE"/>
                         <outlet property="movements" destination="InP-tb-NZa" id="OBJ-Ge-tdD"/>
                         <outlet property="pieces" destination="IeY-lg-un5" id="udF-px-Qm1"/>
-                        <outlet property="tracks" destination="KSn-Qg-e6W" id="fEW-iL-V5W"/>
+                        <outlet property="songs" destination="KSn-Qg-e6W" id="fEW-iL-V5W"/>
                         <outlet property="version" destination="1ET-3t-75R" id="60d-AN-zAQ"/>
                     </connections>
                 </viewController>

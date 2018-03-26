@@ -117,7 +117,7 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
     private func libraryDidChange() {
         DispatchQueue.main.async {
             //The actions are dispatched async to avoid the dread "_BSMachError"
-            let alert = UIAlertController(title: "Media Library Changed",
+            let alert = UIAlertController(title: "iTunes Library Changed",
                                           message: "Load newest media?",
                                           preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "Load newest media", style: .destructive, handler: { _ in
