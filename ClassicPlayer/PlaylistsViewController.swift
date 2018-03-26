@@ -41,8 +41,6 @@ class PlaylistsViewController: UIViewController, UITableViewDelegate, UITableVie
         self.tableView.dataSource = self
         self.tableView.rowHeight = UITableViewAutomaticDimension
         self.tableView.estimatedRowHeight = 72.0
-        loadLists()
-        tableView.reloadData()
     }
     
     private func loadLists() {
@@ -66,6 +64,8 @@ class PlaylistsViewController: UIViewController, UITableViewDelegate, UITableVie
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        loadLists()
+        tableView.reloadData()
     }
 
     override func didReceiveMemoryWarning() {

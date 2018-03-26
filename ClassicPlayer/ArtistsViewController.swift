@@ -27,6 +27,10 @@ class ArtistsViewController: UIViewController, UITableViewDelegate, UITableViewD
         self.tableView.dataSource = self
         self.tableView.rowHeight = UITableViewAutomaticDimension //Autolayout determines height!
         self.tableView.estimatedRowHeight = 64.0
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         loadArtists()
         computeSections()
     }
@@ -42,11 +46,11 @@ class ArtistsViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
         //Artists are returned in "sort" order, so "The Beatles" sorts as "Beatles"
         //If I sort here, it's on "The Beatles"
-//        artistObjects = artistObjects?.sorted {
-//            ao1, ao2 in
-//            return ao1.artist ?? "" < ao2.artist ?? ""
-//        }
-        print("found \(query.collections!.count) artists")
+        //        artistObjects = artistObjects?.sorted {
+        //            ao1, ao2 in
+        //            return ao1.artist ?? "" < ao2.artist ?? ""
+        //        }
+        //print("found \(query.collections!.count) artists")
     }
     
     private func computeSections() {
@@ -68,10 +72,6 @@ class ArtistsViewController: UIViewController, UITableViewDelegate, UITableViewD
                 }
             }
         }
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
     }
 
     override func didReceiveMemoryWarning() {
