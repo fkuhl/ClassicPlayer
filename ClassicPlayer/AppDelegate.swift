@@ -34,15 +34,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         "[A-Z][a-z]+:\\s*([^-]+)\\s+((?:I|II|III|IV|V|VI|VII|VIII|IX|X|XI|XII|XIII|XIV|XV|XVI|XVII|XVIII|XIX|XX)\\. .+)", options: [])
     private static let workColonDashMovement = try! NSRegularExpression(pattern: "\\s*([^-:])(?:: +| -\\s+)(.*)", options: [])
     private static let workNrMovement = try! NSRegularExpression(pattern: "\\s*([^-]+)\\s+([1-9][0-9]*\\. .+)", options: [])
-     private static let workRomMovement = try! NSRegularExpression(pattern:
+    private static let workRomMovement = try! NSRegularExpression(pattern:
         "\\s*([^-]+) ((?:I|II|III|IV|V|VI|VII|VIII|IX|X|XI|XII|XIII|XIV|XV|XVI|XVII|XVIII|XIX|XX)\\. .+)", options: [])
+    private static let workParenMovement = try! NSRegularExpression(pattern:
+        "\\s*([^-]+) \\(([^\\)]*)\\)", options: [])
     private static let parseExpressions = [
         composerColonWorkDashMovement,
         composerColonWorkNrMovement,
         composerColonWorkRomMovement,
         workColonDashMovement,
         workNrMovement,
-        workRomMovement
+        workRomMovement,
+        workParenMovement
     ]
     private static let parseNames = ["composerColonWorkDashMovement", "composerColonWorkNrMovement", "composerColonWorkRomMovement",
                                      "workColonDashMovement", "workNrMovement", "workRomMovement"]
