@@ -22,7 +22,6 @@ class AlbumCell: UITableViewCell {
 class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     @IBOutlet weak var sortButton: UIBarButtonItem!
     @IBOutlet weak var tableView: UITableView!
-    private var collectionIsLoaded = false
     private var albums: [Album]?
     
     private static var indexedSectionCount = 27  //A magic number; that's how many sections any UITableView index can have.
@@ -34,7 +33,8 @@ class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDa
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.tableView.delegate = self
+        //NSLog("AlbumsVC.VDL")
+       self.tableView.delegate = self
         self.tableView.dataSource = self
         self.tableView.rowHeight = UITableViewAutomaticDimension //Autolayout determines height!
         self.tableView.estimatedRowHeight = 128.0
@@ -42,11 +42,11 @@ class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        if !collectionIsLoaded {
-            loadAlbumsSortedBy(.title)
-            collectionIsLoaded = true
-        }
-    }
+        //NSLog("AlbumsVC.VWA")
+        //This load is fast enough there's no reason not to do it every time,
+        //thus dealing with changes to the library since last appearance
+        loadAlbumsSortedBy(.title)
+     }
  
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
