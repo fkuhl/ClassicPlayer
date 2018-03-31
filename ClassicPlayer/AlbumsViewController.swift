@@ -157,7 +157,7 @@ class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         cell.albumTitle?.text = albumEntry.title
         cell.composer?.text = albumEntry.composer ?? ""
         cell.albumArtist?.text = albumEntry.artist
-        let yearText = AppDelegate.yearFrom(releaseDate: albumEntry.releaseDate)
+        let yearText = albumEntry.year > 0 ? "\(albumEntry.year)" : "[n.d.]"
         cell.year?.text = "\(yearText) • \(albumEntry.genre ?? "")"
         cell.trackCount?.text = "tracks: \(albumEntry.trackCount)"
         let id = albumEntry.albumID

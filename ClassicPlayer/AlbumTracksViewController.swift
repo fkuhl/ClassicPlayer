@@ -76,10 +76,8 @@ class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableV
         albumTitle.text = album?.title
         artist.text = album?.artist
         let yearText: String
-        if let timeInterval = album?.releaseDate?.timeIntervalSince1970 {
-            let releaseDate = Date(timeIntervalSince1970: timeInterval)
-            let calendar = Calendar.current
-            yearText = "\(calendar.component(.year, from: releaseDate))"
+        if let year = album?.year {
+            yearText = year > 0 ? "\(year)" : "[n.d.]"
         } else {
             yearText = "[n.d.]"
         }

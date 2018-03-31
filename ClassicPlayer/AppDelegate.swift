@@ -230,7 +230,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 print("Album: \(items[0].value(forProperty: MPMediaItemPropertyComposer) ?? "<anon>"): "
                     + "\(items[0].value(forProperty: MPMediaItemPropertyAlbumTrackCount) ?? "") "
                     + "\(items[0].value(forProperty: MPMediaItemPropertyAlbumTitle) ?? "<no title>")"
-                    + " | \(items[0].value(forProperty: MPMediaItemPropertyAlbumArtist) ?? "<no artist>") ")
+                    + " | \(items[0].value(forProperty: MPMediaItemPropertyAlbumArtist) ?? "<no artist>")"
+                    + " | \((items[0].value(forProperty: "year") as? Int) ?? -1) ")
             }
             let album = NSEntityDescription.insertNewObject(forEntityName: "Album", into: context) as! Album
             //Someday we may purpose "artist" as a composite field containing ensemble, director, soloists
@@ -240,11 +241,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             album.genre = items[0].genre
             album.trackCount = Int32(items[0].albumTrackCount)
             album.albumID = AppDelegate.encodeForCoreData(id: items[0].albumPersistentID)
-            if let timeInterval = items[0].releaseDate?.timeIntervalSince1970 {
-                album.releaseDate = NSDate(timeIntervalSince1970: timeInterval)
-            } else {
-                album.releaseDate = nil
-            }
+            album.year = items[0].value(forProperty: "year") as! Int32  //slightly undocumented!
             if isGenreToParse(album.genre) {
                 loadPieces(for: album, from: items, into: context)
             } else {
@@ -460,18 +457,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let min = Int(duration/60.0)
         let sec = Int(CGFloat(duration).truncatingRemainder(dividingBy: 60.0))
         return String(format: "%d:%02d", min, sec)
-    }
-    
-    static func yearFrom(releaseDate: NSDate?) -> String {
-        let yearText: String
-        if let timeInterval = releaseDate?.timeIntervalSince1970 {
-            let releaseDate = Date(timeIntervalSince1970: timeInterval)
-            let calendar = Calendar.current
-            yearText = "\(calendar.component(.year, from: releaseDate))"
-        } else {
-            yearText = "[n.d.]"
-        }
-        return yearText
     }
     
     // MARK: - Core Data stack
