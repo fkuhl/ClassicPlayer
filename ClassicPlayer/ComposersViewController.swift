@@ -17,7 +17,7 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
     private var tableIsLoaded = false
     private var libraryAccessChecked = false
     
-    private static var indexedSectionCount = 27  //A magic number; that's how many sections any UITableView index can have.
+    private static let indexedSectionCount = 27  //A magic number; that's how many sections any UITableView index can have.
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var composerObjects: [NSDictionary]?
     private var sectionCount = 1

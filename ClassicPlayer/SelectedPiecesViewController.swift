@@ -18,12 +18,17 @@ class PieceTableViewCell: UITableViewCell {
 }
 
 class SelectedPiecesViewController: UIViewController, NSFetchedResultsControllerDelegate, UITableViewDelegate, UITableViewDataSource {
+    private static let indexedSectionCount = 27  //A magic number; that's how many sections any UITableView index can have.
+    private static let numberOfEntriesThatTriggersSections = 20
     @IBOutlet weak var tableView: UITableView!
     var selectionValue: String?
     var selectionField: String?
     var displayTitle:   String?
     private var tableIsLoaded = false
     private var pieces: [Piece]?
+    private var sectionCount = 1
+    private var sectionSize = 0
+    private var sectionTitles: [String]?
 
     // MARK: - UIViewController
 
@@ -62,9 +67,9 @@ class SelectedPiecesViewController: UIViewController, NSFetchedResultsController
         request.resultType = .managedObjectResultType
         request.returnsDistinctResults = true
         request.sortDescriptors = [ NSSortDescriptor(key: "title", ascending: true) ]
-        
         do {
             pieces = try context.fetch(request)
+            computeSections()
             tableView.reloadData()
         }
         catch {
@@ -78,7 +83,36 @@ class SelectedPiecesViewController: UIViewController, NSFetchedResultsController
             self.present(alert, animated: true)
         }
     }
-    
+
+    private func computeSections() {
+        guard pieces != nil else {
+            sectionCount = 1
+            sectionSize = 0
+            return
+        }
+        if pieces!.count < SelectedPiecesViewController.numberOfEntriesThatTriggersSections {
+            sectionCount = 1
+            sectionSize = pieces!.count
+            return
+        }
+        if pieces!.count < SelectedPiecesViewController.indexedSectionCount {
+            sectionCount = 1
+            sectionSize = pieces!.count
+            sectionTitles = []
+        } else {
+            sectionCount = SelectedPiecesViewController.indexedSectionCount
+            sectionSize = pieces!.count / SelectedPiecesViewController.indexedSectionCount
+            sectionTitles = []
+            for i in 0 ..< SelectedPiecesViewController.indexedSectionCount {
+                let piece = pieces![i * sectionSize]
+                let entry = piece.title ?? ""
+                let title = entry.prefix(2)
+                //print("title \(i) is \(title ?? "nada")")
+                sectionTitles?.append(String(title))
+            }
+        }
+    }
+
     @objc private func fontSizeChanged() {
         DispatchQueue.main.async {
             self.view.setNeedsLayout()
@@ -88,13 +122,25 @@ class SelectedPiecesViewController: UIViewController, NSFetchedResultsController
 
     // MARK: - UITableViewDataSource
 
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return sectionCount
+    }
+
     func tableView(_: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return pieces?.count ?? 0
+        if sectionCount == 1 {
+            return pieces?.count ?? 0
+        }
+        if section < SelectedPiecesViewController.indexedSectionCount - 1 {
+            return sectionSize
+        } else {
+            //that pesky last section
+            return pieces!.count - SelectedPiecesViewController.indexedSectionCount * sectionSize
+        }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Piece", for: indexPath) as! PieceTableViewCell
-        let pieceEntry = pieces![indexPath.row]
+        let pieceEntry = pieces![indexPath.section * sectionSize + indexPath.row]
         cell.pieceTitle?.text = pieceEntry.title
         cell.pieceArtist?.text = pieceEntry.artist
         let id = pieceEntry.albumID
@@ -114,6 +160,10 @@ class SelectedPiecesViewController: UIViewController, NSFetchedResultsController
         return cell
     }
     
+    func sectionIndexTitles(for tableView: UITableView) -> [String]? {
+        return sectionTitles
+    }
+
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "PieceSelected" {
             let secondViewController = segue.destination as! PieceViewController
