@@ -19,7 +19,6 @@ class PieceTableViewCell: UITableViewCell {
 
 class SelectedPiecesViewController: UIViewController, NSFetchedResultsControllerDelegate, UITableViewDelegate, UITableViewDataSource {
     private static let indexedSectionCount = 27  //A magic number; that's how many sections any UITableView index can have.
-    private static let numberOfEntriesThatTriggersSections = 20
     @IBOutlet weak var tableView: UITableView!
     var selectionValue: String?
     var selectionField: String?
@@ -90,27 +89,26 @@ class SelectedPiecesViewController: UIViewController, NSFetchedResultsController
             sectionSize = 0
             return
         }
-        if pieces!.count < SelectedPiecesViewController.numberOfEntriesThatTriggersSections {
+        if presentAsOneSection() {
             sectionCount = 1
             sectionSize = pieces!.count
+            sectionTitles = []
             return
         }
-        if pieces!.count < SelectedPiecesViewController.indexedSectionCount {
-            sectionCount = 1
-            sectionSize = pieces!.count
-            sectionTitles = []
-        } else {
-            sectionCount = SelectedPiecesViewController.indexedSectionCount
-            sectionSize = pieces!.count / SelectedPiecesViewController.indexedSectionCount
-            sectionTitles = []
-            for i in 0 ..< SelectedPiecesViewController.indexedSectionCount {
-                let piece = pieces![i * sectionSize]
-                let entry = piece.title ?? ""
-                let title = entry.prefix(2)
-                //print("title \(i) is \(title ?? "nada")")
-                sectionTitles?.append(String(title))
-            }
+        sectionCount = SelectedPiecesViewController.indexedSectionCount
+        sectionSize = pieces!.count / SelectedPiecesViewController.indexedSectionCount
+        sectionTitles = []
+        for i in 0 ..< SelectedPiecesViewController.indexedSectionCount {
+            let piece = pieces![i * sectionSize]
+            let entry = piece.title ?? ""
+            let title = entry.prefix(2)
+            //print("title \(i) is \(title ?? "nada")")
+            sectionTitles?.append(String(title))
         }
+    }
+    
+    private func presentAsOneSection() -> Bool {
+        return (pieces?.count ?? 0) < SelectedPiecesViewController.indexedSectionCount * 2
     }
 
     @objc private func fontSizeChanged() {
@@ -140,7 +138,8 @@ class SelectedPiecesViewController: UIViewController, NSFetchedResultsController
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Piece", for: indexPath) as! PieceTableViewCell
-        let pieceEntry = pieces![indexPath.section * sectionSize + indexPath.row]
+        let pieceIndex = indexPath.section * sectionSize + indexPath.row //works even if 1 section
+        let pieceEntry = pieces![pieceIndex]
         cell.pieceTitle?.text = pieceEntry.title
         cell.pieceArtist?.text = pieceEntry.artist
         let id = pieceEntry.albumID
@@ -168,7 +167,7 @@ class SelectedPiecesViewController: UIViewController, NSFetchedResultsController
         if segue.identifier == "PieceSelected" {
             let secondViewController = segue.destination as! PieceViewController
             if let selected = tableView?.indexPathForSelectedRow {
-                secondViewController.selectedPiece = pieces![selected.row]
+                secondViewController.selectedPiece = pieces![selected.section * sectionSize + selected.row]
             }
         }
     }
