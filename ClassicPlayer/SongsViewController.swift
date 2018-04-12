@@ -12,9 +12,10 @@ import AVFoundation
 import AVKit
 import MediaPlayer
 
-class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchResultsUpdating {
     @IBOutlet weak var sortButton: UIBarButtonItem!
     @IBOutlet weak var trackTable: UITableView!
+    let searchController = UISearchController(searchResultsController: nil)
     var playerViewController: AVPlayerViewController?
     var songs: [Song]?
     var currentlyPlayingIndex = 0 //what's in the player
@@ -36,6 +37,11 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
         trackTable.dataSource = self
         trackTable.rowHeight = UITableViewAutomaticDimension
         trackTable.estimatedRowHeight = 128.0
+        searchController.searchResultsUpdater = self
+        searchController.obscuresBackgroundDuringPresentation = false
+        searchController.searchBar.placeholder = "Search Songs"
+        navigationItem.searchController = searchController
+        definesPresentationContext = true
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -63,7 +69,12 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
             request.entity = NSEntityDescription.entity(forEntityName: "Song", in:context)
             request.resultType = .managedObjectResultType
             request.returnsDistinctResults = true
-            request.sortDescriptors = [ NSSortDescriptor(key: sort.sortDescriptor,
+            if isFiltering() {
+                //filter on the sort descriptor
+                let format = "\(sort.sortDescriptor) CONTAINS[cd] %@"
+                request.predicate = NSPredicate(format: format, searchController.searchBar.text!)
+            }
+           request.sortDescriptors = [ NSSortDescriptor(key: sort.sortDescriptor,
                                                          ascending: true,
                                                          selector: #selector(NSString.localizedCaseInsensitiveCompare)) ]
             songs = try context.fetch(request)
@@ -88,6 +99,12 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
         guard let unwrappedSongs = songs else {
             return
         }
+        if presentAsOneSection() {
+            sectionCount = 1
+            sectionSize = unwrappedSongs.count
+            sectionTitles = []
+            return
+        }
         if unwrappedSongs.count < SongsViewController.indexedSectionCount {
             sectionCount = 1
             sectionSize = unwrappedSongs.count
@@ -103,6 +120,11 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
                 sectionTitles?.append(String(indexEntry))
             }
         }
+    }
+    
+    private func presentAsOneSection() -> Bool {
+        if songs == nil { return true }
+        return songs!.count < SongsViewController.indexedSectionCount * 2
     }
 
     // MARK: - Sort popover
@@ -131,6 +153,9 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }
     
     func tableView(_: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if sectionCount == 1 {
+            return songs?.count ?? 0
+        }
         if section < SongsViewController.indexedSectionCount - 1 {
             return sectionSize
         } else {
@@ -193,6 +218,24 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
         installPlayer()
         tableView.reloadData()
         playerViewController?.player?.play() //Tap on the table, it starts to play
+    }
+    
+    // MARK: - UISearchResultsUpdating Delegate
+    
+    func updateSearchResults(for searchController: UISearchController) {
+        currentlyPlayingIndex = 0
+        installPlayer()
+        playerRate = 0.0
+        loadSongsSortedBy(currentSort)
+    }
+    
+    private func searchBarIsEmpty() -> Bool {
+        // Returns true if the text is empty or nil
+        return searchController.searchBar.text?.isEmpty ?? true
+    }
+    
+    private func isFiltering() -> Bool {
+        return searchController.isActive && !searchBarIsEmpty()
     }
 
     // MARK: - Player management
