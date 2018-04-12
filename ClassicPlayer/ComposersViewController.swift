@@ -10,10 +10,12 @@ import UIKit
 import CoreData
 import MediaPlayer
 
-class ComposersViewController: UIViewController, NSFetchedResultsControllerDelegate, UITableViewDelegate, UITableViewDataSource {
+class ComposersViewController: UIViewController, NSFetchedResultsControllerDelegate, UITableViewDelegate, UITableViewDataSource, UISearchResultsUpdating {
+    
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var activityBackground: UIView!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+    let searchController = UISearchController(searchResultsController: nil)
     private var tableIsLoaded = false
     private var libraryAccessChecked = false
     
@@ -32,6 +34,11 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
         self.tableView.dataSource = self
         self.activityBackground.isHidden = true
         self.activityIndicator.isHidden = true
+        searchController.searchResultsUpdater = self
+        searchController.obscuresBackgroundDuringPresentation = false
+        searchController.searchBar.placeholder = "Search Composers"
+        navigationItem.searchController = searchController
+        definesPresentationContext = true
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(updateUI),
                                                name: .dataAvailable,
@@ -89,7 +96,11 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
         request.resultType = .dictionaryResultType
         request.returnsDistinctResults = true
         request.propertiesToFetch = [ "composer" ]
-        request.predicate = NSPredicate(format: "composer <> %@", "") //No blank composers!
+        if isFiltering() {
+            request.predicate = NSPredicate(format: "composer CONTAINS[cd] %@", searchController.searchBar.text!)
+        } else {
+            request.predicate = NSPredicate(format: "composer <> %@", "") //No blank composers!
+        }
         request.sortDescriptors = [ NSSortDescriptor(key: "composer",
                                                      ascending: true,
                                                      selector: #selector(NSString.localizedCaseInsensitiveCompare)) ]
@@ -200,26 +211,34 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
     }
 
     private func computeSections() {
-        if let composers = composerObjects {
-            if composers.count < ComposersViewController.indexedSectionCount {
-                sectionCount = 1
-                sectionSize = composers.count
-                sectionTitles = []
-            } else {
-                sectionCount = ComposersViewController.indexedSectionCount
-                sectionSize = composers.count / ComposersViewController.indexedSectionCount
-                sectionTitles = []
-                for i in 0 ..< ComposersViewController.indexedSectionCount {
-                    let dict = composers[i * sectionSize]
-                    let composer = dict["composer"] as? String
-                    let title = composer?.prefix(2)
-                    //print("title \(i) is \(title ?? "nada")")
-                    sectionTitles?.append(String(title!))
-                }
-            }
+        guard composerObjects != nil else {
+            sectionCount = 1
+            sectionSize = 0
+            return
+        }
+        if presentAsOneSection() {
+            sectionCount = 1
+            sectionSize = composerObjects!.count
+            sectionTitles = []
+            return
+        }
+        sectionCount = ComposersViewController.indexedSectionCount
+        sectionSize = composerObjects!.count / ComposersViewController.indexedSectionCount
+        sectionTitles = []
+        for i in 0 ..< ComposersViewController.indexedSectionCount {
+            let dict = composerObjects![i * sectionSize]
+            let composer = dict["composer"] as? String
+            let title = composer?.prefix(2)
+            //print("title \(i) is \(title ?? "nada")")
+            sectionTitles?.append(String(title!))
         }
     }
     
+    private func presentAsOneSection() -> Bool {
+        if composerObjects == nil { return true }
+        return composerObjects!.count < ComposersViewController.indexedSectionCount * 2
+    }
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         if !tableIsLoaded {
@@ -240,6 +259,9 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
     }
     
     func tableView(_: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if sectionCount == 1 {
+            return composerObjects?.count ?? 0
+        }
         if section < ComposersViewController.indexedSectionCount - 1 {
             return sectionSize
         } else {
@@ -250,7 +272,7 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Composer", for: indexPath)
-        let composerEntry = composerObjects![indexPath.section * sectionSize + indexPath.row]
+        let composerEntry = composerObjects![indexPath.section * sectionSize + indexPath.row]  //works even if 1 section
         let reportedComposer = composerEntry["composer"] as? String
         cell.textLabel?.text = (reportedComposer == "") ? "[no composer listed]" : reportedComposer
         return cell
@@ -270,6 +292,22 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
                 secondViewController.displayTitle = composerName
             }
         }
+    }
+    
+    // MARK: - UISearchResultsUpdating Delegate
+    
+    func updateSearchResults(for searchController: UISearchController) {
+        //print("update to '\(searchController.searchBar.text ?? "")' filtering: \(isFiltering() ? "true" : "false")")
+        updateUI()
+    }
+    
+    private func searchBarIsEmpty() -> Bool {
+        // Returns true if the text is empty or nil
+        return searchController.searchBar.text?.isEmpty ?? true
+    }
+
+    private func isFiltering() -> Bool {
+        return searchController.isActive && !searchBarIsEmpty()
     }
 }
 
