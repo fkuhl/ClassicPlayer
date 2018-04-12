@@ -19,9 +19,10 @@ class AlbumCell: UITableViewCell {
     @IBOutlet weak var trackCount: UILabel!
 }
 
-class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchResultsUpdating {
     @IBOutlet weak var sortButton: UIBarButtonItem!
     @IBOutlet weak var tableView: UITableView!
+    let searchController = UISearchController(searchResultsController: nil)
     private var albums: [Album]?
     
     private static var indexedSectionCount = 27  //A magic number; that's how many sections any UITableView index can have.
@@ -39,6 +40,11 @@ class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         self.tableView.dataSource = self
         self.tableView.rowHeight = UITableViewAutomaticDimension //Autolayout determines height!
         self.tableView.estimatedRowHeight = 128.0
+        searchController.searchResultsUpdater = self
+        searchController.obscuresBackgroundDuringPresentation = false
+        searchController.searchBar.placeholder = "Search Albums"
+        navigationItem.searchController = searchController
+        definesPresentationContext = true
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -61,6 +67,11 @@ class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             request.entity = NSEntityDescription.entity(forEntityName: "Album", in:context)
             request.resultType = .managedObjectResultType
             request.returnsDistinctResults = true
+            if isFiltering() {
+                //filter on the sort descriptor
+                let format = "\(sort.sortDescriptor) CONTAINS[cd] %@"
+                request.predicate = NSPredicate(format: format, searchController.searchBar.text!)
+            }
             request.sortDescriptors = [ NSSortDescriptor(key: sort.sortDescriptor,
                                                          ascending: true,
                                                          selector: #selector(NSString.localizedCaseInsensitiveCompare)) ]
@@ -86,33 +97,38 @@ class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         guard let unwrappedAlbums = albums else {
             return
         }
-        if unwrappedAlbums.count < AlbumsViewController.indexedSectionCount {
+        if presentAsOneSection() {
             sectionCount = 1
             sectionSize = unwrappedAlbums.count
             sectionTitles = []
-        } else {
-            sectionCount = AlbumsViewController.indexedSectionCount
-            sectionSize = unwrappedAlbums.count / AlbumsViewController.indexedSectionCount
-            sectionTitles = []
-            for i in 0 ..< AlbumsViewController.indexedSectionCount {
-                let album = albums?[i * sectionSize]
-                let indexString: String
-                switch (sort) {
-                case .title:
-                    indexString = album?.title ?? ""
-                case .composer:
-                    indexString = album?.composer ?? "[]"
-                case .artist:
-                    indexString = album?.artist ?? ""
-                case .genre:
-                    indexString = album?.genre ?? ""
-                }
-                let indexEntry = indexString.prefix(2)
-                sectionTitles?.append(String(indexEntry))
+            return
+        }
+        sectionCount = AlbumsViewController.indexedSectionCount
+        sectionSize = unwrappedAlbums.count / AlbumsViewController.indexedSectionCount
+        sectionTitles = []
+        for i in 0 ..< AlbumsViewController.indexedSectionCount {
+            let album = albums?[i * sectionSize]
+            let indexString: String
+            switch (sort) {
+            case .title:
+                indexString = album?.title ?? ""
+            case .composer:
+                indexString = album?.composer ?? "[]"
+            case .artist:
+                indexString = album?.artist ?? ""
+            case .genre:
+                indexString = album?.genre ?? ""
             }
+            let indexEntry = indexString.prefix(2)
+            sectionTitles?.append(String(indexEntry))
         }
     }
     
+    private func presentAsOneSection() -> Bool {
+        if albums == nil { return true }
+        return albums!.count < AlbumsViewController.indexedSectionCount * 2
+    }
+
     // MARK: - Sort popover
 
     @IBAction func sortButtonTapped(_ sender: Any) {
@@ -139,6 +155,9 @@ class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func tableView(_: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if sectionCount == 1 {
+            return albums?.count ?? 0
+        }
         if section < AlbumsViewController.indexedSectionCount - 1 {
             return sectionSize
         } else {
@@ -186,5 +205,20 @@ class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 secondViewController.title = secondViewController.album?.title
             }
         }
+    }
+    
+    // MARK: - UISearchResultsUpdating Delegate
+    
+    func updateSearchResults(for searchController: UISearchController) {
+        loadAlbumsSortedBy(currentSort)
+    }
+    
+    private func searchBarIsEmpty() -> Bool {
+        // Returns true if the text is empty or nil
+        return searchController.searchBar.text?.isEmpty ?? true
+    }
+    
+    private func isFiltering() -> Bool {
+        return searchController.isActive && !searchBarIsEmpty()
     }
 }
