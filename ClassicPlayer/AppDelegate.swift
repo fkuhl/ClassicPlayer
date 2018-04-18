@@ -27,9 +27,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     private static let showParses = false
     private static let showPieces = false
     private static let separator: Character = "|"
-    private static let composerColonWorkDashMovement = try! NSRegularExpression(pattern: "[A-Z][a-z]+:\\s*([^-]+) -\\s+(.+)", options: [])
+    private static let composerColonWorkDashMovement = try! NSRegularExpression(pattern: "\\s*[^:]+:\\s*([^-]+) -\\s+(.+)", options: [])
     private static let composerColonWorkNrMovement =
-        try! NSRegularExpression(pattern: "[A-Z][a-z]+:\\s*([^-]+) +([1-9][0-9]*\\. .+)", options: [])
+        try! NSRegularExpression(pattern: "\\s*[^:]+:\\s*([^-]+) +([1-9][0-9]*\\. .+)", options: [])
     private static let composerColonWorkRomMovement = try! NSRegularExpression(pattern:
         "[A-Z][a-z]+:\\s*([^-]+)\\s+((?:I|II|III|IV|V|VI|VII|VIII|IX|X|XI|XII|XIII|XIV|XV|XVI|XVII|XVIII|XIX|XX)\\. .+)", options: [])
     private static let workColonDashMovement = try! NSRegularExpression(pattern: "\\s*([^-:])(?:: +| -\\s+)(.*)", options: [])

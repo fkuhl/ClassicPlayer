@@ -9,8 +9,9 @@
 import UIKit
 import MediaPlayer
 
-class ArtistsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class ArtistsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchResultsUpdating {
     @IBOutlet weak var tableView: UITableView!
+    let searchController = UISearchController(searchResultsController: nil)
     private var tableIsLoaded = false
     
     private static var indexedSectionCount = 27  //A magic number; that's how many sections any UITableView index can have.
@@ -27,24 +28,36 @@ class ArtistsViewController: UIViewController, UITableViewDelegate, UITableViewD
         self.tableView.dataSource = self
         self.tableView.rowHeight = UITableViewAutomaticDimension //Autolayout determines height!
         self.tableView.estimatedRowHeight = 64.0
+        searchController.searchResultsUpdater = self
+        searchController.obscuresBackgroundDuringPresentation = false
+        searchController.searchBar.placeholder = "Search Artists"
+        navigationItem.searchController = searchController
+        definesPresentationContext = true
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        loadArtists()
-        computeSections()
+        updateUI()
     }
     
-    private func loadArtists() {
+    private func updateUI() {
         let query = MPMediaQuery.artists()
         artistObjects = []
         for collection in query.collections! {
             let possibleItem = collection.items.first
             if let item = possibleItem {
-                artistObjects?.append(item)
+                if isFiltering(), let artist = item.artist {
+                    if artist.localizedCaseInsensitiveContains(searchController.searchBar.text!) {
+                        artistObjects!.append(item)
+                    }
+                } else {
+                    artistObjects!.append(item)
+                }
             }
         }
-        //Artists are returned in "sort" order, so "The Beatles" sorts as "Beatles"
+        computeSections()
+        tableView.reloadData()
+       //Artists are returned in "sort" order, so "The Beatles" sorts as "Beatles"
         //If I sort here, it's on "The Beatles"
         //        artistObjects = artistObjects?.sorted {
         //            ao1, ao2 in
@@ -54,24 +67,38 @@ class ArtistsViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     private func computeSections() {
-        if let artists = artistObjects {
-            if artists.count < ArtistsViewController.indexedSectionCount {
+        guard artistObjects != nil else {
+            sectionCount = 1
+            sectionSize = 0
+            return
+        }
+        if presentAsOneSection() {
+            sectionCount = 1
+            sectionSize = artistObjects!.count
+            sectionTitles = []
+            return
+        }
+            if artistObjects!.count < ArtistsViewController.indexedSectionCount {
                 sectionCount = 1
-                sectionSize = artists.count
+                sectionSize = artistObjects!.count
                 sectionTitles = []
             } else {
                 sectionCount = ArtistsViewController.indexedSectionCount
-                sectionSize = artists.count / ArtistsViewController.indexedSectionCount
+                sectionSize = artistObjects!.count / ArtistsViewController.indexedSectionCount
                 sectionTitles = []
                 for i in 0 ..< ArtistsViewController.indexedSectionCount {
-                    let item = artists[i * sectionSize]
+                    let item = artistObjects![i * sectionSize]
                     let artist = item.artist
                     let title = artist?.prefix(2)
                     //print("title \(i) is \(title ?? "nada")")
                     sectionTitles?.append(String(title!))
                 }
             }
-        }
+    }
+    
+    private func presentAsOneSection() -> Bool {
+        if artistObjects == nil { return true }
+        return artistObjects!.count < ArtistsViewController.indexedSectionCount * 2
     }
 
     override func didReceiveMemoryWarning() {
@@ -97,7 +124,7 @@ class ArtistsViewController: UIViewController, UITableViewDelegate, UITableViewD
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Artist", for: indexPath)
         let artistEntry = artistObjects![indexPath.section * sectionSize + indexPath.row]
-        cell.textLabel?.text = artistEntry.albumArtist
+        cell.textLabel?.text = artistEntry.artist
         return cell
     }
     
@@ -116,6 +143,22 @@ class ArtistsViewController: UIViewController, UITableViewDelegate, UITableViewD
                 secondViewController.displayTitle = selectedArtist.artist
             }
         }
+    }
+    
+    // MARK: - UISearchResultsUpdating Delegate
+    
+    func updateSearchResults(for searchController: UISearchController) {
+        //print("update to '\(searchController.searchBar.text ?? "")' filtering: \(isFiltering() ? "true" : "false")")
+        updateUI()
+    }
+    
+    private func searchBarIsEmpty() -> Bool {
+        // Returns true if the text is empty or nil
+        return searchController.searchBar.text?.isEmpty ?? true
+    }
+    
+    private func isFiltering() -> Bool {
+        return searchController.isActive && !searchBarIsEmpty()
     }
 }
 
