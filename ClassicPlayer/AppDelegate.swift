@@ -23,7 +23,10 @@ extension Notification.Name {
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     private static let displayArtworkKey = "display_artwork_preference"
-    private static let parsedGenres = ["Classical", "Opera", "Church", "British"]
+    /**
+     Those genres which will be parsed for pieces and movements.
+    */
+    private static let parsedGenres = ["Classical", "Opera", "Church", "British", "Christmas"]
     private static let showParses = false
     private static let showPieces = false
     private static let separator: Character = "|"
