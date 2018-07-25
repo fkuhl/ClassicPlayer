@@ -30,28 +30,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     private static let showParses = false
     private static let showPieces = false
     private static let separator: Character = "|"
-    private static let composerColonWorkDashMovement = try! NSRegularExpression(pattern: "\\s*[^:]+:\\s*([^-]+) -\\s+(.+)", options: [])
-    private static let composerColonWorkNrMovement =
-        try! NSRegularExpression(pattern: "\\s*[^:]+:\\s*([^-]+) +([1-9][0-9]*\\. .+)", options: [])
-    private static let composerColonWorkRomMovement = try! NSRegularExpression(pattern:
-        "[A-Z][a-z]+:\\s*([^-]+)\\s+((?:I|II|III|IV|V|VI|VII|VIII|IX|X|XI|XII|XIII|XIV|XV|XVI|XVII|XVIII|XIX|XX)\\. .+)", options: [])
-    private static let workColonDashMovement = try! NSRegularExpression(pattern: "\\s*([^-:])(?:: +| -\\s+)(.*)", options: [])
-    private static let workNrMovement = try! NSRegularExpression(pattern: "\\s*([^-]+)\\s+([1-9][0-9]*\\. .+)", options: [])
-    private static let workRomMovement = try! NSRegularExpression(pattern:
-        "\\s*([^-]+) ((?:I|II|III|IV|V|VI|VII|VIII|IX|X|XI|XII|XIII|XIV|XV|XVI|XVII|XVIII|XIX|XX)\\. .+)", options: [])
-    private static let workParenMovement = try! NSRegularExpression(pattern:
-        "\\s*([^-]+) \\(([^\\)]*)\\)", options: [])
-    private static let parseExpressions = [
-        composerColonWorkDashMovement,
-        composerColonWorkNrMovement,
-        composerColonWorkRomMovement,
-        workColonDashMovement,
-        workNrMovement,
-        workRomMovement,
-        workParenMovement
-    ]
-    private static let parseNames = ["composerColonWorkDashMovement", "composerColonWorkNrMovement", "composerColonWorkRomMovement",
-                                     "workColonDashMovement", "workNrMovement", "workRomMovement"]
+//    private static let composerColonWorkDashMovement = try! NSRegularExpression(pattern: "\\s*[^:]+:\\s*([^-]+) -\\s+(.+)", options: [])
+//    private static let composerColonWorkNrMovement =
+//        try! NSRegularExpression(pattern: "\\s*[^:]+:\\s*([^-]+) +([1-9][0-9]*\\. .+)", options: [])
+//    private static let composerColonWorkRomMovement = try! NSRegularExpression(pattern:
+//        "[A-Z][a-z]+:\\s*([^-]+)\\s+((?:I|II|III|IV|V|VI|VII|VIII|IX|X|XI|XII|XIII|XIV|XV|XVI|XVII|XVIII|XIX|XX)\\. .+)", options: [])
+//    private static let workColonDashMovement = try! NSRegularExpression(pattern: "\\s*([^-:])(?:: +| -\\s+)(.*)", options: [])
+//    private static let workNrMovement = try! NSRegularExpression(pattern: "\\s*([^-]+)\\s+([1-9][0-9]*\\. .+)", options: [])
+//    private static let workRomMovement = try! NSRegularExpression(pattern:
+//        "\\s*([^-]+) ((?:I|II|III|IV|V|VI|VII|VIII|IX|X|XI|XII|XIII|XIV|XV|XVI|XVII|XVIII|XIX|XX)\\. .+)", options: [])
+//    private static let workParenMovement = try! NSRegularExpression(pattern:
+//        "\\s*([^-]+) \\(([^\\)]*)\\)", options: [])
+//    private static let parseExpressions = [
+//        composerColonWorkDashMovement,
+//        composerColonWorkNrMovement,
+//        composerColonWorkRomMovement,
+//        workColonDashMovement,
+//        workNrMovement,
+//        workRomMovement,
+//        workParenMovement
+//    ]
+//    private static let parseNames = ["composerColonWorkDashMovement", "composerColonWorkNrMovement", "composerColonWorkRomMovement",
+//                                     "workColonDashMovement", "workNrMovement", "workRomMovement"]
     private static let parseTemplate = "$1\(AppDelegate.separator)$2"
 
     var window: UIWindow?
@@ -331,18 +331,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     private func checkParses(in raw: String)-> (pieceTitle: String, movementTitle: String)? {
-        for i in 0..<AppDelegate.parseExpressions.count {
-            let transformed = AppDelegate.parseExpressions[i].stringByReplacingMatches(
+        for i in 0..<patterns.count {
+            let transformed = patterns[i].pattern.stringByReplacingMatches(
                 in: raw,
                 options: [],
                 range: NSRange(raw.startIndex..., in: raw),
                 withTemplate: AppDelegate.parseTemplate)
             let components = transformed.split(separator: AppDelegate.separator, maxSplits: 6, omittingEmptySubsequences: false)
             if components.count == 2 {
-                if AppDelegate.showParses { print("raw:\(raw) passed \(AppDelegate.parseNames[i])") }
+                if AppDelegate.showParses { print("raw:\(raw) passed \(patterns[i].name)") }
                 return (pieceTitle: String(components[0]), movementTitle: String(components[1]))
             } else {
-                if AppDelegate.showParses { print("raw:\(raw) failed \(AppDelegate.parseNames[i])") }
+                if AppDelegate.showParses { print("raw:\(raw) failed \(patterns[i].name)") }
             }
         }
         return nil
@@ -422,6 +422,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return AppDelegate.artworkFor(album: idVal)
     }
     
+    /**
+     Get artwork for an album.
+     
+     - Parameters:
+        - album: persistentID of album
+     
+     - Returns:
+     What's returned is (see docs) "smallest image at least as large as specified"--
+     which turns out to be 600 x 600, with no discernible difference for the albums
+     with iTunes LPs.
+     */
     static func artworkFor(album: MPMediaEntityPersistentID) -> UIImage {
         if !UserDefaults.standard.bool(forKey: displayArtworkKey) {
             return AppDelegate.defaultImage
@@ -435,15 +446,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 let propertyVal = result.value(forProperty: MPMediaItemPropertyArtwork)
                 let artwork = propertyVal as? MPMediaItemArtwork
                 let returnedImage = artwork?.image(at: CGSize(width: 30, height: 30))
-                //What's returned is (see docs) "smallest image at least as large as specified"--
-                //which turns out to be 600 x 600, with no discernible difference for the albums
-                //with iTunes LPs.
                 return returnedImage != nil ? returnedImage! : AppDelegate.defaultImage
             }
         }
         return AppDelegate.defaultImage
     }
     
+    /**
+     Make the animation of audio bars for currently playing audio.
+    */
     private func makeAudioBarSet() {
         audioBarSet = [UIImage]()
         for imageFrame in 1...10 {
@@ -456,6 +467,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         audioNotCurrent = UIImage(named:"bars-not-current")
     }
     
+    /**
+     Represesentation of a the duration of a song, suitable for display.
+     */
     static func durationAsString(_ duration: TimeInterval) -> String {
         let min = Int(duration/60.0)
         let sec = Int(CGFloat(duration).truncatingRemainder(dividingBy: 60.0))
@@ -464,33 +478,44 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     // MARK: - Core Data stack
     
-    //estupido: persistentIDs are UInt64, but CoreData knows nothing of them. Store as hex strings
+    /**
+     Media persistentIDs are UInt64, but CoreData knows nothing that type.
+     Store in CoreData as hex strings.
+     Estupido.
+    */
     class func encodeForCoreData(id: MPMediaEntityPersistentID) -> String {
         return String(id, radix: 16, uppercase: false)
     }
     
+    /**
+     Decode Media persistentID (UInt64) from hex string representation in CoreData.
+    */
     class func decodeIDFrom(coreDataRepresentation: String) -> MPMediaEntityPersistentID {
         return UInt64(coreDataRepresentation, radix: 16) ?? 0
     }
 
+    /**
+     The persistent container for the application.
+     This implementation
+     creates and returns a container, having loaded the store for the
+     application to it.
+     This property is optional since there are legitimate
+     error conditions that could cause the creation of the store to fail.
+     
+     *Errors*
+     
+     Typical reasons for an error here include:
+     * The parent directory does not exist, cannot be created, or disallows writing.
+     * The persistent store is not accessible, due to permissions or data protection when the device is locked.
+     * The device is out of space.
+     * The store could not be migrated to the current model version.
+     Check the error message to determine what the actual problem was.
+
+    */
     lazy var persistentContainer: NSPersistentContainer = {
-        /*
-         The persistent container for the application. This implementation
-         creates and returns a container, having loaded the store for the
-         application to it. This property is optional since there are legitimate
-         error conditions that could cause the creation of the store to fail.
-        */
         let container = NSPersistentContainer(name: "ClassicPlayer")
         container.loadPersistentStores(completionHandler: { (storeDescription, error) in
             if let error = error as NSError? {
-                 /*
-                 Typical reasons for an error here include:
-                 * The parent directory does not exist, cannot be created, or disallows writing.
-                 * The persistent store is not accessible, due to permissions or data protection when the device is locked.
-                 * The device is out of space.
-                 * The store could not be migrated to the current model version.
-                 Check the error message to determine what the actual problem was.
-                 */
                 NotificationCenter.default.post(Notification(name: .storeError,
                                                              object: self,
                                                              userInfo: error.userInfo))
@@ -500,7 +525,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return container
     }()
     
-    //All CoreData operations should use this context!
+    /**
+     Context to be used by all CoreData operations!
+    */
     lazy var context: NSManagedObjectContext = {
         return persistentContainer.viewContext
     }()
