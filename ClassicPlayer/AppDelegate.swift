@@ -126,12 +126,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             if MPMediaLibrary.default().lastModifiedDate <= storedLastModDate {
                 //use current data
                 NSLog("media lib stored \(MPMediaLibrary.default().lastModifiedDate), app lib stored \(storedLastModDate): use current app lib")
-                //logCurrentNumberOfAlbums()
+                logCurrentNumberOfAlbums()
                 NotificationCenter.default.post(Notification(name: .dataAvailable))
                 return
             }  else {
                 NSLog("media lib stored \(MPMediaLibrary.default().lastModifiedDate), app lib data \(storedLastModDate): media lib changed, replace app lib")
-                //logCurrentNumberOfAlbums()
+                logCurrentNumberOfAlbums()
                 NotificationCenter.default.post(Notification(name: .libraryChanged))
                 return
             }
@@ -159,26 +159,35 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
     
-//    private func logCurrentNumberOfAlbums() {
-//        let request = NSFetchRequest<Album>()
-//        request.entity = NSEntityDescription.entity(forEntityName: "Album", in: context)
-//        request.resultType = .managedObjectResultType
-//        do {
-//            let albums = try context.fetch(request)
-//            NSLog("\(albums.count) albums")
-//        } catch {
-//            let nserror = error as NSError
-//            fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
-//        }
-//    }
+    private func logCurrentNumberOfAlbums() {
+        let request = NSFetchRequest<Album>()
+        request.entity = NSEntityDescription.entity(forEntityName: "Album", in: context)
+        request.resultType = .managedObjectResultType
+        do {
+            let albums = try context.fetch(request)
+            NSLog("\(albums.count) albums")
+        } catch {
+            let error = error as NSError
+            NSLog("error retrieving album count: \(error), \(error.userInfo)")
+        }
+    }
 
-    //ComposersView will call this after authorization gained to access library
-    func loadMediaLibraryToApp() {
+    /**
+     Load app from Media Library without clearing old data.
+     Used by AppDelegate when there was no app library.
+     
+     - Precondition: App has authorization to access library
+    */
+    private func loadMediaLibraryToApp() {
         self.loadAppFromMediaLibrary(into: context)
         NotificationCenter.default.post(Notification(name: .dataAvailable))
     }
 
-    //ComposersView will call this after authorization gained to access library
+    /**
+     Clear out old app library, and replace with media library contents.
+     
+     - Precondition: App has authorization to access library
+     */
     func replaceAppLibraryWithMedia() {
         self.clearOldData(from: self.context)
         self.loadAppFromMediaLibrary(into: self.context)
@@ -223,35 +232,43 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         libraryPieceCount = 0
         librarySongCount = 0
         libraryMovementCount = 0
-        let mediaStuff = MPMediaQuery.albums()
-        if mediaStuff.collections == nil { return }
-        for mediaCollection in mediaStuff.collections! {
-            let items = mediaCollection.items
+        let mediaAlbums = MPMediaQuery.albums()
+        if mediaAlbums.collections == nil { return }
+        for mediaAlbum in mediaAlbums.collections! {
+            let mediaAlbumItems = mediaAlbum.items
             libraryAlbumCount += 1
-            //libraryTrackCount += Int32(items.count)
-            if AppDelegate.showPieces && isGenreToParse(items[0].genre) {
-                print("Album: \(items[0].value(forProperty: MPMediaItemPropertyComposer) ?? "<anon>"): "
-                    + "\(items[0].value(forProperty: MPMediaItemPropertyAlbumTrackCount) ?? "") "
-                    + "\(items[0].value(forProperty: MPMediaItemPropertyAlbumTitle) ?? "<no title>")"
-                    + " | \(items[0].value(forProperty: MPMediaItemPropertyAlbumArtist) ?? "<no artist>")"
-                    + " | \((items[0].value(forProperty: "year") as? Int) ?? -1) ")
+            if AppDelegate.showPieces && isGenreToParse(mediaAlbumItems[0].genre) {
+                print("Album: \(mediaAlbumItems[0].value(forProperty: MPMediaItemPropertyComposer) ?? "<anon>"): "
+                    + "\(mediaAlbumItems[0].value(forProperty: MPMediaItemPropertyAlbumTrackCount) ?? "") "
+                    + "\(mediaAlbumItems[0].value(forProperty: MPMediaItemPropertyAlbumTitle) ?? "<no title>")"
+                    + " | \(mediaAlbumItems[0].value(forProperty: MPMediaItemPropertyAlbumArtist) ?? "<no artist>")"
+                    + " | \((mediaAlbumItems[0].value(forProperty: "year") as? Int) ?? -1) ")
             }
-            let album = NSEntityDescription.insertNewObject(forEntityName: "Album", into: context) as! Album
-            //Someday we may purpose "artist" as a composite field containing ensemble, director, soloists
-            album.artist = items[0].albumArtist
-            album.title = items[0].albumTitle
-            album.composer = items[0].composer
-            album.genre = items[0].genre
-            album.trackCount = Int32(items[0].albumTrackCount)
-            album.albumID = AppDelegate.encodeForCoreData(id: items[0].albumPersistentID)
-            album.year = items[0].value(forProperty: "year") as! Int32  //slightly undocumented!
-            if isGenreToParse(album.genre) {
-                loadPieces(for: album, from: items, into: context)
+            let appAlbum = makeAndFillAlbum(from: mediaAlbumItems, into: context)
+            if isGenreToParse(appAlbum.genre) {
+                loadPieces(for: appAlbum, from: mediaAlbumItems, into: context)
             } else {
-                loadSongs(for: album, from: items, into: context)
+                loadSongs(for: appAlbum, from: mediaAlbumItems, into: context)
             }
         }
-        print("found \(libraryAlbumCount) albums, \(libraryPieceCount) pieces, \(libraryMovementCount) movements, \(librarySongCount) tracks")
+        NSLog("found \(libraryAlbumCount) albums, \(libraryPieceCount) pieces, \(libraryMovementCount) movements, \(librarySongCount) tracks")
+        storeMediaLibraryInfo()
+    }
+    
+    private func makeAndFillAlbum(from mediaAlbumItems: [MPMediaItem],  into context: NSManagedObjectContext) -> Album {
+        let album = NSEntityDescription.insertNewObject(forEntityName: "Album", into: context) as! Album
+        //Someday we may purpose "artist" as a composite field containing ensemble, director, soloists
+        album.artist = mediaAlbumItems[0].albumArtist
+        album.title = mediaAlbumItems[0].albumTitle
+        album.composer = mediaAlbumItems[0].composer
+        album.genre = mediaAlbumItems[0].genre
+        album.trackCount = Int32(mediaAlbumItems[0].albumTrackCount)
+        album.albumID = AppDelegate.encodeForCoreData(id: mediaAlbumItems[0].albumPersistentID)
+        album.year = mediaAlbumItems[0].value(forProperty: "year") as! Int32  //slightly undocumented!
+        return album
+    }
+    
+    private func storeMediaLibraryInfo() {
         var mediaInfoObject: MediaLibraryInfo
         let mediaLibraryInfosInStore = getMediaLibraryInfo()
         if mediaLibraryInfosInStore.count >= 1 {
@@ -265,7 +282,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         mediaInfoObject.pieceCount = libraryPieceCount
         mediaInfoObject.songCount = librarySongCount
         saveContext()
-        print("saved \(libraryAlbumCount) albums and \(libraryPieceCount) pieces for lib at \(mediaInfoObject.lastModifiedDate!)")
+        //NSLog("saved \(libraryAlbumCount) albums and \(libraryPieceCount) pieces for lib at \(mediaInfoObject.lastModifiedDate!)")
     }
     
     private func loadSongs(for album: Album, from collection: [MPMediaItem], into context: NSManagedObjectContext) {
@@ -479,7 +496,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // MARK: - Core Data stack
     
     /**
-     Media persistentIDs are UInt64, but CoreData knows nothing that type.
+     Media persistentIDs are UInt64, but CoreData knows nothing of that type.
      Store in CoreData as hex strings.
      Estupido.
     */

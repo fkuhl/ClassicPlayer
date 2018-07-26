@@ -111,3 +111,44 @@ let patterns = [
     PatternEntry(pattern: workRomMovement, name: "workRomMovement"),
     PatternEntry(pattern: workParenMovement, name: "workParenMovement")
 ]
+
+fileprivate let separator: Character = "|"
+fileprivate let parseTemplate = "$1\(separator)$2"
+
+struct ParseResult: Equatable {
+    let pieceTitle: String
+    let movementTitle: String
+}
+
+/**
+ Find all successful parses of song title into work title and piece title.
+ 
+ - Parameters:
+    - in: unparsed song title
+ 
+ - Returns:
+ Array, possibly empty, of successful parse results
+ */
+func findParses(in raw: String) -> [ParseResult] {
+    var result = [ParseResult]()
+    //I re-wrote this using map and filter, and it was less clear.
+    for pattern in patterns {
+        let transformed = pattern.pattern.stringByReplacingMatches(
+            in: raw,
+            options: [],
+            range: NSRange(raw.startIndex..., in: raw),
+            withTemplate: parseTemplate)
+        let components = transformed.split(separator: separator, maxSplits: 6, omittingEmptySubsequences: false)
+        if components.count == 2 {
+            result.append(ParseResult(pieceTitle: String(components[0]), movementTitle: String(components[1])))
+        }
+    }
+    return result
+}
+
+// TODO: When looking for a second movement for a piece, compare each parse of 1st song title against each
+// parsed piece title of second song title. When you find a match of titles, declare a match.
+// (Or do we accumulate all such matches and prefer, e.g., the longest?)
+// That becomes the definitive piece title.
+
+// TODO: When comparing subsequent song titles, look for a match with piece title.
