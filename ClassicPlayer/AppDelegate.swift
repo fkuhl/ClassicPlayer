@@ -29,30 +29,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     private static let parsedGenres = ["Classical", "Opera", "Church", "British", "Christmas"]
     private static let showParses = false
     private static let showPieces = false
-    private static let separator: Character = "|"
-//    private static let composerColonWorkDashMovement = try! NSRegularExpression(pattern: "\\s*[^:]+:\\s*([^-]+) -\\s+(.+)", options: [])
-//    private static let composerColonWorkNrMovement =
-//        try! NSRegularExpression(pattern: "\\s*[^:]+:\\s*([^-]+) +([1-9][0-9]*\\. .+)", options: [])
-//    private static let composerColonWorkRomMovement = try! NSRegularExpression(pattern:
-//        "[A-Z][a-z]+:\\s*([^-]+)\\s+((?:I|II|III|IV|V|VI|VII|VIII|IX|X|XI|XII|XIII|XIV|XV|XVI|XVII|XVIII|XIX|XX)\\. .+)", options: [])
-//    private static let workColonDashMovement = try! NSRegularExpression(pattern: "\\s*([^-:])(?:: +| -\\s+)(.*)", options: [])
-//    private static let workNrMovement = try! NSRegularExpression(pattern: "\\s*([^-]+)\\s+([1-9][0-9]*\\. .+)", options: [])
-//    private static let workRomMovement = try! NSRegularExpression(pattern:
-//        "\\s*([^-]+) ((?:I|II|III|IV|V|VI|VII|VIII|IX|X|XI|XII|XIII|XIV|XV|XVI|XVII|XVIII|XIX|XX)\\. .+)", options: [])
-//    private static let workParenMovement = try! NSRegularExpression(pattern:
-//        "\\s*([^-]+) \\(([^\\)]*)\\)", options: [])
-//    private static let parseExpressions = [
-//        composerColonWorkDashMovement,
-//        composerColonWorkNrMovement,
-//        composerColonWorkRomMovement,
-//        workColonDashMovement,
-//        workNrMovement,
-//        workRomMovement,
-//        workParenMovement
-//    ]
-//    private static let parseNames = ["composerColonWorkDashMovement", "composerColonWorkNrMovement", "composerColonWorkRomMovement",
-//                                     "workColonDashMovement", "workNrMovement", "workRomMovement"]
-    private static let parseTemplate = "$1\(AppDelegate.separator)$2"
 
     var window: UIWindow?
     var audioBarSet: [UIImage]?
@@ -214,7 +190,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let request: NSFetchRequest<NSFetchRequestResult> = NSFetchRequest<NSFetchRequestResult>()
         request.entity = NSEntityDescription.entity(forEntityName: type, in:context)
         let deleteRequest = NSBatchDeleteRequest(fetchRequest: request)
-        request.predicate = NSPredicate(format: "title MATCHES %@", ".*")
+        request.predicate = NSPredicate(format: "title LIKE %@", ".*")
         deleteRequest.resultType = .resultTypeCount
         let deleteResult = try context.execute(deleteRequest) as? NSBatchDeleteResult
         NSLog("deleted \(deleteResult?.result ?? "<nil>") \(type)")
@@ -228,6 +204,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     private func loadAppFromMediaLibrary(into context: NSManagedObjectContext) {
+        findComposers()
         libraryAlbumCount = 0
         libraryPieceCount = 0
         librarySongCount = 0
@@ -298,71 +275,67 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     private func loadPieces(for album: Album, from collection: [MPMediaItem], into context: NSManagedObjectContext) {
         if collection.count < 1 { return }
-        if collection.count < 2 {
-            _ = storePiece(from: collection[0], entitled: collection[0].title ?? "", to: album, into: context)
-            return
-        }
+//        if collection.count < 2 {
+//            _ = storePiece(from: collection[0], entitled: collection[0].title ?? "", to: album, into: context)
+//            return
+//        }
         var state = LoadingState.beginPiece
         var i = 0
         var piece: Piece?
+        var firstParse = ParseResult(pieceTitle: "", movementTitle: "", parseName: "") //compiler needs a default value
+        var nextParse: ParseResult?
         repeat {
             let unwrappedTitle = collection[i].title ?? ""
-            let parsed = checkParses(in: unwrappedTitle)
             switch state {
             case .beginPiece:
-                let pieceTitle = parsed?.pieceTitle ?? unwrappedTitle
+                firstParse = bestParse(in: unwrappedTitle)
+                if AppDelegate.showParses {
+                    print("composer: '\(collection[i].composer ?? "")' raw: '\(unwrappedTitle)'")
+                    print("   piece: '\(firstParse.pieceTitle)' movement: '\(firstParse.movementTitle)' (\(firstParse.parseName))")
+                }
                 if i + 1 >= collection.count {
                     //no more songs to be movements
                     //so piece name is the track name
-                    piece = storePiece(from: collection[i], entitled: unwrappedTitle, to: album, into: context)
+                    piece = storePiece(from: collection[i], entitled: firstParse.pieceTitle, to: album, into: context)
                     i += 1
                     continue
                 }
-                let nextParsed = checkParses(in: collection[i + 1].title ?? "")
-                if nextParsed != nil && pieceTitle == nextParsed!.pieceTitle {
+                let secondTitle = collection[i + 1].title ?? ""
+                nextParse = matchSubsequentMovement(raw: secondTitle, against: firstParse)
+                 if let matchedNext = nextParse {
+                    if AppDelegate.showParses {
+                        print("      2nd raw: '\(secondTitle)' second movt: '\(matchedNext.movementTitle)' (\(matchedNext.parseName))")
+                    }
                     //at least two movements: record piece, then first two movements
-                    let pieceTitle = parsed?.pieceTitle ?? unwrappedTitle
+                    let pieceTitle = firstParse.pieceTitle
                     piece = storePiece(from: collection[i], entitled: pieceTitle, to: album, into: context)
-                    storeMovement(from: collection[i],     named: parsed!.movementTitle,     for: piece!, into: context)
-                    storeMovement(from: collection[i + 1], named: nextParsed!.movementTitle, for: piece!, into: context)
-                    //see what other movement you can find
+                    storeMovement(from: collection[i],     named: firstParse.movementTitle,  for: piece!, into: context)
+                    storeMovement(from: collection[i + 1], named: matchedNext.movementTitle, for: piece!, into: context)
+                    //see what other movement(s) you can find
                     i += 2
                     state = .continuePiece
                 } else {
                     //next is different piece
-                    //so piece name is the track name
-                    piece = storePiece(from: collection[i], entitled: unwrappedTitle, to: album, into: context)
+                    //so piece name is what we found at first
+                    piece = storePiece(from: collection[i], entitled: firstParse.pieceTitle, to: album, into: context)
                     i += 1
                     state = .beginPiece
                 }
             case .continuePiece:
                 if i >= collection.count { continue }
-                if parsed != nil && piece!.title == parsed!.pieceTitle {
-                    storeMovement(from: collection[i], named: parsed!.movementTitle, for: piece!, into: context)
+                let subsequentTitle = collection[i].title ?? ""
+                let subsequentParse = matchSubsequentMovement(raw: subsequentTitle, against: firstParse)
+                 if let matchedSubsequent = subsequentParse {
+                    if AppDelegate.showParses {
+                        print("      Subsq raw: '\(subsequentTitle)' subsq movt: '\(matchedSubsequent.movementTitle)' (\(matchedSubsequent.parseName))")
+                    }
+                    storeMovement(from: collection[i], named: matchedSubsequent.movementTitle, for: piece!, into: context)
                     i += 1
                 } else {
                     state = .beginPiece //don't increment i
                 }
             }
         } while i < collection.count
-    }
-    
-    private func checkParses(in raw: String)-> (pieceTitle: String, movementTitle: String)? {
-        for i in 0..<patterns.count {
-            let transformed = patterns[i].pattern.stringByReplacingMatches(
-                in: raw,
-                options: [],
-                range: NSRange(raw.startIndex..., in: raw),
-                withTemplate: AppDelegate.parseTemplate)
-            let components = transformed.split(separator: AppDelegate.separator, maxSplits: 6, omittingEmptySubsequences: false)
-            if components.count == 2 {
-                if AppDelegate.showParses { print("raw:\(raw) passed \(patterns[i].name)") }
-                return (pieceTitle: String(components[0]), movementTitle: String(components[1]))
-            } else {
-                if AppDelegate.showParses { print("raw:\(raw) failed \(patterns[i].name)") }
-            }
-        }
-        return nil
     }
 
     private func storeMovement(from item: MPMediaItem, named: String, for piece: Piece, into context: NSManagedObjectContext) {

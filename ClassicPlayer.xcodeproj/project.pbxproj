@@ -145,6 +145,7 @@
 				27182249204B4678003345C0 /* InfoViewController.swift */,
 				2733A6191FE5FDE000E1EE77 /* LaunchScreen.storyboard */,
 				2733A6141FE5FDE000E1EE77 /* Main.storyboard */,
+				274404A02103ABF1004E0152 /* MovementParsing.swift */,
 				27FCDEDD1FF2D8D6001D81CE /* PieceViewController.swift */,
 				27CFA1572034D35D00D6F613 /* PlaylistsViewController.swift */,
 				270CA5D1203B7D7100325862 /* PlaylistViewController.swift */,
@@ -154,7 +155,6 @@
 				27DAEB9F20264B3B00F8D5DA /* SongSortViewController.swift */,
 				27DAEBA120264BE700F8D5DA /* SongsViewController.swift */,
 				27D61042203E1EF6001075BF /* SongTableViewCell.swift */,
-				274404A02103ABF1004E0152 /* MovementParsing.swift */,
 			);
 			path = ClassicPlayer;
 			sourceTree = "<group>";
