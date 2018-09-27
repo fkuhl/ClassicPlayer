@@ -11,6 +11,9 @@ import MediaPlayer
 
 //https://developer.apple.com/documentation/foundation/nsregularexpression?changes=_9
 
+fileprivate let nonCapturingParen = "(?:"
+fileprivate let space = " "
+fileprivate let dash = "-"
 fileprivate let whitespaceZeroOrMore = "\\s*"
 fileprivate let whitespaceOneOrMore = "\\s+"
 fileprivate let upToColon = "[^:]+"
@@ -21,8 +24,8 @@ fileprivate let anythingOneOrMore = ".+"
 fileprivate let anythingZeroOrMore = ".*"
 fileprivate let movementNumber = "[0-9]+"
 fileprivate let period = "\\."
-fileprivate let space = " "
-fileprivate let nonCapturingParen = "(?:"
+fileprivate let periodSpace = period + space
+fileprivate let dashOrPeriod = nonCapturingParen + period + space + "|" + dash + ")"
 fileprivate let romanNumber =
     nonCapturingParen + "I|II|III|IV|V|VI|VII|VIII|IX|X|XI|XII|XIII|XIV|XV|XVI|XVII|XVIII|XIX|XX" + ")"
 fileprivate let colonOneOrMoreSpaces = ": +"
@@ -87,14 +90,14 @@ fileprivate let composerColonWorkRomMovement = try! NSRegularExpression(pattern:
         whitespaceZeroOrMore +
         "(" + upToDash + ")" +
         whitespaceOneOrMore +
-        "(" + romanNumber + period + space + anythingOneOrMore + ")",
+        "(" + romanNumber + dashOrPeriod + anythingOneOrMore + ")",
                                                                         options: [])
 
 fileprivate let workRomMovement = try! NSRegularExpression(pattern:
     whitespaceZeroOrMore +
         "(" + upToDash + ")" +
         whitespaceOneOrMore +
-        "(" + romanNumber + period + space + anythingOneOrMore + ")",
+        "(" + romanNumber + dashOrPeriod + anythingOneOrMore + ")",
                                                            options: [])
 
 fileprivate let composerColonWorkColonMovement = try! NSRegularExpression(pattern:
@@ -142,26 +145,27 @@ fileprivate struct PatternEntry {
     let name: String
 }
 
+fileprivate let composerCheckSet = [ PatternEntry(pattern: workColonMovement, name: "composerCheck") ]
+
 /**
  The set of r.e. patterns used to find pieces and movements.
  These are listed in order of decreasing desirability.
  */
-fileprivate let patterns = [
-    PatternEntry(pattern: composerColonWorkNrMovement, name: "composerColonWorkNrMovement"),
+fileprivate let composerPatterns = [
     PatternEntry(pattern: composerColonWorkRomMovement, name: "composerColonWorkRomMovement"),
+    PatternEntry(pattern: composerColonWorkNrMovement, name: "composerColonWorkNrMovement"),
     PatternEntry(pattern: composerColonWorkDashMovement, name: "composerColonWorkDashMovement"),
     PatternEntry(pattern: composerColonWorkColonMovement, name: "composerColonWorkColonMovement"),
     PatternEntry(pattern: composerColonWorkParenMovement, name: "composerColonWorkParenMovement"),
+    PatternEntry(pattern: composerColonWork, name: "composerColonWork"),
+]
 
-    PatternEntry(pattern: workNrMovement, name: "workNrMovement"),
+fileprivate let noComposerPatterns = [
     PatternEntry(pattern: workRomMovement, name: "workRomMovement"),
+    PatternEntry(pattern: workNrMovement, name: "workNrMovement"),
     PatternEntry(pattern: workDashMovement, name: "workDashMovement"),
+    PatternEntry(pattern: workColonMovement, name: "workColonMovement"),
     PatternEntry(pattern: workParenMovement, name: "workParenMovement"),
-
-    //PatternEntry(pattern: composerColonWork, name: "composerColonWork"),
-    PatternEntry(pattern: workColonMovement, name: "workColonMovement"), //special treatment: is it really composer:work?
-
-    PatternEntry(pattern: work, name: "work") //the default at the end
 ]
 
 fileprivate let separator: Character = "|"
@@ -170,26 +174,50 @@ fileprivate let parseTemplate = "$1\(separator)$2"
 fileprivate var composersFound = Set<String>()
 
 struct ParseResult: Equatable {
-    let pieceTitle: String
-    let movementTitle: String
+    let firstMatch: String
+    let secondMatch: String
     let parseName: String
 }
 
 /**
  Find the best parse of song title into work title and piece title.
+ "Best" is defined as "most desirable."
  
  - Parameter in: unparsed song title
  
- - Returns: ParseResult. Always returns something, as there's a default parse.
+ - Returns: ParseResult. Always returns something, even if no match.
  */
-func bestParse (in raw: String) -> ParseResult {
+func bestParse(in raw: String) -> ParseResult {
+    if let composerCheck = apply(patternSet: composerCheckSet, to: raw) {
+        if composersContains(candidate: composerCheck.firstMatch) {
+            if let result = apply(patternSet: composerPatterns, to: raw) {
+                return result  //some composer pattern matched
+            }
+        }
+    }
+    if let result = apply(patternSet: noComposerPatterns, to: raw) {
+        return result  //some no-composer pattern matched
+    }
+    return ParseResult(firstMatch: raw, secondMatch: "", parseName: "no match")
+}
+
+/**
+ Return the best parse, if any, from the set of patterns.
+ Assume pattern set is ordered most to least desirable: return first match.
+ 
+ - Parameter patternSet: Array of PatternEntry's to apply
+ - Parameter to: unparsed song title
+ 
+ - Returns: best ParseResult, if there is a match; otherwise, nil
+ */
+fileprivate func apply(patternSet: [PatternEntry], to raw: String) -> ParseResult? {
+
     let rawRange = NSRange(raw.startIndex..., in: raw)
-    for pattern in patterns {
+    for pattern in patternSet {
         let matchCount = pattern.pattern.numberOfMatches(
             in: raw,
             options: [],
             range: rawRange)
-        //Patterns are listed most desirable first: report the first match
         if  matchCount == 1 {
             let transformed = pattern.pattern.stringByReplacingMatches(
                 in: raw,
@@ -197,15 +225,10 @@ func bestParse (in raw: String) -> ParseResult {
                 range: rawRange,
                 withTemplate: parseTemplate)
             let components = transformed.split(separator: separator, maxSplits: 6, omittingEmptySubsequences: false)
-            //Is it the <something>:<something> case, and does the 'work' appear to be a composer?
-            if pattern.name == "workColonMovement" && composersContains(candidate: String(components[0])) {
-                return ParseResult(pieceTitle: String(components[1]), movementTitle: "", parseName: "composerColonWork")
-            }
-            return ParseResult(pieceTitle: String(components[0]), movementTitle: String(components[1]), parseName: pattern.name)
+            return ParseResult(firstMatch: String(components[0]), secondMatch: String(components[1]), parseName: pattern.name)
         }
     }
-    //Actually, anything should match the last pattern. In case it doesn't...
-    return ParseResult(pieceTitle: raw, movementTitle: "", parseName: "no match")
+    return nil
 }
 
 /**
@@ -218,7 +241,7 @@ func bestParse (in raw: String) -> ParseResult {
  */
 func matchSubsequentMovement(raw: String, against: ParseResult) -> ParseResult? {
     let rawRange = NSRange(raw.startIndex..., in: raw)
-    for pattern in patterns {
+    for pattern in composerPatterns + noComposerPatterns {
         let matchCount = pattern.pattern.numberOfMatches(
             in: raw,
             options: [],
@@ -230,8 +253,8 @@ func matchSubsequentMovement(raw: String, against: ParseResult) -> ParseResult? 
                 range: rawRange,
                 withTemplate: parseTemplate)
             let components = transformed.split(separator: separator, maxSplits: 6, omittingEmptySubsequences: false)
-            if String(components[0]) == against.pieceTitle {
-                return ParseResult(pieceTitle: against.pieceTitle, movementTitle: String(components[1]), parseName: pattern.name)
+            if String(components[0]) == against.firstMatch {
+                return ParseResult(firstMatch: against.firstMatch, secondMatch: String(components[1]), parseName: pattern.name)
             }
         }
     }
@@ -265,7 +288,7 @@ func findComposers() {
  */
 fileprivate func composersContains(candidate: String) -> Bool {
     for composer in composersFound {
-        if composer.range(of: candidate) != nil { return true }
+        if composer.range(of: candidate, options: String.CompareOptions.caseInsensitive) != nil { return true }
     }
     return false
 }

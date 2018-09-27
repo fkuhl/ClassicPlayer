@@ -27,7 +27,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
      Those genres which will be parsed for pieces and movements.
     */
     private static let parsedGenres = ["Classical", "Opera", "Church", "British", "Christmas"]
-    private static let showParses = false
+    private static let showParses = true
     private static let showPieces = false
 
     var window: UIWindow?
@@ -282,7 +282,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         var state = LoadingState.beginPiece
         var i = 0
         var piece: Piece?
-        var firstParse = ParseResult(pieceTitle: "", movementTitle: "", parseName: "") //compiler needs a default value
+        var firstParse = ParseResult(firstMatch: "", secondMatch: "", parseName: "") //compiler needs a default value
         var nextParse: ParseResult?
         repeat {
             let unwrappedTitle = collection[i].title ?? ""
@@ -291,12 +291,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 firstParse = bestParse(in: unwrappedTitle)
                 if AppDelegate.showParses {
                     print("composer: '\(collection[i].composer ?? "")' raw: '\(unwrappedTitle)'")
-                    print("   piece: '\(firstParse.pieceTitle)' movement: '\(firstParse.movementTitle)' (\(firstParse.parseName))")
+                    print("   piece: '\(firstParse.firstMatch)' movement: '\(firstParse.secondMatch)' (\(firstParse.parseName))")
                 }
                 if i + 1 >= collection.count {
                     //no more songs to be movements
                     //so piece name is the track name
-                    piece = storePiece(from: collection[i], entitled: firstParse.pieceTitle, to: album, into: context)
+                    piece = storePiece(from: collection[i], entitled: firstParse.firstMatch, to: album, into: context)
                     i += 1
                     continue
                 }
@@ -304,20 +304,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 nextParse = matchSubsequentMovement(raw: secondTitle, against: firstParse)
                  if let matchedNext = nextParse {
                     if AppDelegate.showParses {
-                        print("      2nd raw: '\(secondTitle)' second movt: '\(matchedNext.movementTitle)' (\(matchedNext.parseName))")
+                        print("      2nd raw: '\(secondTitle)' second movt: '\(matchedNext.secondMatch)' (\(matchedNext.parseName))")
                     }
                     //at least two movements: record piece, then first two movements
-                    let pieceTitle = firstParse.pieceTitle
+                    let pieceTitle = firstParse.firstMatch
                     piece = storePiece(from: collection[i], entitled: pieceTitle, to: album, into: context)
-                    storeMovement(from: collection[i],     named: firstParse.movementTitle,  for: piece!, into: context)
-                    storeMovement(from: collection[i + 1], named: matchedNext.movementTitle, for: piece!, into: context)
+                    storeMovement(from: collection[i],     named: firstParse.secondMatch,  for: piece!, into: context)
+                    storeMovement(from: collection[i + 1], named: matchedNext.secondMatch, for: piece!, into: context)
                     //see what other movement(s) you can find
                     i += 2
                     state = .continuePiece
                 } else {
                     //next is different piece
                     //so piece name is what we found at first
-                    piece = storePiece(from: collection[i], entitled: firstParse.pieceTitle, to: album, into: context)
+                    piece = storePiece(from: collection[i], entitled: firstParse.firstMatch, to: album, into: context)
                     i += 1
                     state = .beginPiece
                 }
@@ -327,9 +327,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 let subsequentParse = matchSubsequentMovement(raw: subsequentTitle, against: firstParse)
                  if let matchedSubsequent = subsequentParse {
                     if AppDelegate.showParses {
-                        print("      Subsq raw: '\(subsequentTitle)' subsq movt: '\(matchedSubsequent.movementTitle)' (\(matchedSubsequent.parseName))")
+                        print("      Subsq raw: '\(subsequentTitle)' subsq movt: '\(matchedSubsequent.secondMatch)' (\(matchedSubsequent.parseName))")
                     }
-                    storeMovement(from: collection[i], named: matchedSubsequent.movementTitle, for: piece!, into: context)
+                    storeMovement(from: collection[i], named: matchedSubsequent.secondMatch, for: piece!, into: context)
                     i += 1
                 } else {
                     state = .beginPiece //don't increment i
