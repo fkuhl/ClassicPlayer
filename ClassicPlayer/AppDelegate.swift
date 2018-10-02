@@ -27,7 +27,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
      Those genres which will be parsed for pieces and movements.
     */
     private static let parsedGenres = ["Classical", "Opera", "Church", "British", "Christmas"]
-    private static let showParses = true
+    private static let showParses = false
     private static let showPieces = false
 
     var window: UIWindow?
@@ -204,7 +204,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     private func loadAppFromMediaLibrary(into context: NSManagedObjectContext) {
+        NSLog("started finding composers")
         findComposers()
+        NSLog("finished finding composers")
         libraryAlbumCount = 0
         libraryPieceCount = 0
         librarySongCount = 0

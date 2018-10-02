@@ -138,9 +138,9 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
                     self.activityIndicator.startAnimating()
                     self.view.setNeedsDisplay()
                     NSLog("started animation")
-                    //DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(5), execute: {
-                    self.appDelegate.replaceAppLibraryWithMedia()
-                    //})
+                    DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100), execute: {
+                        self.appDelegate.replaceAppLibraryWithMedia()
+                    })
                 }
             }))
             alert.addAction(UIAlertAction(title: "Skip the load for now", style: .cancel, handler: { _ in
