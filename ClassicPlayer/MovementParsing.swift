@@ -115,7 +115,7 @@ fileprivate let workColonMovement = try! NSRegularExpression(pattern:
         "(" + upToColon + ")" +
         nonCapturingParen + colonOneOrMoreSpaces + ")" +
         "(" + anythingZeroOrMore + ")",
-                                                                 options: [])
+                                                             options: [])
 
 fileprivate let composerColonWorkParenMovement = try! NSRegularExpression(pattern:
     whitespaceZeroOrMore +
@@ -140,12 +140,13 @@ fileprivate let workParenMovement = try! NSRegularExpression(pattern:
 /**
  The entry for a r.e. pattern used to find pieces and movements.
  */
-fileprivate struct PatternEntry {
+struct PatternEntry: Equatable {
     let pattern: NSRegularExpression
     let name: String
 }
 
 fileprivate let composerCheckSet = [ PatternEntry(pattern: workColonMovement, name: "composerCheck") ]
+fileprivate let workEntry = PatternEntry(pattern: work, name: "work")
 
 /**
  The set of r.e. patterns used to find pieces and movements.
@@ -176,12 +177,16 @@ fileprivate var composersFound = Set<String>()
 struct ParseResult: Equatable {
     let firstMatch: String
     let secondMatch: String
-    let parseName: String
+    let parse: PatternEntry
+    
+    static let undefined = ParseResult(firstMatch: "", secondMatch: "", parse: workEntry)
 }
 
 /**
  Find the best parse of song title into work title and piece title.
- "Best" is defined as "most desirable."
+ "Best" is defined as "most desirable." NOTE: We tried, in pursuit of
+ efficiency, just finding a colon rather than applying the composerCheckSet,
+ but that doesn't deal with whitespace properly.
  
  - Parameter in: unparsed song title
  
@@ -198,7 +203,9 @@ func bestParse(in raw: String) -> ParseResult {
     if let result = apply(patternSet: noComposerPatterns, to: raw) {
         return result  //some no-composer pattern matched
     }
-    return ParseResult(firstMatch: raw, secondMatch: "", parseName: "no match")
+    return ParseResult(firstMatch: raw.trimmingCharacters(in: .whitespacesAndNewlines),
+                       secondMatch: "",
+                       parse: workEntry)
 }
 
 /**
@@ -211,55 +218,112 @@ func bestParse(in raw: String) -> ParseResult {
  - Returns: best ParseResult, if there is a match; otherwise, nil
  */
 fileprivate func apply(patternSet: [PatternEntry], to raw: String) -> ParseResult? {
-
     let rawRange = NSRange(raw.startIndex..., in: raw)
     for pattern in patternSet {
-        let matchCount = pattern.pattern.numberOfMatches(
-            in: raw,
-            options: [],
-            range: rawRange)
-        if  matchCount == 1 {
-            let transformed = pattern.pattern.stringByReplacingMatches(
-                in: raw,
-                options: [],
-                range: rawRange,
-                withTemplate: parseTemplate)
-            let components = transformed.split(separator: separator, maxSplits: 6, omittingEmptySubsequences: false)
-            return ParseResult(firstMatch: String(components[0]), secondMatch: String(components[1]), parseName: pattern.name)
+        let checkingResult = pattern.pattern.matches(in: raw, options: [], range: rawRange)
+        if checkingResult.isEmpty { continue }
+        if checkingResult.count != 1 {
+            //How do you get more than one match?
+            NSLog("Match of raw '\(raw)' with pattern \(pattern.name) produced \(checkingResult.count) ranges!")
+            return nil
         }
+        if checkingResult[0].numberOfRanges < 1 {
+            //not sure how you get a match and no ranges
+            NSLog("Match of raw '\(raw)' with pattern \(pattern.name) but no ranges!")
+            continue
+        }
+        //First range found is entire string; second is first match
+        let firstComponent = extract(from: raw, range: checkingResult[0].range(at: 1))
+        let secondComponent: String
+        if checkingResult[0].numberOfRanges > 2 {
+           secondComponent = extract(from: raw, range: checkingResult[0].range(at: 2))
+        } else {
+            secondComponent = ""
+        }
+        return ParseResult(firstMatch: firstComponent, secondMatch: secondComponent, parse: pattern)
     }
     return nil
 }
 
+//fileprivate func apply(patternSet: [PatternEntry], to raw: String) -> ParseResult? {
+//
+//    let rawRange = NSRange(raw.startIndex..., in: raw)
+//    for pattern in patternSet {
+//        let matchCount = pattern.pattern.numberOfMatches(
+//            in: raw,
+//            options: [],
+//            range: rawRange)
+//        if  matchCount == 1 {
+//            let transformed = pattern.pattern.stringByReplacingMatches(
+//                in: raw,
+//                options: [],
+//                range: rawRange,
+//                withTemplate: parseTemplate)
+//            let components = transformed.split(separator: separator, maxSplits: 6, omittingEmptySubsequences: false)
+//            return ParseResult(firstMatch: String(components[0]), secondMatch: String(components[1]), parse: pattern)
+//        }
+//    }
+//    return nil
+//}
+
 /**
- Given the parse of the first movement, find a matching parse of a subsequent movement.
+ Given the parse of the first movement, see if that parse works for a subsequent movement.
  
  - Parameter raw: unparsed song title
  - Parameter against: parse of first movement title
 
- - Returns: ParseResult, if there is a parse; nil otherwise.
+ - Returns: ParseResult, if it parses the same way; nil otherwise.
  */
 func matchSubsequentMovement(raw: String, against: ParseResult) -> ParseResult? {
     let rawRange = NSRange(raw.startIndex..., in: raw)
-    for pattern in composerPatterns + noComposerPatterns {
-        let matchCount = pattern.pattern.numberOfMatches(
-            in: raw,
-            options: [],
-            range: rawRange)
-        if  matchCount == 1 {
-            let transformed = pattern.pattern.stringByReplacingMatches(
-                in: raw,
-                options: [],
-                range: rawRange,
-                withTemplate: parseTemplate)
-            let components = transformed.split(separator: separator, maxSplits: 6, omittingEmptySubsequences: false)
-            if String(components[0]) == against.firstMatch {
-                return ParseResult(firstMatch: against.firstMatch, secondMatch: String(components[1]), parseName: pattern.name)
-            }
+    let checkingResult = against.parse.pattern.matches(in: raw, options: [], range: rawRange)
+    if checkingResult.isEmpty { return nil }
+    if checkingResult.count != 1 {
+        print("match returned \(checkingResult.count) results--bizarre!")
+        return nil
+    }
+    if checkingResult[0].numberOfRanges < 1 { return nil }
+    //First range found is entire string; second is first match
+    let firstComponent = extract(from: raw, range: checkingResult[0].range(at: 1))
+    if  firstComponent == against.firstMatch {
+        if checkingResult[0].numberOfRanges > 2 {
+            //There was a match on second range (third in checkingResult); that's the movement title.
+            let secondComponent = extract(from: raw, range: checkingResult[0].range(at: 2))
+            return ParseResult(firstMatch: against.firstMatch, secondMatch: secondComponent, parse: against.parse)
+        } else if checkingResult[0].numberOfRanges > 1 {
+            //No match of movement title.
+            return ParseResult(firstMatch: against.firstMatch, secondMatch: "", parse: against.parse)
         }
     }
     return nil
 }
+
+fileprivate func extract(from: String, range: NSRange) -> String {
+    //Create string indices (UTF-8, recall) from the range
+    let startIndex = from.index(from.startIndex, offsetBy: range.location)
+    let endIndex = from.index(startIndex, offsetBy: range.length)
+    return String(from[startIndex..<endIndex])
+}
+
+//func matchSubsequentMovement(raw: String, against: ParseResult) -> ParseResult? {
+//    let rawRange = NSRange(raw.startIndex..., in: raw)
+//    let matchCount = against.parse.pattern.numberOfMatches(
+//        in: raw,
+//        options: [],
+//        range: rawRange)
+//    if  matchCount == 1 {
+//        let transformed = against.parse.pattern.stringByReplacingMatches(
+//            in: raw,
+//            options: [],
+//            range: rawRange,
+//            withTemplate: parseTemplate)
+//        let components = transformed.split(separator: separator, maxSplits: 6, omittingEmptySubsequences: false)
+//        if String(components[0]) == against.firstMatch {
+//            return ParseResult(firstMatch: against.firstMatch, secondMatch: String(components[1]), parse: against.parse)
+//        }
+//    }
+//    return nil
+//}
 
 /**
  Find and store all the composers that occur in songs. Called from AppDelegate.
