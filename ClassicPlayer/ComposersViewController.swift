@@ -159,8 +159,8 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
             let alert = UIAlertController(title: "No Access to Media Library", message: message, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "Go to Settings", style: .default, handler: { _ in
                 DispatchQueue.main.async {
-                    UIApplication.shared.open(URL(string: UIApplicationOpenSettingsURLString)!,
-                                              options: [:],
+                    UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!,
+                                              options: convertToUIApplicationOpenExternalURLOptionsKeyDictionary([:]),
                                               completionHandler: nil)
                 }
             }))
@@ -311,3 +311,8 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
     }
 }
 
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToUIApplicationOpenExternalURLOptionsKeyDictionary(_ input: [String: Any]) -> [UIApplication.OpenExternalURLOptionsKey: Any] {
+	return Dictionary(uniqueKeysWithValues: input.map { key, value in (UIApplication.OpenExternalURLOptionsKey(rawValue: key), value)})
+}

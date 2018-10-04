@@ -44,11 +44,11 @@ class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableV
         super.viewDidLoad()
         trackTable.delegate = self
         trackTable.dataSource = self
-        trackTable.rowHeight = UITableViewAutomaticDimension
+        trackTable.rowHeight = UITableView.automaticDimension
         trackTable.estimatedRowHeight = 64.0
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(fontSizeChanged),
-                                               name: .UIContentSizeCategoryDidChange,
+                                               name: UIContentSizeCategory.didChangeNotification,
                                                object: nil)
     }
     

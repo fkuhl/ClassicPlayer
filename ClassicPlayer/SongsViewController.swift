@@ -35,7 +35,7 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
         self.title = "Songs"
         trackTable.delegate = self
         trackTable.dataSource = self
-        trackTable.rowHeight = UITableViewAutomaticDimension
+        trackTable.rowHeight = UITableView.automaticDimension
         trackTable.estimatedRowHeight = 128.0
         searchController.searchResultsUpdater = self
         searchController.obscuresBackgroundDuringPresentation = false

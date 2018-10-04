@@ -35,11 +35,11 @@ class SelectedPiecesViewController: UIViewController, NSFetchedResultsController
         super.viewDidLoad()
         self.tableView.delegate = self
         self.tableView.dataSource = self
-        self.tableView.rowHeight = UITableViewAutomaticDimension
+        self.tableView.rowHeight = UITableView.automaticDimension
         self.tableView.estimatedRowHeight = 72.0
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(fontSizeChanged),
-                                               name: .UIContentSizeCategoryDidChange,
+                                               name: UIContentSizeCategory.didChangeNotification,
                                                object: nil)
     }
     

@@ -38,7 +38,7 @@ class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         //NSLog("AlbumsVC.VDL")
        self.tableView.delegate = self
         self.tableView.dataSource = self
-        self.tableView.rowHeight = UITableViewAutomaticDimension //Autolayout determines height!
+        self.tableView.rowHeight = UITableView.automaticDimension //Autolayout determines height!
         self.tableView.estimatedRowHeight = 128.0
         searchController.searchResultsUpdater = self
         searchController.obscuresBackgroundDuringPresentation = false

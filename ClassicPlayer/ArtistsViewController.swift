@@ -26,7 +26,7 @@ class ArtistsViewController: UIViewController, UITableViewDelegate, UITableViewD
         super.viewDidLoad()
         self.tableView.delegate = self
         self.tableView.dataSource = self
-        self.tableView.rowHeight = UITableViewAutomaticDimension //Autolayout determines height!
+        self.tableView.rowHeight = UITableView.automaticDimension //Autolayout determines height!
         self.tableView.estimatedRowHeight = 64.0
         searchController.searchResultsUpdater = self
         searchController.obscuresBackgroundDuringPresentation = false

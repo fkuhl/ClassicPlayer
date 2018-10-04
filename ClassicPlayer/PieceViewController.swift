@@ -46,11 +46,11 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
         super.viewDidLoad()
         self.movementTable.delegate = self
         self.movementTable.dataSource = self
-        self.movementTable.rowHeight = UITableViewAutomaticDimension
+        self.movementTable.rowHeight = UITableView.automaticDimension
         self.movementTable.estimatedRowHeight = 64.0
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(fontSizeChanged),
-                                               name: .UIContentSizeCategoryDidChange,
+                                               name: UIContentSizeCategory.didChangeNotification,
                                                object: nil)
    }
     

@@ -43,7 +43,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     // MARK: - App delegate
 
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         return true
     }
 
@@ -78,7 +78,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         do {
             //In addition to setting this audio mode, info.plist contains a "Required background modes" key,
             //with an "audio" ("app plays audio ... AirPlay") entry.
-            try audioSession.setCategory(AVAudioSessionCategoryPlayback)
+            try audioSession.setCategory(convertFromAVAudioSessionCategory(AVAudioSession.Category.playback))
         } catch {
             let error = error as NSError
             NotificationCenter.default.post(Notification(name: .initializingError,
@@ -542,3 +542,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 }
 
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromAVAudioSessionCategory(_ input: AVAudioSession.Category) -> String {
+	return input.rawValue
+}

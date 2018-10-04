@@ -39,7 +39,7 @@ class PlaylistsViewController: UIViewController, UITableViewDelegate, UITableVie
         super.viewDidLoad()
         self.tableView.delegate = self
         self.tableView.dataSource = self
-        self.tableView.rowHeight = UITableViewAutomaticDimension
+        self.tableView.rowHeight = UITableView.automaticDimension
         self.tableView.estimatedRowHeight = 72.0
     }
     
