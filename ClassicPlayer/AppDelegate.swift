@@ -27,7 +27,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
      Those genres which will be parsed for pieces and movements.
     */
     private static let parsedGenres = ["Classical", "Opera", "Church", "British", "Christmas"]
-    private static let showParses = false
+    private static let showParses = true
     private static let showPieces = false
 
     var window: UIWindow?
@@ -277,61 +277,65 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     private func loadPieces(for album: Album, from collection: [MPMediaItem], into context: NSManagedObjectContext) {
         if collection.count < 1 { return }
-//        if collection.count < 2 {
-//            _ = storePiece(from: collection[0], entitled: collection[0].title ?? "", to: album, into: context)
-//            return
-//        }
         var state = LoadingState.beginPiece
         var i = 0
         var piece: Piece?
-        var firstParse = ParseResult.undefined //compiler needs a default value
-        var nextParse: ParseResult?
+        var commonPrefix = ""
+        var titleForFirstMovement = ""
         repeat {
-            let unwrappedTitle = collection[i].title ?? ""
+            let unwrappedTitle = removeComposer(from: collection[i].title ?? "")
             switch state {
             case .beginPiece:
-                firstParse = bestParse(in: unwrappedTitle)
-                if AppDelegate.showParses {
-                    print("composer: '\(collection[i].composer ?? "")' raw: '\(unwrappedTitle)'")
-                    print("   piece: '\(firstParse.firstMatch)' movement: '\(firstParse.secondMatch)' (\(firstParse.parse.name))")
-                }
                 if i + 1 >= collection.count {
                     //no more songs to be movements
                     //so piece name is the track name
-                    piece = storePiece(from: collection[i], entitled: firstParse.firstMatch, to: album, into: context)
+                    piece = storePiece(from: collection[i], entitled: unwrappedTitle, to: album, into: context)
+                    librarySongCount += 1
+                    if AppDelegate.showParses {
+                        print("piece title: '\(unwrappedTitle)'")
+                    }
                     i += 1
                     continue
                 }
-                let secondTitle = collection[i + 1].title ?? ""
-                nextParse = matchSubsequentMovement(raw: secondTitle, against: firstParse)
-                if let matchedNext = nextParse {
-                    if AppDelegate.showParses {
-                        print("      2nd raw: '\(secondTitle)' second movt: '\(matchedNext.secondMatch)' (\(matchedNext.parse.name))")
-                    }
+                let unwrappedNextTitle = removeComposer(from: collection[i+1].title ?? "")
+                commonPrefix = unwrappedTitle.commonPrefix(with: unwrappedNextTitle)
+                if commonPrefix.count >= minimumWorkTitleLength {
                     //at least two movements: record piece, then first two movements
-                    let pieceTitle = firstParse.firstMatch
-                    piece = storePiece(from: collection[i], entitled: pieceTitle, to: album, into: context)
-                    storeMovement(from: collection[i],     named: firstParse.secondMatch,  for: piece!, into: context)
-                    storeMovement(from: collection[i + 1], named: matchedNext.secondMatch, for: piece!, into: context)
+                    titleForFirstMovement = unwrappedTitle
+                    let movementTitle1 = unwrappedTitle.deleting(prefix: commonPrefix)
+                    let movementTitle2 = unwrappedNextTitle.deleting(prefix: commonPrefix)
+                    piece = storePiece(from: collection[i], entitled: commonPrefix, to: album, into: context)
+                    storeMovement(from: collection[i],     named: movementTitle1, for: piece!, into: context)
+                    storeMovement(from: collection[i + 1], named: movementTitle2, for: piece!, into: context)
+                    librarySongCount += 2
+                    if AppDelegate.showParses {
+                        print("piece title: '\(commonPrefix)' raw '\(unwrappedTitle)'")
+                        print("      movt '\(movementTitle1)'")
+                        print("      movt '\(movementTitle2)' raw '\(unwrappedNextTitle)'")
+                    }
                     //see what other movement(s) you can find
                     i += 2
                     state = .continuePiece
                 } else {
                     //next is different piece
                     //so piece name is what we found at first
-                    piece = storePiece(from: collection[i], entitled: firstParse.firstMatch, to: album, into: context)
+                    piece = storePiece(from: collection[i], entitled: unwrappedTitle, to: album, into: context)
+                    if AppDelegate.showParses {
+                        print("piece title: '\(unwrappedTitle)'")
+                    }
                     i += 1
                     state = .beginPiece
                 }
             case .continuePiece:
                 if i >= collection.count { continue }
-                let subsequentTitle = collection[i].title ?? ""
-                let subsequentParse = matchSubsequentMovement(raw: subsequentTitle, against: firstParse)
-                 if let matchedSubsequent = subsequentParse {
+                let subsequentTitle = removeComposer(from: collection[i].title ?? "")
+                if commonPrefix == titleForFirstMovement.commonPrefix(with: subsequentTitle) {
+                    let movementTitle = subsequentTitle.deleting(prefix: commonPrefix)
+                    storeMovement(from: collection[i], named: movementTitle, for: piece!, into: context)
+                    librarySongCount += 1
                     if AppDelegate.showParses {
-                        print("      Subsq raw: '\(subsequentTitle)' subsq movt: '\(matchedSubsequent.secondMatch)' (\(matchedSubsequent.parse.name))")
+                        print("      subs '\(movementTitle)' raw: '\(subsequentTitle)'")
                     }
-                    storeMovement(from: collection[i], named: matchedSubsequent.secondMatch, for: piece!, into: context)
                     i += 1
                 } else {
                     state = .beginPiece //don't increment i
@@ -355,7 +359,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         song.duration = AppDelegate.durationAsString(item.playbackDuration)
         song.title = item.title
         song.trackURL = item.assetURL
-        librarySongCount += 1
     }
 
     private func storePiece(from mediaItem: MPMediaItem, entitled title: String, to album: Album, into context: NSManagedObjectContext) -> Piece {
@@ -381,7 +384,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         song.duration = AppDelegate.durationAsString(mediaItem.playbackDuration)
         song.title = mediaItem.title
         song.trackURL = mediaItem.assetURL
-        librarySongCount += 1
         return piece
     }
     

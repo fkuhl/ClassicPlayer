@@ -146,6 +146,7 @@ struct PatternEntry: Equatable {
 }
 
 fileprivate let composerCheckSet = [ PatternEntry(pattern: workColonMovement, name: "composerCheck") ]
+fileprivate let composerCheck = PatternEntry(pattern: workColonMovement, name: "composerCheck")
 fileprivate let workEntry = PatternEntry(pattern: work, name: "work")
 
 /**
@@ -180,6 +181,19 @@ struct ParseResult: Equatable {
     let parse: PatternEntry
     
     static let undefined = ParseResult(firstMatch: "", secondMatch: "", parse: workEntry)
+}
+
+let minimumWorkTitleLength = 7 //kinda arbitrary
+
+//func findCommonPrefix(between raw1: String, and raw2: String) -> String {
+//    return removeComposer(from: raw1).commonPrefix(with: removeComposer(from: raw2))
+//}
+
+extension String {
+    func deleting(prefix: String) -> String {
+        guard self.hasPrefix(prefix) else { return self }
+        return String(self.dropFirst(prefix.count))
+    }
 }
 
 /**
@@ -245,27 +259,6 @@ fileprivate func apply(patternSet: [PatternEntry], to raw: String) -> ParseResul
     return nil
 }
 
-//fileprivate func apply(patternSet: [PatternEntry], to raw: String) -> ParseResult? {
-//
-//    let rawRange = NSRange(raw.startIndex..., in: raw)
-//    for pattern in patternSet {
-//        let matchCount = pattern.pattern.numberOfMatches(
-//            in: raw,
-//            options: [],
-//            range: rawRange)
-//        if  matchCount == 1 {
-//            let transformed = pattern.pattern.stringByReplacingMatches(
-//                in: raw,
-//                options: [],
-//                range: rawRange,
-//                withTemplate: parseTemplate)
-//            let components = transformed.split(separator: separator, maxSplits: 6, omittingEmptySubsequences: false)
-//            return ParseResult(firstMatch: String(components[0]), secondMatch: String(components[1]), parse: pattern)
-//        }
-//    }
-//    return nil
-//}
-
 /**
  Given the parse of the first movement, see if that parse works for a subsequent movement.
  
@@ -305,25 +298,20 @@ fileprivate func extract(from: String, range: NSRange) -> String {
     return String(from[startIndex..<endIndex])
 }
 
-//func matchSubsequentMovement(raw: String, against: ParseResult) -> ParseResult? {
-//    let rawRange = NSRange(raw.startIndex..., in: raw)
-//    let matchCount = against.parse.pattern.numberOfMatches(
-//        in: raw,
-//        options: [],
-//        range: rawRange)
-//    if  matchCount == 1 {
-//        let transformed = against.parse.pattern.stringByReplacingMatches(
-//            in: raw,
-//            options: [],
-//            range: rawRange,
-//            withTemplate: parseTemplate)
-//        let components = transformed.split(separator: separator, maxSplits: 6, omittingEmptySubsequences: false)
-//        if String(components[0]) == against.firstMatch {
-//            return ParseResult(firstMatch: against.firstMatch, secondMatch: String(components[1]), parse: against.parse)
-//        }
-//    }
-//    return nil
-//}
+func removeComposer(from: String) -> String {
+    let rawRange = NSRange(from.startIndex..., in: from)
+    let checkingResult = composerCheck.pattern.matches(in: from, options: [], range: rawRange)
+    if checkingResult.isEmpty { return from }
+    if checkingResult.count != 1 {
+        print("match returned \(checkingResult.count) results--bizarre!")
+        return from
+    }
+    if checkingResult[0].numberOfRanges < 3 { return from }
+    //First range found is entire string; second is first match
+    let prospectiveComposer = extract(from: from, range: checkingResult[0].range(at: 1))
+    if !composersContains(candidate: prospectiveComposer) { return from }
+    return extract(from: from, range: checkingResult[0].range(at: 2))
+}
 
 /**
  Find and store all the composers that occur in songs. Called from AppDelegate.
