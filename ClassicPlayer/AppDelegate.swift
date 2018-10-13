@@ -299,6 +299,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     //no more songs to be movements
                     //so piece name is the track name
                     piece = storePiece(from: collection[i], entitled: firstParse.firstMatch, to: album, into: context)
+                    librarySongCount += 1
                     i += 1
                     continue
                 }
@@ -313,6 +314,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     piece = storePiece(from: collection[i], entitled: pieceTitle, to: album, into: context)
                     storeMovement(from: collection[i],     named: firstParse.secondMatch,  for: piece!, into: context)
                     storeMovement(from: collection[i + 1], named: matchedNext.secondMatch, for: piece!, into: context)
+                    librarySongCount += 2
                     //see what other movement(s) you can find
                     i += 2
                     state = .continuePiece
@@ -320,6 +322,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     //next is different piece
                     //so piece name is what we found at first
                     piece = storePiece(from: collection[i], entitled: firstParse.firstMatch, to: album, into: context)
+                    librarySongCount += 1
                     i += 1
                     state = .beginPiece
                 }
@@ -332,6 +335,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                         print("      Subsq raw: '\(subsequentTitle)' subsq movt: '\(matchedSubsequent.secondMatch)' (\(matchedSubsequent.parse.name))")
                     }
                     storeMovement(from: collection[i], named: matchedSubsequent.secondMatch, for: piece!, into: context)
+                    librarySongCount += 1
                     i += 1
                 } else {
                     state = .beginPiece //don't increment i
@@ -355,7 +359,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         song.duration = AppDelegate.durationAsString(item.playbackDuration)
         song.title = item.title
         song.trackURL = item.assetURL
-        librarySongCount += 1
     }
 
     private func storePiece(from mediaItem: MPMediaItem, entitled title: String, to album: Album, into context: NSManagedObjectContext) -> Piece {
@@ -381,7 +384,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         song.duration = AppDelegate.durationAsString(mediaItem.playbackDuration)
         song.title = mediaItem.title
         song.trackURL = mediaItem.assetURL
-        librarySongCount += 1
         return piece
     }
     

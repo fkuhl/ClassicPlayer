@@ -245,27 +245,6 @@ fileprivate func apply(patternSet: [PatternEntry], to raw: String) -> ParseResul
     return nil
 }
 
-//fileprivate func apply(patternSet: [PatternEntry], to raw: String) -> ParseResult? {
-//
-//    let rawRange = NSRange(raw.startIndex..., in: raw)
-//    for pattern in patternSet {
-//        let matchCount = pattern.pattern.numberOfMatches(
-//            in: raw,
-//            options: [],
-//            range: rawRange)
-//        if  matchCount == 1 {
-//            let transformed = pattern.pattern.stringByReplacingMatches(
-//                in: raw,
-//                options: [],
-//                range: rawRange,
-//                withTemplate: parseTemplate)
-//            let components = transformed.split(separator: separator, maxSplits: 6, omittingEmptySubsequences: false)
-//            return ParseResult(firstMatch: String(components[0]), secondMatch: String(components[1]), parse: pattern)
-//        }
-//    }
-//    return nil
-//}
-
 /**
  Given the parse of the first movement, see if that parse works for a subsequent movement.
  
@@ -304,26 +283,6 @@ fileprivate func extract(from: String, range: NSRange) -> String {
     let endIndex = from.index(startIndex, offsetBy: range.length)
     return String(from[startIndex..<endIndex])
 }
-
-//func matchSubsequentMovement(raw: String, against: ParseResult) -> ParseResult? {
-//    let rawRange = NSRange(raw.startIndex..., in: raw)
-//    let matchCount = against.parse.pattern.numberOfMatches(
-//        in: raw,
-//        options: [],
-//        range: rawRange)
-//    if  matchCount == 1 {
-//        let transformed = against.parse.pattern.stringByReplacingMatches(
-//            in: raw,
-//            options: [],
-//            range: rawRange,
-//            withTemplate: parseTemplate)
-//        let components = transformed.split(separator: separator, maxSplits: 6, omittingEmptySubsequences: false)
-//        if String(components[0]) == against.firstMatch {
-//            return ParseResult(firstMatch: against.firstMatch, secondMatch: String(components[1]), parse: against.parse)
-//        }
-//    }
-//    return nil
-//}
 
 /**
  Find and store all the composers that occur in songs. Called from AppDelegate.
