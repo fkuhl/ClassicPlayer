@@ -59,9 +59,9 @@ class SelectedPiecesViewController: UIViewController, NSFetchedResultsController
     
     private func updateUI() {
         self.title = displayTitle
-        let context:NSManagedObjectContext! = (UIApplication.shared.delegate as! AppDelegate).context
+        let context:NSManagedObjectContext! = (UIApplication.shared.delegate as! AppDelegate).mainThreadContext
         let request = NSFetchRequest<Piece>()
-        request.entity = NSEntityDescription.entity(forEntityName: "Piece", in:context)
+        request.entity = NSEntityDescription.entity(forEntityName: "Piece", in: context)
         request.predicate = NSPredicate(format: "%K == %@", selectionField!, selectionValue!)
         request.resultType = .managedObjectResultType
         request.returnsDistinctResults = true

@@ -8,7 +8,12 @@
 
 import UIKit
 
-class InfoViewController: UIViewController {
+protocol ProgressDelegate {
+    func setProgress(progress: Float)
+}
+
+class InfoViewController: UIViewController, ProgressDelegate {
+    
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
     @IBOutlet weak var buildAndVersionStack: UIStackView!
@@ -20,14 +25,15 @@ class InfoViewController: UIViewController {
     @IBOutlet weak var pieces: UILabel!
     @IBOutlet weak var movements: UILabel!
     @IBOutlet weak var activityBackground: UIView!
-    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+    @IBOutlet weak var progressBar: UIProgressView!
     
     // MARK: - UIViewController
 
     override func viewDidLoad() {
         super.viewDidLoad()
         self.activityBackground.isHidden = true
-        self.activityIndicator.isHidden = true
+        self.progressBar.isHidden = true
+        appDelegate.progressDelegate = nil
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(updateUI),
                                                name: .dataAvailable,
@@ -61,11 +67,12 @@ class InfoViewController: UIViewController {
     
     @objc
     private func updateUI() {
+        //You might not think this needs to put a task on the main thread, but this gets call from
+        //a number of places.
         DispatchQueue.main.async {
-            NSLog("stopping animation")
-            self.activityIndicator.stopAnimating()
             self.activityBackground.isHidden = true
-            self.activityIndicator.isHidden = true
+            self.progressBar.isHidden = true
+            self.appDelegate.progressDelegate = nil
             let appDelegate = UIApplication.shared.delegate as! AppDelegate
             self.version?.text = "version \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") ?? "")"
             self.buildNumber?.text = "build \(Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") ?? "")"
@@ -87,13 +94,11 @@ class InfoViewController: UIViewController {
             alert.addAction(UIAlertAction(title: "Load newest media", style: .destructive, handler: { _ in
                 DispatchQueue.main.async {
                     self.activityBackground.isHidden = false
-                    self.activityIndicator.isHidden = false
-                    self.activityIndicator.startAnimating()
+                    self.progressBar.isHidden = false
+                    self.appDelegate.progressDelegate = self
+                    self.progressBar.setProgress(0.0, animated: false)
                     self.view.setNeedsDisplay()
-                    NSLog("started animation")
-                    DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100), execute: {
-                        self.appDelegate.replaceAppLibraryWithMedia()
-                    })
+                    self.appDelegate.replaceAppLibraryWithMedia()
                 }
             }))
             alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { _ in
@@ -143,6 +148,17 @@ class InfoViewController: UIViewController {
                 exit(1)
             }))
             self.present(alert, animated: true)
+        }
+    }
+    
+    
+    // MARK: - ProgressDelegate
+    
+
+    func setProgress(progress: Float) {
+        DispatchQueue.main.async {
+            self.progressBar.setProgress(progress, animated: true)
+            self.view.setNeedsDisplay()
         }
     }
 }

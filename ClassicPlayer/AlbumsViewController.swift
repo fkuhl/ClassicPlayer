@@ -62,7 +62,7 @@ class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     private func loadAlbumsSortedBy(_ sort: AlbumSorts) {
         do {
-            let context:NSManagedObjectContext! = (UIApplication.shared.delegate as! AppDelegate).context
+            let context:NSManagedObjectContext! = (UIApplication.shared.delegate as! AppDelegate).mainThreadContext
             let request = NSFetchRequest<Album>()
             request.entity = NSEntityDescription.entity(forEntityName: "Album", in:context)
             request.resultType = .managedObjectResultType

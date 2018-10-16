@@ -64,7 +64,7 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     private func loadSongsSortedBy(_ sort: SongSorts) {
         do {
-            let context:NSManagedObjectContext! = (UIApplication.shared.delegate as! AppDelegate).context
+            let context:NSManagedObjectContext! = (UIApplication.shared.delegate as! AppDelegate).mainThreadContext
             let request = NSFetchRequest<Song>()
             request.entity = NSEntityDescription.entity(forEntityName: "Song", in:context)
             request.resultType = .managedObjectResultType

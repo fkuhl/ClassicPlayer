@@ -288,10 +288,11 @@ fileprivate func extract(from: String, range: NSRange) -> String {
  Find and store all the composers that occur in songs. Called from AppDelegate.
 
  */
-func findComposers() {
+func findComposers() -> Int {
+    var albumCount = 0
     composersFound = Set<String>()
     let mediaAlbums = MPMediaQuery.albums()
-    if mediaAlbums.collections == nil { return }
+    if mediaAlbums.collections == nil { return 0 }
     for mediaAlbum in mediaAlbums.collections! {
         let mediaAlbumItems = mediaAlbum.items
         for item in mediaAlbumItems {
@@ -299,7 +300,9 @@ func findComposers() {
                 composersFound.insert(composer)
             }
         }
+        albumCount += 1
     }
+    return albumCount
 }
 
 /**

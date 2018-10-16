@@ -216,27 +216,27 @@
                                 </prototypes>
                             </tableView>
                             <view alpha="0.34999999999999998" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="71T-e2-Jpl">
-                                <rect key="frame" x="151.5" y="331" width="72" height="72"/>
-                                <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <rect key="frame" x="122.5" y="352" width="130" height="30"/>
+                                <color key="backgroundColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="72" id="8Tj-lv-8PD"/>
-                                    <constraint firstAttribute="height" constant="72" id="bWt-eH-fdZ"/>
+                                    <constraint firstAttribute="width" constant="130" id="8Tj-lv-8PD"/>
+                                    <constraint firstAttribute="height" constant="30" id="bWt-eH-fdZ"/>
                                 </constraints>
                             </view>
-                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="tzv-XN-JVI">
-                                <rect key="frame" x="155.5" y="335" width="64" height="64"/>
+                            <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="ZeK-PM-TAV">
+                                <rect key="frame" x="127.5" y="362" width="120" height="10"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="64" id="syl-Y6-kQc"/>
-                                    <constraint firstAttribute="width" constant="64" id="uKH-bD-1t2"/>
+                                    <constraint firstAttribute="width" constant="120" id="ZjM-fS-Oid"/>
+                                    <constraint firstAttribute="height" constant="10" id="oNY-hu-RWe"/>
                                 </constraints>
-                            </activityIndicatorView>
+                            </progressView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="tzv-XN-JVI" firstAttribute="centerY" secondItem="fMZ-e6-Ilm" secondAttribute="centerY" id="GnM-ek-9ie"/>
+                            <constraint firstItem="ZeK-PM-TAV" firstAttribute="centerX" secondItem="ktb-Eq-4B3" secondAttribute="centerX" id="DvH-No-WUP"/>
+                            <constraint firstItem="ZeK-PM-TAV" firstAttribute="centerY" secondItem="ktb-Eq-4B3" secondAttribute="centerY" id="FWP-fB-hcd"/>
                             <constraint firstItem="fMZ-e6-Ilm" firstAttribute="bottom" secondItem="ktb-Eq-4B3" secondAttribute="bottom" id="Q47-NY-eXA"/>
                             <constraint firstItem="71T-e2-Jpl" firstAttribute="centerY" secondItem="fMZ-e6-Ilm" secondAttribute="centerY" id="Tb3-Hu-9Ib"/>
-                            <constraint firstItem="tzv-XN-JVI" firstAttribute="centerX" secondItem="fMZ-e6-Ilm" secondAttribute="centerX" id="Ytc-Jb-pM1"/>
                             <constraint firstItem="fMZ-e6-Ilm" firstAttribute="top" secondItem="ktb-Eq-4B3" secondAttribute="top" id="fEu-5G-I6s"/>
                             <constraint firstAttribute="trailing" secondItem="fMZ-e6-Ilm" secondAttribute="trailing" id="m0v-dB-OB0"/>
                             <constraint firstItem="71T-e2-Jpl" firstAttribute="centerX" secondItem="fMZ-e6-Ilm" secondAttribute="centerX" id="vPb-Tq-idM"/>
@@ -247,7 +247,7 @@
                     <navigationItem key="navigationItem" title="Composers" id="xI1-yn-nnW"/>
                     <connections>
                         <outlet property="activityBackground" destination="71T-e2-Jpl" id="2g2-Ln-qV0"/>
-                        <outlet property="activityIndicator" destination="tzv-XN-JVI" id="Ous-b3-HJT"/>
+                        <outlet property="progressBar" destination="ZeK-PM-TAV" id="wr6-bn-Wqw"/>
                         <outlet property="tableView" destination="fMZ-e6-Ilm" id="R3n-SR-4qF"/>
                     </connections>
                 </viewController>
@@ -1353,31 +1353,31 @@
                                     <constraint firstItem="mLy-Kb-lSR" firstAttribute="leading" secondItem="JHc-lx-1Ee" secondAttribute="leading" id="mH1-XA-QqZ"/>
                                 </constraints>
                             </stackView>
-                            <view alpha="0.34999999403953552" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8Fx-vq-o8J">
-                                <rect key="frame" x="151.5" y="283" width="72" height="72"/>
-                                <color key="backgroundColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <view autoresizesSubviews="NO" alpha="0.59999999999999998" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8Fx-vq-o8J">
+                                <rect key="frame" x="112.5" y="304" width="150" height="30"/>
+                                <color key="backgroundColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="72" id="Rkv-p3-sED"/>
-                                    <constraint firstAttribute="width" constant="72" id="wlX-Gj-7mb"/>
+                                    <constraint firstAttribute="height" constant="30" id="Rkv-p3-sED"/>
+                                    <constraint firstAttribute="width" constant="150" id="wlX-Gj-7mb"/>
                                 </constraints>
                             </view>
-                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="xmo-Ph-hxt">
-                                <rect key="frame" x="155.5" y="287" width="64" height="64"/>
+                            <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="jF9-5d-shL">
+                                <rect key="frame" x="127.5" y="314" width="120" height="10"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="64" id="gQe-S3-lTm"/>
-                                    <constraint firstAttribute="height" constant="64" id="ywM-C0-lBP"/>
+                                    <constraint firstAttribute="width" constant="120" id="T6h-xQ-vcO"/>
+                                    <constraint firstAttribute="height" constant="10" id="y37-xK-Bs6"/>
                                 </constraints>
-                            </activityIndicatorView>
+                            </progressView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="xmo-Ph-hxt" firstAttribute="centerX" secondItem="dUu-eD-qcu" secondAttribute="centerX" id="8Ke-oe-v6z"/>
+                            <constraint firstItem="8Fx-vq-o8J" firstAttribute="centerX" secondItem="jF9-5d-shL" secondAttribute="centerX" id="GOs-FZ-IZr"/>
                             <constraint firstItem="8Fx-vq-o8J" firstAttribute="centerX" secondItem="dUu-eD-qcu" secondAttribute="centerX" id="I53-zh-hlh"/>
-                            <constraint firstItem="xmo-Ph-hxt" firstAttribute="centerY" secondItem="dUu-eD-qcu" secondAttribute="centerY" id="Ifq-Dv-TdQ"/>
                             <constraint firstItem="8Fx-vq-o8J" firstAttribute="centerY" secondItem="dUu-eD-qcu" secondAttribute="centerY" id="OyY-M7-lMe"/>
                             <constraint firstItem="dUu-eD-qcu" firstAttribute="trailing" secondItem="JHc-lx-1Ee" secondAttribute="trailing" constant="16" id="Pc6-EO-t5s"/>
                             <constraint firstItem="JHc-lx-1Ee" firstAttribute="leading" secondItem="dUu-eD-qcu" secondAttribute="leading" constant="16" id="QEb-aC-LX5"/>
                             <constraint firstItem="JHc-lx-1Ee" firstAttribute="top" secondItem="dUu-eD-qcu" secondAttribute="top" constant="16" id="Xw1-FT-Wug"/>
+                            <constraint firstItem="8Fx-vq-o8J" firstAttribute="centerY" secondItem="jF9-5d-shL" secondAttribute="centerY" id="rGP-Ja-JJq"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="dUu-eD-qcu"/>
                     </view>
@@ -1385,13 +1385,13 @@
                     <simulatedTabBarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="activityBackground" destination="8Fx-vq-o8J" id="jkd-z1-Uni"/>
-                        <outlet property="activityIndicator" destination="xmo-Ph-hxt" id="J2c-kH-dmW"/>
                         <outlet property="albums" destination="iRn-F0-wHh" id="8Oq-8T-zZk"/>
                         <outlet property="buildAndVersionStack" destination="0nH-fX-xe0" id="Yh6-EV-HuL"/>
                         <outlet property="buildNumber" destination="xQw-1N-ggm" id="0LF-YZ-VFm"/>
                         <outlet property="libraryDate" destination="rS4-8o-ayz" id="xWR-yT-tlE"/>
                         <outlet property="movements" destination="InP-tb-NZa" id="OBJ-Ge-tdD"/>
                         <outlet property="pieces" destination="IeY-lg-un5" id="udF-px-Qm1"/>
+                        <outlet property="progressBar" destination="jF9-5d-shL" id="D2R-7s-i5u"/>
                         <outlet property="songs" destination="KSn-Qg-e6W" id="fEW-iL-V5W"/>
                         <outlet property="version" destination="1ET-3t-75R" id="60d-AN-zAQ"/>
                     </connections>
@@ -1410,7 +1410,7 @@
         <image name="1706-music-note" width="19" height="23"/>
         <image name="info-icon" width="83.5" height="83.5"/>
         <namedColor name="TheBlue">
-            <color red="0.17647058823529413" green="0.24705882352941178" blue="0.58431372549019611" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.47450980392156861" green="0.50588235294117645" blue="0.88235294117647056" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
     </resources>
     <inferredMetricsTieBreakers>

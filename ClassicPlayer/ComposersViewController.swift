@@ -10,11 +10,11 @@ import UIKit
 import CoreData
 import MediaPlayer
 
-class ComposersViewController: UIViewController, NSFetchedResultsControllerDelegate, UITableViewDelegate, UITableViewDataSource, UISearchResultsUpdating {
+class ComposersViewController: UIViewController, NSFetchedResultsControllerDelegate, UITableViewDelegate, UITableViewDataSource, UISearchResultsUpdating, ProgressDelegate {
     
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var activityBackground: UIView!
-    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+    @IBOutlet weak var progressBar: UIProgressView!
     let searchController = UISearchController(searchResultsController: nil)
     private var tableIsLoaded = false
     private var libraryAccessChecked = false
@@ -33,7 +33,8 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
         self.tableView.delegate = self
         self.tableView.dataSource = self
         self.activityBackground.isHidden = true
-        self.activityIndicator.isHidden = true
+        self.progressBar.isHidden = true
+        appDelegate.progressDelegate = nil
         searchController.searchResultsUpdater = self
         searchController.obscuresBackgroundDuringPresentation = false
         searchController.searchBar.placeholder = "Search Composers"
@@ -78,7 +79,7 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
             case .notDetermined:
                 break //not clear how you'd ever get here, as the request will determine authorization
             case .authorized:
-                self.appDelegate.checkLibraryChanged()
+                self.appDelegate.checkLibraryChanged(context: self.appDelegate.mainThreadContext)
             case .restricted:
                 self.alertAndGoToSettings(message: "Media library access restricted by corporate or parental controls")
             case .denied:
@@ -90,7 +91,7 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
     
     @objc
     private func updateUI() {
-        let context:NSManagedObjectContext! = self.appDelegate.context
+        let context:NSManagedObjectContext! = self.appDelegate.mainThreadContext
         let request = NSFetchRequest<NSDictionary>()
         request.entity = NSEntityDescription.entity(forEntityName: "Piece", in:context!)
         request.resultType = .dictionaryResultType
@@ -110,10 +111,8 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
             self.computeSections()
             DispatchQueue.main.async {
                 self.tableView.reloadData()
-                NSLog("stopping animation")
-                self.activityIndicator.stopAnimating()
                 self.activityBackground.isHidden = true
-                self.activityIndicator.isHidden = true
+                self.progressBar.isHidden = true
            }
         }
         catch {
@@ -134,13 +133,12 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
             alert.addAction(UIAlertAction(title: "Load newest media", style: .destructive, handler: { _ in
                 DispatchQueue.main.async {
                     self.activityBackground.isHidden = false
-                    self.activityIndicator.isHidden = false
-                    self.activityIndicator.startAnimating()
+                    self.progressBar.isHidden = false
+                    self.appDelegate.progressDelegate = self
+                    self.progressBar.setProgress(0.0, animated: false)
                     self.view.setNeedsDisplay()
                     NSLog("started animation")
-                    DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100), execute: {
-                        self.appDelegate.replaceAppLibraryWithMedia()
-                    })
+                    self.appDelegate.replaceAppLibraryWithMedia()
                 }
             }))
             alert.addAction(UIAlertAction(title: "Skip the load for now", style: .cancel, handler: { _ in
@@ -308,6 +306,17 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
 
     private func isFiltering() -> Bool {
         return searchController.isActive && !searchBarIsEmpty()
+    }
+    
+    
+    // MARK: - ProgressDelegate
+    
+    
+    func setProgress(progress: Float) {
+        DispatchQueue.main.async {
+            self.progressBar.setProgress(progress, animated: true)
+            self.view.setNeedsDisplay()
+        }
     }
 }
 

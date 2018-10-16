@@ -34,6 +34,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var audioBarSet: [UIImage]?
     var audioPaused: UIImage?
     var audioNotCurrent: UIImage?
+    var progressDelegate: ProgressDelegate?
     
     private var libraryAlbumCount: Int32 = 0
     private var librarySongCount: Int32 = 0
@@ -68,7 +69,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
         // Saves changes in the application's managed object context before the application terminates.
-        self.saveContext()
+        self.save(context: mainThreadContext)
     }
 
     // MARK: - Audio and library
@@ -89,12 +90,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         makeAudioBarSet()
     }
     
-    func checkLibraryChanged() {
+    func checkLibraryChanged(context: NSManagedObjectContext) {
         initializeAudio()
-        let libraryInfos = getMediaLibraryInfo()
+        let libraryInfos = getMediaLibraryInfo(from: context)
         if libraryInfos.count < 1 {
             NSLog("No app library found: load media lib to app")
-            loadMediaLibraryToApp()
+            loadMediaLibraryToApp(context: context)
             return
         }
         mediaLibraryInfo = libraryInfos[0]
@@ -102,12 +103,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             if MPMediaLibrary.default().lastModifiedDate <= storedLastModDate {
                 //use current data
                 NSLog("media lib stored \(MPMediaLibrary.default().lastModifiedDate), app lib stored \(storedLastModDate): use current app lib")
-                logCurrentNumberOfAlbums()
+                logCurrentNumberOfAlbums(context: context)
                 NotificationCenter.default.post(Notification(name: .dataAvailable))
                 return
             }  else {
                 NSLog("media lib stored \(MPMediaLibrary.default().lastModifiedDate), app lib data \(storedLastModDate): media lib changed, replace app lib")
-                logCurrentNumberOfAlbums()
+                logCurrentNumberOfAlbums(context: context)
                 NotificationCenter.default.post(Notification(name: .libraryChanged))
                 return
             }
@@ -119,7 +120,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
     
-    private func getMediaLibraryInfo() -> [MediaLibraryInfo] {
+    private func getMediaLibraryInfo(from context: NSManagedObjectContext) -> [MediaLibraryInfo] {
         let request = NSFetchRequest<MediaLibraryInfo>()
         request.entity = NSEntityDescription.entity(forEntityName: "MediaLibraryInfo", in: context)
         request.resultType = .managedObjectResultType
@@ -135,7 +136,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
     
-    private func logCurrentNumberOfAlbums() {
+    private func logCurrentNumberOfAlbums(context: NSManagedObjectContext) {
         let request = NSFetchRequest<Album>()
         request.entity = NSEntityDescription.entity(forEntityName: "Album", in: context)
         request.resultType = .managedObjectResultType
@@ -154,8 +155,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
      
      - Precondition: App has authorization to access library
     */
-    private func loadMediaLibraryToApp() {
-        self.loadAppFromMediaLibrary(into: context)
+    private func loadMediaLibraryToApp(context: NSManagedObjectContext) {
+        self.loadAppFromMediaLibrary(context: context)
         NotificationCenter.default.post(Notification(name: .dataAvailable))
     }
 
@@ -165,9 +166,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
      - Precondition: App has authorization to access library
      */
     func replaceAppLibraryWithMedia() {
-        self.clearOldData(from: self.context)
-        self.loadAppFromMediaLibrary(into: self.context)
-        NotificationCenter.default.post(Notification(name: .dataAvailable))
+        //Note that the load is done on a background thread!
+        //loadAppFromMediaLibrary makes progress calls back to a delegate,
+        //which must handle its UI updates on main thread.
+        persistentContainer.performBackgroundTask() { (context) in
+            self.clearOldData(from: context)
+            self.loadAppFromMediaLibrary(context: context)
+            self.save(context: context)
+            NotificationCenter.default.post(Notification(name: .dataAvailable))
+        }
     }
     
     private func clearOldData(from context: NSManagedObjectContext) {
@@ -176,7 +183,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             try clearEntities(ofType: "Piece", from: context)
             try clearEntities(ofType: "Album", from: context)
             try clearEntities(ofType: "Song", from: context)
-            saveContext()
+            save(context: context)
         } catch {
             let error = error as NSError
             NotificationCenter.default.post(Notification(name: .clearingError,
@@ -203,9 +210,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return AppDelegate.parsedGenres.contains(genre)
     }
     
-    private func loadAppFromMediaLibrary(into context: NSManagedObjectContext) {
+    private func loadAppFromMediaLibrary(context: NSManagedObjectContext) {
         NSLog("started finding composers")
-        findComposers()
+        let totalAlbumCount = Float(findComposers())
+        let progressIncrement = Int32(totalAlbumCount / 20) //update progress bar 20 times
         NSLog("finished finding composers")
         libraryAlbumCount = 0
         libraryPieceCount = 0
@@ -215,23 +223,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if mediaAlbums.collections == nil { return }
         for mediaAlbum in mediaAlbums.collections! {
             let mediaAlbumItems = mediaAlbum.items
-            libraryAlbumCount += 1
-            if AppDelegate.showPieces && isGenreToParse(mediaAlbumItems[0].genre) {
+            self.libraryAlbumCount += 1
+            if self.libraryAlbumCount % progressIncrement == 0 {
+                self.progressDelegate?.setProgress(progress: Float(self.libraryAlbumCount) / totalAlbumCount)
+            }
+            if AppDelegate.showPieces && self.isGenreToParse(mediaAlbumItems[0].genre) {
                 print("Album: \(mediaAlbumItems[0].value(forProperty: MPMediaItemPropertyComposer) ?? "<anon>"): "
                     + "\(mediaAlbumItems[0].value(forProperty: MPMediaItemPropertyAlbumTrackCount) ?? "") "
                     + "\(mediaAlbumItems[0].value(forProperty: MPMediaItemPropertyAlbumTitle) ?? "<no title>")"
                     + " | \(mediaAlbumItems[0].value(forProperty: MPMediaItemPropertyAlbumArtist) ?? "<no artist>")"
                     + " | \((mediaAlbumItems[0].value(forProperty: "year") as? Int) ?? -1) ")
             }
-            let appAlbum = makeAndFillAlbum(from: mediaAlbumItems, into: context)
-            if isGenreToParse(appAlbum.genre) {
-                loadPieces(for: appAlbum, from: mediaAlbumItems, into: context)
+            let appAlbum = self.makeAndFillAlbum(from: mediaAlbumItems, into: context)
+            if self.isGenreToParse(appAlbum.genre) {
+                self.loadPieces(for: appAlbum, from: mediaAlbumItems, into: context)
             } else {
-                loadSongs(for: appAlbum, from: mediaAlbumItems, into: context)
+                self.loadSongs(for: appAlbum, from: mediaAlbumItems, into: context)
             }
         }
         NSLog("found \(libraryAlbumCount) albums, \(libraryPieceCount) pieces, \(libraryMovementCount) movements, \(librarySongCount) tracks")
-        storeMediaLibraryInfo()
+        storeMediaLibraryInfo(into: context)
     }
     
     private func makeAndFillAlbum(from mediaAlbumItems: [MPMediaItem],  into context: NSManagedObjectContext) -> Album {
@@ -247,9 +258,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return album
     }
     
-    private func storeMediaLibraryInfo() {
+    private func storeMediaLibraryInfo(into context: NSManagedObjectContext) {
         var mediaInfoObject: MediaLibraryInfo
-        let mediaLibraryInfosInStore = getMediaLibraryInfo()
+        let mediaLibraryInfosInStore = getMediaLibraryInfo(from: context)
         if mediaLibraryInfosInStore.count >= 1 {
             mediaInfoObject = mediaLibraryInfosInStore[0]
         } else {
@@ -260,7 +271,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         mediaInfoObject.movementCount = libraryMovementCount
         mediaInfoObject.pieceCount = libraryPieceCount
         mediaInfoObject.songCount = librarySongCount
-        saveContext()
         //NSLog("saved \(libraryAlbumCount) albums and \(libraryPieceCount) pieces for lib at \(mediaInfoObject.lastModifiedDate!)")
     }
     
@@ -520,16 +530,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }()
     
     /**
-     Context to be used by all CoreData operations!
+     Context to be used by all CoreData operations on main thread
     */
-    lazy var context: NSManagedObjectContext = {
+    lazy var mainThreadContext: NSManagedObjectContext = {
         return persistentContainer.viewContext
     }()
 
     // MARK: - Core Data Saving support
 
-    func saveContext () {
-        let context = persistentContainer.viewContext
+    func save(context: NSManagedObjectContext) {
         do {
             NSLog("Saving changes")
             try context.save()
