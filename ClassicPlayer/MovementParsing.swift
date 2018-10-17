@@ -21,6 +21,7 @@ fileprivate let upToDash = "[^-]+"
 fileprivate let upToParen = "[^\\)]+"
 fileprivate let upToDashOrColon = "[^-:]+"
 fileprivate let anythingOneOrMore = ".+"
+fileprivate let anythingOneOrMoreWithDashes = ".+" + nonCapturingParen + "-" + ".+" + ")+"
 fileprivate let anythingZeroOrMore = ".*"
 fileprivate let movementNumber = "[0-9]+"
 fileprivate let period = "\\."
@@ -117,6 +118,24 @@ fileprivate let workColonMovement = try! NSRegularExpression(pattern:
         "(" + anythingZeroOrMore + ")",
                                                              options: [])
 
+fileprivate let composerColonWorkColonMovementIncludingDashes = try! NSRegularExpression(pattern:
+    whitespaceZeroOrMore +
+        upToColon +
+        ":" +
+        whitespaceZeroOrMore +
+        "(" + upToColon + ")" +
+        nonCapturingParen + colonOneOrMoreSpaces + ")" +
+        "(" + anythingOneOrMoreWithDashes + ")",
+                                                                          options: [])
+
+//No. 1 in D: Largo - Allegro - Largo - Allegro
+fileprivate let workColonMovementIncludingDashes = try! NSRegularExpression(pattern:
+    whitespaceZeroOrMore +
+        "(" + upToColon + ")" +
+        nonCapturingParen + colonOneOrMoreSpaces + ")" +
+        "(" + anythingOneOrMoreWithDashes + ")",
+                                                             options: [])
+
 fileprivate let composerColonWorkParenMovement = try! NSRegularExpression(pattern:
     whitespaceZeroOrMore +
         upToColon +
@@ -143,30 +162,54 @@ fileprivate let workParenMovement = try! NSRegularExpression(pattern:
 struct PatternEntry: Equatable {
     let pattern: NSRegularExpression
     let name: String
+    let allowedSubsequentPatterns: [NSRegularExpression]
 }
 
-fileprivate let composerCheckSet = [ PatternEntry(pattern: workColonMovement, name: "composerCheck") ]
-fileprivate let workEntry = PatternEntry(pattern: work, name: "work")
+fileprivate let composerCheckSet = [ PatternEntry(pattern: workColonMovement, name: "composerCheck", allowedSubsequentPatterns: []) ]
+fileprivate let workEntry = PatternEntry(pattern: work, name: "work", allowedSubsequentPatterns: [])
 
 /**
  The set of r.e. patterns used to find pieces and movements.
  These are listed in order of decreasing desirability.
  */
 fileprivate let composerPatterns = [
-    PatternEntry(pattern: composerColonWorkRomMovement, name: "composerColonWorkRomMovement"),
-    PatternEntry(pattern: composerColonWorkNrMovement, name: "composerColonWorkNrMovement"),
-    PatternEntry(pattern: composerColonWorkDashMovement, name: "composerColonWorkDashMovement"),
-    PatternEntry(pattern: composerColonWorkColonMovement, name: "composerColonWorkColonMovement"),
-    PatternEntry(pattern: composerColonWorkParenMovement, name: "composerColonWorkParenMovement"),
-    PatternEntry(pattern: composerColonWork, name: "composerColonWork"),
+    PatternEntry(pattern: composerColonWorkRomMovement, name: "composerColonWorkRomMovement",
+                 allowedSubsequentPatterns: [composerColonWorkRomMovement]),
+    PatternEntry(pattern: composerColonWorkNrMovement, name: "composerColonWorkNrMovement",
+                 allowedSubsequentPatterns: [composerColonWorkNrMovement]),
+    PatternEntry(pattern: composerColonWorkColonMovementIncludingDashes, name: "composerColonWorkColonMovementIncludingDashes",
+                 allowedSubsequentPatterns: [composerColonWorkColonMovement, composerColonWorkColonMovementIncludingDashes]),
+    PatternEntry(pattern: composerColonWorkDashMovement, name: "composerColonWorkDashMovement",
+                 allowedSubsequentPatterns: [composerColonWorkDashMovement]),
+    PatternEntry(pattern: composerColonWorkColonMovement, name: "composerColonWorkColonMovement",
+                 allowedSubsequentPatterns: [composerColonWorkColonMovement, composerColonWorkColonMovementIncludingDashes]),
+    PatternEntry(pattern: composerColonWorkParenMovement, name: "composerColonWorkParenMovement",
+                 allowedSubsequentPatterns: [composerColonWorkParenMovement]),
+    PatternEntry(pattern: composerColonWork, name: "composerColonWork",
+                 allowedSubsequentPatterns: [composerColonWork]),
 ]
 
+/*
+ If dash comes before colon, then this parses correctly:
+ BWV 10 Cantata "Meine Seel Erhebt Den Herren" - 1. Chor: Meine Seel Erhebt Den Herren
+ and this:
+ No. 1 in D: Largo - Allegro - Largo - Allegro
+ is parsed picked up by the "including dashes" patterns.
+ */
+
 fileprivate let noComposerPatterns = [
-    PatternEntry(pattern: workRomMovement, name: "workRomMovement"),
-    PatternEntry(pattern: workNrMovement, name: "workNrMovement"),
-    PatternEntry(pattern: workDashMovement, name: "workDashMovement"),
-    PatternEntry(pattern: workColonMovement, name: "workColonMovement"),
-    PatternEntry(pattern: workParenMovement, name: "workParenMovement"),
+    PatternEntry(pattern: workRomMovement, name: "workRomMovement",
+                 allowedSubsequentPatterns: [workRomMovement]),
+    PatternEntry(pattern: workNrMovement, name: "workNrMovement",
+                 allowedSubsequentPatterns: [workNrMovement]),
+    PatternEntry(pattern: workColonMovementIncludingDashes, name: "workColonMovementIncludingDashes",
+                 allowedSubsequentPatterns: [workColonMovement, workColonMovementIncludingDashes]),
+    PatternEntry(pattern: workDashMovement, name: "workDashMovement",
+                 allowedSubsequentPatterns: [workDashMovement]),
+    PatternEntry(pattern: workColonMovement, name: "workColonMovement",
+                 allowedSubsequentPatterns: [workColonMovement, workColonMovementIncludingDashes]),
+    PatternEntry(pattern: workParenMovement, name: "workParenMovement",
+                 allowedSubsequentPatterns: [workParenMovement]),
 ]
 
 fileprivate let separator: Character = "|"
@@ -218,35 +261,42 @@ func bestParse(in raw: String) -> ParseResult {
  - Returns: best ParseResult, if there is a match; otherwise, nil
  */
 fileprivate func apply(patternSet: [PatternEntry], to raw: String) -> ParseResult? {
-    let rawRange = NSRange(raw.startIndex..., in: raw)
     for pattern in patternSet {
-        let checkingResult = pattern.pattern.matches(in: raw, options: [], range: rawRange)
-        if checkingResult.isEmpty { continue }
-        if checkingResult.count != 1 {
-            //How do you get more than one match?
-            NSLog("Match of raw '\(raw)' with pattern \(pattern.name) produced \(checkingResult.count) ranges!")
-            return nil
+        if let result = apply(expression: pattern.pattern, to: raw) {
+            return ParseResult(firstMatch: result.firstMatch, secondMatch: result.secondMatch, parse: pattern)
         }
-        if checkingResult[0].numberOfRanges < 1 {
-            //not sure how you get a match and no ranges
-            NSLog("Match of raw '\(raw)' with pattern \(pattern.name) but no ranges!")
-            continue
-        }
-        //First range found is entire string; second is first match
-        let firstComponent = extract(from: raw, range: checkingResult[0].range(at: 1))
-        let secondComponent: String
-        if checkingResult[0].numberOfRanges > 2 {
-           secondComponent = extract(from: raw, range: checkingResult[0].range(at: 2))
-        } else {
-            secondComponent = ""
-        }
-        return ParseResult(firstMatch: firstComponent, secondMatch: secondComponent, parse: pattern)
     }
     return nil
 }
 
+fileprivate func apply(expression: NSRegularExpression, to raw: String) -> (firstMatch: String, secondMatch: String)? {
+    let rawRange = NSRange(raw.startIndex..., in: raw)
+    let checkingResult = expression.matches(in: raw, options: [], range: rawRange)
+    if checkingResult.isEmpty { return nil }
+    if checkingResult.count != 1 {
+        //How do you get more than one match?
+        NSLog("Match of raw '\(raw)' with pattern \(expression) produced \(checkingResult.count) ranges!")
+        return nil
+    }
+    if checkingResult[0].numberOfRanges < 1 {
+        //not sure how you get a match and no ranges
+        NSLog("Match of raw '\(raw)' with pattern \(expression) but no ranges!")
+        return nil
+    }
+    //First range found is entire string; second is first match
+    let firstComponent = extract(from: raw, range: checkingResult[0].range(at: 1))
+    let secondComponent: String
+    if checkingResult[0].numberOfRanges > 2 {
+        secondComponent = extract(from: raw, range: checkingResult[0].range(at: 2))
+    } else {
+        secondComponent = ""
+    }
+    return (firstMatch: firstComponent, secondMatch: secondComponent)
+}
+
 /**
- Given the parse of the first movement, see if that parse works for a subsequent movement.
+ Given the parse of the first movement, see if any of the allowed subsequent parses work for a subsequent movement.
+ Require that the parse of the subsequent title return the same piece name.
  
  - Parameter raw: unparsed song title
  - Parameter against: parse of first movement title
@@ -254,24 +304,11 @@ fileprivate func apply(patternSet: [PatternEntry], to raw: String) -> ParseResul
  - Returns: ParseResult, if it parses the same way; nil otherwise.
  */
 func matchSubsequentMovement(raw: String, against: ParseResult) -> ParseResult? {
-    let rawRange = NSRange(raw.startIndex..., in: raw)
-    let checkingResult = against.parse.pattern.matches(in: raw, options: [], range: rawRange)
-    if checkingResult.isEmpty { return nil }
-    if checkingResult.count != 1 {
-        print("match returned \(checkingResult.count) results--bizarre!")
-        return nil
-    }
-    if checkingResult[0].numberOfRanges < 1 { return nil }
-    //First range found is entire string; second is first match
-    let firstComponent = extract(from: raw, range: checkingResult[0].range(at: 1))
-    if  firstComponent == against.firstMatch {
-        if checkingResult[0].numberOfRanges > 2 {
-            //There was a match on second range (third in checkingResult); that's the movement title.
-            let secondComponent = extract(from: raw, range: checkingResult[0].range(at: 2))
-            return ParseResult(firstMatch: against.firstMatch, secondMatch: secondComponent, parse: against.parse)
-        } else if checkingResult[0].numberOfRanges > 1 {
-            //No match of movement title.
-            return ParseResult(firstMatch: against.firstMatch, secondMatch: "", parse: against.parse)
+    for pattern in against.parse.allowedSubsequentPatterns {
+        if let result = apply(expression: pattern, to: raw) {
+            if against.firstMatch == result.firstMatch {
+                return ParseResult(firstMatch: result.firstMatch, secondMatch: result.secondMatch, parse: against.parse)
+            }
         }
     }
     return nil

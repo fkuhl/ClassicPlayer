@@ -538,7 +538,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     // MARK: - Core Data Saving support
 
-    func save(context: NSManagedObjectContext) {
+    private func save(context: NSManagedObjectContext) {
         do {
             NSLog("Saving changes")
             try context.save()

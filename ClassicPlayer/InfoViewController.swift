@@ -67,7 +67,7 @@ class InfoViewController: UIViewController, ProgressDelegate {
     
     @objc
     private func updateUI() {
-        //You might not think this needs to put a task on the main thread, but this gets call from
+        //You might not think this needs to put a task on the main thread, but this gets called from
         //a number of places.
         DispatchQueue.main.async {
             self.activityBackground.isHidden = true
@@ -78,10 +78,10 @@ class InfoViewController: UIViewController, ProgressDelegate {
             self.buildNumber?.text = "build \(Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") ?? "")"
             let dateString = appDelegate.mediaLibraryInfo?.lastModifiedDate?.description(with: Locale.current) ?? "[n.d.]"
             self.libraryDate?.text = "Media library date: \(dateString)"
-            self.albums?.text = "Albums: \(appDelegate.mediaLibraryInfo?.albumCount ?? -1)"
-            self.songs?.text = "Songs (tracks): \(appDelegate.mediaLibraryInfo?.songCount ?? -1)"
-            self.pieces?.text = "Pieces: \(appDelegate.mediaLibraryInfo?.pieceCount ?? -1)"
-            self.movements?.text = "Movements: \(appDelegate.mediaLibraryInfo?.movementCount ?? -1)"
+            self.albums?.text = "Albums: \(appDelegate.mediaLibraryInfo?.albumCount ?? 0)"
+            self.songs?.text = "Songs (tracks): \(appDelegate.mediaLibraryInfo?.songCount ?? 0)"
+            self.pieces?.text = "Pieces: \(appDelegate.mediaLibraryInfo?.pieceCount ?? 0)"
+            self.movements?.text = "Movements: \(appDelegate.mediaLibraryInfo?.movementCount ?? 0)"
         }
     }
     
