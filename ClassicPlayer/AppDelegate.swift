@@ -271,7 +271,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         mediaInfoObject.movementCount = libraryMovementCount
         mediaInfoObject.pieceCount = libraryPieceCount
         mediaInfoObject.songCount = librarySongCount
-        //NSLog("saved \(libraryAlbumCount) albums and \(libraryPieceCount) pieces for lib at \(mediaInfoObject.lastModifiedDate!)")
+        NSLog("saved \(libraryAlbumCount) albums and \(libraryPieceCount) pieces for lib at \(mediaInfoObject.lastModifiedDate!)")
     }
     
     private func loadSongs(for album: Album, from collection: [MPMediaItem], into context: NSManagedObjectContext) {

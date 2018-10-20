@@ -65,7 +65,7 @@ fileprivate let workDashMovement = try! NSRegularExpression(pattern:
         "(" + anythingZeroOrMore + ")",
                                                             options: [])
 
-//Chopin: Piano Sonatas, Bruckner: Symphony #9
+//Chopin: Piano Sonata #2 In B Flat Minor, Op. 35, B 128, "Funeral March" - 1. Grave
 fileprivate let composerColonWorkNrMovement = try! NSRegularExpression(pattern:
         whitespaceZeroOrMore +
         upToColon +
@@ -76,6 +76,7 @@ fileprivate let composerColonWorkNrMovement = try! NSRegularExpression(pattern:
         "(" + movementNumber + period + space + anythingOneOrMore + ")",
                                                                        options: [])
 
+//BWV 249 Easter Oratorio - 4. Rec. (C, S, T, B): O Kalter Mánner Sinn
 fileprivate let  workNrMovement = try! NSRegularExpression(pattern:
     whitespaceZeroOrMore +
         "(" + upToDash + ")" +
@@ -83,7 +84,7 @@ fileprivate let  workNrMovement = try! NSRegularExpression(pattern:
         "(" + movementNumber + period + space + anythingOneOrMore + ")",
                                                            options: [])
 
-//need an example of this. Boccherini Cello Ctos, Adams: Century Rolls don't have composer
+//Brahms: Clarinet Sonata No. 2 in E-Flat Major, Op. 120: II. Appassionato; Ma non troppo allegro
 fileprivate let composerColonWorkRomMovement = try! NSRegularExpression(pattern:
     whitespaceZeroOrMore +
         upToColon +
@@ -94,6 +95,8 @@ fileprivate let composerColonWorkRomMovement = try! NSRegularExpression(pattern:
         "(" + romanNumber + dashOrPeriod + anythingOneOrMore + ")",
                                                                         options: [])
 
+//Boccherini
+//Cello concerto #1, G 474. I-Allegro moderato
 fileprivate let workRomMovement = try! NSRegularExpression(pattern:
     whitespaceZeroOrMore +
         "(" + upToDash + ")" +
@@ -111,6 +114,8 @@ fileprivate let composerColonWorkColonMovement = try! NSRegularExpression(patter
         "(" + anythingZeroOrMore + ")",
                                                                         options: [])
 
+//Boccherini
+//Quintetto No. 4 In Re Maggiore "Fandango" Per Corda e Chitarra (G. 448): Pastorale
 fileprivate let workColonMovement = try! NSRegularExpression(pattern:
     whitespaceZeroOrMore +
         "(" + upToColon + ")" +
@@ -128,6 +133,7 @@ fileprivate let composerColonWorkColonMovementIncludingDashes = try! NSRegularEx
         "(" + anythingOneOrMoreWithDashes + ")",
                                                                           options: [])
 
+//Corelli
 //No. 1 in D: Largo - Allegro - Largo - Allegro
 fileprivate let workColonMovementIncludingDashes = try! NSRegularExpression(pattern:
     whitespaceZeroOrMore +
@@ -202,6 +208,10 @@ fileprivate let noComposerPatterns = [
                  allowedSubsequentPatterns: [workRomMovement]),
     PatternEntry(pattern: workNrMovement, name: "workNrMovement",
                  allowedSubsequentPatterns: [workNrMovement]),
+//    Corelli
+//    No. 2 in F: Vivace - Allegro - Adagio - Vivace - Allegro - Largo andante
+//    No. 2 in F: Allegro
+//    No. 2 in F: Grave - Andante largo - Allegro
     PatternEntry(pattern: workColonMovementIncludingDashes, name: "workColonMovementIncludingDashes",
                  allowedSubsequentPatterns: [workColonMovement, workColonMovementIncludingDashes]),
     PatternEntry(pattern: workDashMovement, name: "workDashMovement",

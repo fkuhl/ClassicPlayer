@@ -76,12 +76,14 @@ class InfoViewController: UIViewController, ProgressDelegate {
             let appDelegate = UIApplication.shared.delegate as! AppDelegate
             self.version?.text = "version \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") ?? "")"
             self.buildNumber?.text = "build \(Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") ?? "")"
+            NSLog("updating info with \(appDelegate.mediaLibraryInfo?.albumCount ?? 0) albums and \(appDelegate.mediaLibraryInfo?.songCount ?? 0) songs at \(appDelegate.mediaLibraryInfo?.lastModifiedDate)" )
             let dateString = appDelegate.mediaLibraryInfo?.lastModifiedDate?.description(with: Locale.current) ?? "[n.d.]"
             self.libraryDate?.text = "Media library date: \(dateString)"
             self.albums?.text = "Albums: \(appDelegate.mediaLibraryInfo?.albumCount ?? 0)"
             self.songs?.text = "Songs (tracks): \(appDelegate.mediaLibraryInfo?.songCount ?? 0)"
             self.pieces?.text = "Pieces: \(appDelegate.mediaLibraryInfo?.pieceCount ?? 0)"
             self.movements?.text = "Movements: \(appDelegate.mediaLibraryInfo?.movementCount ?? 0)"
+            self.view.setNeedsDisplay()
         }
     }
     
