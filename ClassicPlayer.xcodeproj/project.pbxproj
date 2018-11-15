@@ -12,6 +12,7 @@
 		2718224A204B4678003345C0 /* InfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27182249204B4678003345C0 /* InfoViewController.swift */; };
 		27188EAB201D238B00CB5427 /* AlbumTracksViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27188EAA201D238B00CB5427 /* AlbumTracksViewController.swift */; };
 		271D2E23202CD7E4005FE857 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 271D2E22202CD7E4005FE857 /* Settings.bundle */; };
+		2728D4C221877C2B005DB467 /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2728D4C121877C2B005DB467 /* Player.swift */; };
 		2733A60C1FE5FDE000E1EE77 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2733A60B1FE5FDE000E1EE77 /* AppDelegate.swift */; };
 		2733A60F1FE5FDE000E1EE77 /* ClassicPlayer.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2733A60D1FE5FDE000E1EE77 /* ClassicPlayer.xcdatamodeld */; };
 		2733A6161FE5FDE000E1EE77 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2733A6141FE5FDE000E1EE77 /* Main.storyboard */; };
@@ -54,6 +55,7 @@
 		27182249204B4678003345C0 /* InfoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InfoViewController.swift; sourceTree = "<group>"; };
 		27188EAA201D238B00CB5427 /* AlbumTracksViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumTracksViewController.swift; sourceTree = "<group>"; };
 		271D2E22202CD7E4005FE857 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
+		2728D4C121877C2B005DB467 /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
 		2733A6081FE5FDE000E1EE77 /* ClassicPlayer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClassicPlayer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2733A60B1FE5FDE000E1EE77 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		2733A60E1FE5FDE000E1EE77 /* ClassicPlayer.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ClassicPlayer.xcdatamodel; sourceTree = "<group>"; };
@@ -147,6 +149,7 @@
 				2733A6141FE5FDE000E1EE77 /* Main.storyboard */,
 				274404A02103ABF1004E0152 /* MovementParsing.swift */,
 				27FCDEDD1FF2D8D6001D81CE /* PieceViewController.swift */,
+				2728D4C121877C2B005DB467 /* Player.swift */,
 				27CFA1572034D35D00D6F613 /* PlaylistsViewController.swift */,
 				270CA5D1203B7D7100325862 /* PlaylistViewController.swift */,
 				2733A6301FE5FE8600E1EE77 /* README.md */,
@@ -287,6 +290,7 @@
 				27FCDEDC1FF2D220001D81CE /* ComposersViewController.swift in Sources */,
 				2755D7341FE9629C006F49AE /* Movement+CoreDataProperties.swift in Sources */,
 				2755D72F1FE9629C006F49AE /* Piece+CoreDataClass.swift in Sources */,
+				2728D4C221877C2B005DB467 /* Player.swift in Sources */,
 				2733A60C1FE5FDE000E1EE77 /* AppDelegate.swift in Sources */,
 				27CFA1582034D35D00D6F613 /* PlaylistsViewController.swift in Sources */,
 				277B21E1202258F20052DF42 /* AlbumSortViewController.swift in Sources */,

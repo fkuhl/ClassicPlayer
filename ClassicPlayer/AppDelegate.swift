@@ -9,6 +9,7 @@
 import UIKit
 import CoreData
 import MediaPlayer
+import AVKit
 
 extension Notification.Name {
     static let dataAvailable       = Notification.Name("com.tyndalesoft.ClassicPlayer.DataAvailable")
@@ -41,9 +42,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     private var libraryPieceCount: Int32 = 0
     private var libraryMovementCount: Int32 = 0
     var mediaLibraryInfo: MediaLibraryInfo?
+    
+    // MARK: - AVPlayer
+    
+    let player = Player()
+    
 
     // MARK: - App delegate
-
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         return true
     }
