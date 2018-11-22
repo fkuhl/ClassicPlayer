@@ -18,8 +18,10 @@ class TrackTableViewCell: UITableViewCell {
 }
 
 class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
-    private let myControllerID = "com.tyndalesoft.ClassicPlayer.AlbumTracksViewController"
-    private var observingContext = "com.tyndalesoft.ClassicPlayer.AlbumTracksViewController"
+    private let myControllerID = Bundle.main.bundleIdentifier! + ".AlbumTracksViewController"
+    private var observingContext = Bundle.main.bundleIdentifier! + ".AlbumTracksViewController"
+    private var rateObserver = RateObserver()
+    private let indexObserver = IndexObserver()
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     weak var album: Album? {
         didSet {
@@ -34,11 +36,10 @@ class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableV
     @IBOutlet weak var trackTable: UITableView!
     @IBOutlet weak var year: UILabel!
     @IBOutlet weak var tracks: UILabel!
-    var playerViewController: AVPlayerViewController?
+    weak var playerViewController: AVPlayerViewController?
     var trackData: [MPMediaItem]?
-    var currentlyPlayingIndex = 0 //what's next in the player
-    var firstIndexInPlayer = 0    //index of first movement in player
-    var playerRate: Float = 0.0
+    var firstTableIndexInPlayer = 0    //index of first movement in player
+    //var playerRate: Float = 0.0
 
     // MARK: - UIViewController
 
@@ -104,31 +105,22 @@ class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableV
         //Priority lowered on artwork height to prevent unsatisfiable constraint.
         adjustStack()
         print("player ID \(appDelegate.player.settingController) active: \(appDelegate.player.isActive) " +
-            "index: \(appDelegate.player.type == .queue ? String(appDelegate.player.currentPlayerIndex) : "single") " +
-            "starting: \(appDelegate.player.startingIndex)")
+            "current table index: \(appDelegate.player.type == .queue ? String(appDelegate.player.currentTableIndex) : "single") ")
         playerViewController?.player = appDelegate.player.player
         if appDelegate.player.isActive {
             if appDelegate.player.settingController == myControllerID {
-                currentlyPlayingIndex = appDelegate.player.currentPlayerIndex
-                firstIndexInPlayer = appDelegate.player.startingIndex
+                indexObserver.start(on: self)
+                rateObserver.start(on: self)
             }
         } else {
             installPlayer()   //fresh player
         }
-        appDelegate.player.addObserver(self,
-                                       forKeyPath: #keyPath(Player.currentPlayerIndex),
-                                       options: [.old, .new],
-                                       context: &observingContext)
-        appDelegate.player.player.addObserver(self,
-                                       forKeyPath: #keyPath(AVPlayer.rate),
-                                       options: [.old, .new],
-                                       context: &observingContext)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        appDelegate.player.removeObserver(self, forKeyPath: #keyPath(Player.currentPlayerIndex))
-        appDelegate.player.player.removeObserver(self, forKeyPath: #keyPath(AVPlayer.rate))
+        indexObserver.stop(on: self)
+        rateObserver.stop(on: self)
     }
     
     @objc private func fontSizeChanged() {
@@ -164,8 +156,8 @@ class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableV
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Track", for: indexPath) as! TrackTableViewCell
         if appDelegate.player.settingController == myControllerID {
-            if indexPath.row == currentlyPlayingIndex + firstIndexInPlayer {
-                if playerRate < 0.5 {
+            if indexPath.row == appDelegate.player.currentTableIndex {
+                if appDelegate.player.player.rate < 0.5 {
                     cell.indicator.stopAnimating()
                     cell.indicator.animationImages = nil
                     cell.indicator.image = appDelegate.audioPaused
@@ -185,7 +177,7 @@ class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableV
             //If it's not our player, show no audio indicators
             cell.indicator.stopAnimating()
             cell.indicator.animationImages = nil
-            cell.indicator.image = nil
+            cell.indicator.image = appDelegate.audioNotCurrent
         }
         let trackEntry = trackData![indexPath.row]
         cell.title.text = trackEntry.title
@@ -196,18 +188,13 @@ class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableV
     // MARK: - UITableViewDelegate
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        firstIndexInPlayer = indexPath.row
-        currentlyPlayingIndex = 0
+        firstTableIndexInPlayer = indexPath.row
         let partialList = trackData![indexPath.row...]
         let playerItems: [AVPlayerItem] = partialList.map {
             item in
             return AVPlayerItem(url: item.assetURL!)
         }
-        setQueuePlayer(items: playerItems, startingIndex: firstIndexInPlayer)
-//        if currentlyPlayingIndex == trackData!.count - 1 {
-//            //Just pause after last item, rather than searching for stuff.
-//            playerViewController?.player?.actionAtItemEnd = .pause
-//        }
+        setQueuePlayer(items: playerItems, startingIndex: firstTableIndexInPlayer)
         tableView.reloadData()
         playerViewController?.player?.play() //Tap on the table, it starts to play
     }
@@ -216,16 +203,10 @@ class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableV
 
     private func setQueuePlayer(items: [AVPlayerItem], startingIndex: Int) {
         playerViewController?.player = appDelegate.player.setPlayer(items: items,
-                                                                    startingIndex: startingIndex,
+                                                                    tableIndex: startingIndex,
                                                                     settingController: myControllerID)
-        playerViewController?.player?.addObserver(self,
-                                                  forKeyPath: #keyPath(AVPlayer.rate),
-                                                  options: [.old, .new],
-                                                  context: &observingContext)
-        appDelegate.player.addObserver(self,
-                                       forKeyPath: #keyPath(Player.currentPlayerIndex),
-                                       options: [.old, .new],
-                                       context: &observingContext)
+        indexObserver.start(on: self)
+        rateObserver.start(on: self)
         if items.count == 1 {
             playerViewController?.player?.actionAtItemEnd = .pause
         }
@@ -245,8 +226,7 @@ class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableV
                 item in
                 return AVPlayerItem(url: item.assetURL!)
             }
-            firstIndexInPlayer = 0 //start with all movements
-            currentlyPlayingIndex = 0
+            firstTableIndexInPlayer = 0 //start with all movements
             setQueuePlayer(items: playerItems, startingIndex: 0)
         }
     }
@@ -255,17 +235,9 @@ class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableV
                                of object: Any?,
                                change: [NSKeyValueChangeKey : Any]?,
                                context: UnsafeMutableRawPointer?) {
-        guard context == &observingContext else {
-            super.observeValue(forKeyPath: keyPath,
-                               of: object,
-                               change: change,
-                               context: context)
-            return
-        }
         if keyPath == #keyPath(Player.currentPlayerIndex) {
             if let currentItemIndex = change?[.newKey] as? Int {
-                currentlyPlayingIndex = currentItemIndex
-                print("new currentItem, index \(currentlyPlayingIndex)")
+                print("new currentItem, index \(currentItemIndex)")
                 //this is done in Player now
 //                if currentlyPlayingIndex == trackData!.count - 1 {
 //                    //Just pause after last item, rather than searching for stuff.
@@ -276,7 +248,7 @@ class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableV
                 let deadlineTime = DispatchTime.now() + .milliseconds(100)
                 DispatchQueue.main.asyncAfter(deadline: deadlineTime) {
                     if let visibleIndexPaths = self.trackTable.indexPathsForVisibleRows {
-                        let currentPath = IndexPath(indexes: [0, self.currentlyPlayingIndex])
+                        let currentPath = IndexPath(indexes: [0, self.appDelegate.player.currentTableIndex])
                         if !visibleIndexPaths.contains(currentPath) {
                             self.trackTable.scrollToRow(at: currentPath, at: .bottom, animated: true)
                         }
@@ -286,7 +258,7 @@ class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableV
         }
         if keyPath == #keyPath(AVPlayer.rate) {
             if let rate = change?[.newKey] as? NSNumber {
-                playerRate = rate.floatValue
+                print("player rate: \(rate.floatValue)")
                 DispatchQueue.main.async { self.trackTable.reloadData() }
             }
         }
