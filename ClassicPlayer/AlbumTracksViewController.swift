@@ -115,6 +115,7 @@ class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableV
         } else {
             installPlayer()   //fresh player
         }
+        trackTable.reloadData()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -194,6 +195,8 @@ class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableV
             item in
             return AVPlayerItem(url: item.assetURL!)
         }
+        indexObserver.stop(on: self)
+        rateObserver.stop(on: self)
         setQueuePlayer(items: playerItems, startingIndex: firstTableIndexInPlayer)
         tableView.reloadData()
         playerViewController?.player?.play() //Tap on the table, it starts to play
@@ -238,11 +241,6 @@ class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableV
         if keyPath == #keyPath(Player.currentPlayerIndex) {
             if let currentItemIndex = change?[.newKey] as? Int {
                 print("new currentItem, index \(currentItemIndex)")
-                //this is done in Player now
-//                if currentlyPlayingIndex == trackData!.count - 1 {
-//                    //Just pause after last item, rather than searching for stuff.
-//                    (object as? AVPlayer)?.actionAtItemEnd = .pause
-//                }
                 DispatchQueue.main.async { self.trackTable.reloadData() }
                 //As of iOS 11, the scroll seems to need a little delay.
                 let deadlineTime = DispatchTime.now() + .milliseconds(100)

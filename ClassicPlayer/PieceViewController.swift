@@ -88,6 +88,7 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
         } else {
             installPlayer()   //fresh player
         }
+        movementTable.reloadData()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -160,8 +161,9 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
         firstTableIndexInPlayer = indexPath.row
         let partialList = (selectedPiece?.movements)!.array[indexPath.row...]
         let playerItems = partialList.map {
-            movementAny in
-            return AVPlayerItem(url: ((movementAny as? Movement)?.trackURL)!)
+            (movementAny: Any) -> AVPlayerItem in
+            let item = AVPlayerItem(url: ((movementAny as? Movement)?.trackURL)!)
+            return item
         }
         indexObserver.stop(on: self)
         rateObserver.stop(on: self)
