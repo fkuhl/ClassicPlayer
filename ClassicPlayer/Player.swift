@@ -6,7 +6,7 @@
 //  Copyright © 2018 TyndaleSoft LLC. All rights reserved.
 //
 
-import Foundation
+import UIKit
 import AVKit
 
 enum PlayerType {
@@ -20,9 +20,10 @@ enum PlayerType {
     private var _player = AVPlayer(playerItem: nil)
     private var _type = PlayerType.single
     private var _settingController = ""
+    private var _label = "not init"
     //controller's table index when player was set. Doesn't change as player runs
     private var _tableIndex = 0
-    //index of tracks in current player
+    //index of current tracks in player
     @objc dynamic var currentPlayerIndex = 0 //for KVO to work, I can't make this read-only
     private var _queueSize = 0
 
@@ -30,18 +31,19 @@ enum PlayerType {
         get { return _player }
     }
 
-    func setPlayer(url: URL, settingController: String) -> AVPlayer? {
+    func setPlayer(url: URL, settingController: String, label: String) -> AVPlayer? {
         _player.pause()
         _player = AVPlayer(url: url)
         _type = .single
         _settingController = settingController
+        _label = label
         _tableIndex = -1 //nonsensical
         currentPlayerIndex = 0 //but this won't change
         _queueSize = 1
         return _player
     }
 
-    func setPlayer(items: [AVPlayerItem], tableIndex: Int, settingController: String) -> AVPlayer? {
+    func setPlayer(items: [AVPlayerItem], tableIndex: Int, settingController: String, label: String) -> AVPlayer? {
         //_type is .queue only by going through this code, which installs an observer
 //        if _type == .queue {
 //            _player.removeObserver(self, forKeyPath: #keyPath(AVPlayer.currentItem))
@@ -50,6 +52,7 @@ enum PlayerType {
         _player = AVQueuePlayer(items: items)
         _type = .queue
         _settingController = settingController
+        _label = label
         _tableIndex = tableIndex
         currentPlayerIndex = 0
         _queueSize = items.count
@@ -79,13 +82,10 @@ enum PlayerType {
             }
         }
     }
-//
-//    @objc dynamic var currentPlayerIndex: Int {
-//        get {
-//            assert(_type == .queue, "No current index except for queue player")
-//            return _currentPlayerIndex
-//        }
-//    }
+    
+    var label: String {
+        get { return _label }
+    }
     
     var currentTableIndex: Int {
         get { return _tableIndex + currentPlayerIndex }
@@ -112,4 +112,22 @@ enum PlayerType {
         }
     }
 
+}
+
+func add(label: String, to playerVC: AVPlayerViewController) -> UILabel {
+    let uiLabel = UILabel()
+    uiLabel.translatesAutoresizingMaskIntoConstraints = false
+    uiLabel.text = label
+    uiLabel.textAlignment = .center
+    //uiLabel.adjustsFontSizeToFitWidth = true
+    uiLabel.textColor = UIColor.gray
+    uiLabel.backgroundColor = UIColor.black
+    let playerVCV = playerVC.contentOverlayView
+    playerVCV?.addSubview(uiLabel)
+    let playerVCVLayout = playerVCV?.safeAreaLayoutGuide
+    uiLabel.heightAnchor.constraint(equalToConstant: 30.0).isActive = true
+    uiLabel.topAnchor.constraint(equalTo: playerVCVLayout!.topAnchor).isActive = true
+    uiLabel.leadingAnchor.constraint(equalTo: playerVCVLayout!.leadingAnchor, constant: 60.0).isActive = true
+    uiLabel.trailingAnchor.constraint(equalTo: playerVCVLayout!.trailingAnchor, constant: -60.0).isActive = true
+    return uiLabel
 }

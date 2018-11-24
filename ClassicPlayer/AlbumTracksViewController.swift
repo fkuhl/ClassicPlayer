@@ -18,7 +18,6 @@ class TrackTableViewCell: UITableViewCell {
 }
 
 class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
-    private let myControllerID = Bundle.main.bundleIdentifier! + ".AlbumTracksViewController"
     private var observingContext = Bundle.main.bundleIdentifier! + ".AlbumTracksViewController"
     private var rateObserver = RateObserver()
     private let indexObserver = IndexObserver()
@@ -38,8 +37,7 @@ class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableV
     @IBOutlet weak var tracks: UILabel!
     weak var playerViewController: AVPlayerViewController?
     var trackData: [MPMediaItem]?
-    var firstTableIndexInPlayer = 0    //index of first movement in player
-    //var playerRate: Float = 0.0
+    weak var playerLabel: UILabel?
 
     // MARK: - UIViewController
 
@@ -82,6 +80,7 @@ class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableV
                 if item.assetURL != nil { trackData?.append(item) } //iTunes LPs have nil URLs!!
             }
         }
+        print("AlbumTracksVC loaded \(trackData?.count ?? -1) tracks")
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -101,14 +100,14 @@ class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableV
             yearText = "[n.d.]"
         }
         year?.text = "\(yearText) • \(album?.genre ?? "")"
-        tracks?.text = "tracks: \(album?.trackCount ?? 0)"
+        tracks?.text = "tracks: \(/*album?.trackCount ?? 0*/ trackData!.count)"
         //Priority lowered on artwork height to prevent unsatisfiable constraint.
         adjustStack()
         print("player ID \(appDelegate.player.settingController) active: \(appDelegate.player.isActive) " +
             "current table index: \(appDelegate.player.type == .queue ? String(appDelegate.player.currentTableIndex) : "single") ")
         playerViewController?.player = appDelegate.player.player
         if appDelegate.player.isActive {
-            if appDelegate.player.settingController == myControllerID {
+            if appDelegate.player.settingController == displayID() {
                 indexObserver.start(on: self)
                 rateObserver.start(on: self)
             }
@@ -156,7 +155,7 @@ class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableV
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Track", for: indexPath) as! TrackTableViewCell
-        if appDelegate.player.settingController == myControllerID {
+        if appDelegate.player.settingController == displayID() {
             if indexPath.row == appDelegate.player.currentTableIndex {
                 if appDelegate.player.player.rate < 0.5 {
                     cell.indicator.stopAnimating()
@@ -189,7 +188,6 @@ class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableV
     // MARK: - UITableViewDelegate
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        firstTableIndexInPlayer = indexPath.row
         let partialList = trackData![indexPath.row...]
         let playerItems: [AVPlayerItem] = partialList.map {
             item in
@@ -197,17 +195,40 @@ class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableV
         }
         indexObserver.stop(on: self)
         rateObserver.stop(on: self)
-        setQueuePlayer(items: playerItems, startingIndex: firstTableIndexInPlayer)
-        tableView.reloadData()
+        setQueuePlayer(items: playerItems, startingIndex: indexPath.row)
         playerViewController?.player?.play() //Tap on the table, it starts to play
+        playerLabel?.text = labelForPlayer(atIndex: indexPath.row)
+        playerViewController?.contentOverlayView?.setNeedsDisplay()
+        tableView.reloadData()
+    }
+    
+    private func labelForPlayer(atIndex: Int) -> String {
+        let composer = trackData![atIndex].composer
+        let artist = trackData![atIndex].artist
+        let title = trackData![atIndex].title
+        if let uComposer = composer {
+            return uComposer + ": " + (title ?? "")
+        } else if let uArtist = artist {
+            return uArtist + ": " + (title ?? "")
+        } else {
+            return title ?? ""
+        }
+    }
+    
+    private func displayID() -> String {
+        return Bundle.main.bundleIdentifier! + ".AlbumTracksViewController"
+            + "." + (album?.title ?? "")
     }
 
     // MARK: - Player management
 
     private func setQueuePlayer(items: [AVPlayerItem], startingIndex: Int) {
+        let newLabel = labelForPlayer(atIndex: startingIndex)
         playerViewController?.player = appDelegate.player.setPlayer(items: items,
                                                                     tableIndex: startingIndex,
-                                                                    settingController: myControllerID)
+                                                                    settingController: displayID(),
+                                                                    label: newLabel)
+        playerLabel?.text = newLabel
         indexObserver.start(on: self)
         rateObserver.start(on: self)
         if items.count == 1 {
@@ -218,8 +239,9 @@ class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableV
     //The embed segue that places the AVPlayerViewController in the ContainerVC
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "PlayTracks" {
-            //print("AlbumTracksVC.prepareForSegue")
-            self.playerViewController = segue.destination as? AVPlayerViewController
+            print("AlbumTracksVC.prepareForSegue")
+            playerViewController = segue.destination as? AVPlayerViewController
+            playerLabel = ClassicPlayer.add(label: appDelegate.player.label, to: playerViewController!)
         }
     }
 
@@ -229,7 +251,6 @@ class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableV
                 item in
                 return AVPlayerItem(url: item.assetURL!)
             }
-            firstTableIndexInPlayer = 0 //start with all movements
             setQueuePlayer(items: playerItems, startingIndex: 0)
         }
     }
@@ -241,7 +262,11 @@ class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableV
         if keyPath == #keyPath(Player.currentPlayerIndex) {
             if let currentItemIndex = change?[.newKey] as? Int {
                 print("new currentItem, index \(currentItemIndex)")
-                DispatchQueue.main.async { self.trackTable.reloadData() }
+                DispatchQueue.main.async {
+                    self.playerLabel?.text = self.labelForPlayer(atIndex: self.appDelegate.player.currentTableIndex)
+                    self.playerViewController?.contentOverlayView?.setNeedsDisplay()
+                    self.trackTable.reloadData()
+                }
                 //As of iOS 11, the scroll seems to need a little delay.
                 let deadlineTime = DispatchTime.now() + .milliseconds(100)
                 DispatchQueue.main.asyncAfter(deadline: deadlineTime) {

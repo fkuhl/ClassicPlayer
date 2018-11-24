@@ -178,7 +178,8 @@ class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         cell.albumArtist?.text = albumEntry.artist
         let yearText = albumEntry.year > 0 ? "\(albumEntry.year)" : "[n.d.]"
         cell.year?.text = "\(yearText) • \(albumEntry.genre ?? "")"
-        cell.trackCount?.text = "tracks: \(albumEntry.trackCount)"
+        //There may not have been an entry for track counts in the iTunes data
+        cell.trackCount?.text = (albumEntry.trackCount > 0) ? "tracks: \(albumEntry.trackCount)" : ""
         let id = albumEntry.albumID
         if let realID = id {
             cell.artwork.image = AppDelegate.artworkFor(album: realID)

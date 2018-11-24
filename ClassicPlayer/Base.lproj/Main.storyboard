@@ -352,6 +352,7 @@
                                 <subviews>
                                     <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="ywQ-hv-IID">
                                         <rect key="frame" x="0.0" y="0.0" width="120" height="120"/>
+                                        <gestureRecognizers/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="120" id="7Po-DM-mV4"/>
                                             <constraint firstAttribute="width" constant="120" id="hP0-ia-4uX"/>
@@ -379,7 +380,11 @@
                                                 <nil key="highlightedColor"/>
                                             </label>
                                         </subviews>
+                                        <gestureRecognizers/>
                                         <viewLayoutGuide key="safeArea" id="ZRM-xa-Fa5"/>
+                                        <connections>
+                                            <outletCollection property="gestureRecognizers" destination="JbW-JR-C86" appends="YES" id="Khh-Qr-xw3"/>
+                                        </connections>
                                     </stackView>
                                 </subviews>
                             </stackView>
@@ -473,6 +478,11 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="j0C-Zi-dRz" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <tapGestureRecognizer id="JbW-JR-C86">
+                    <connections>
+                        <action selector="stackWasTapped:" destination="M8t-0W-tjS" id="h8O-PE-uvk"/>
+                    </connections>
+                </tapGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="-1609" y="-2538"/>
         </scene>
@@ -1414,7 +1424,7 @@
         </namedColor>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="aXb-RL-15L"/>
+        <segue reference="obt-4U-61W"/>
         <segue reference="nBS-bV-W5Y"/>
     </inferredMetricsTieBreakers>
     <color key="tintColor" name="TheBlue"/>

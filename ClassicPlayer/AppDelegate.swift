@@ -233,11 +233,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             if self.libraryAlbumCount % progressIncrement == 0 {
                 self.progressDelegate?.setProgress(progress: Float(self.libraryAlbumCount) / totalAlbumCount)
             }
-            if AppDelegate.showPieces && self.isGenreToParse(mediaAlbumItems[0].genre) {
-                print("Album: \(mediaAlbumItems[0].value(forProperty: MPMediaItemPropertyComposer) ?? "<anon>"): "
-                    + "\(mediaAlbumItems[0].value(forProperty: MPMediaItemPropertyAlbumTrackCount) ?? "") "
-                    + "\(mediaAlbumItems[0].value(forProperty: MPMediaItemPropertyAlbumTitle) ?? "<no title>")"
-                    + " | \(mediaAlbumItems[0].value(forProperty: MPMediaItemPropertyAlbumArtist) ?? "<no artist>")"
+            if AppDelegate.showPieces && self.isGenreToParse(mediaAlbumItems[0].genre ) {
+                print("Album: \(mediaAlbumItems[0].composer ?? "<anon>"): "
+                    + "\(mediaAlbumItems[0].albumTrackCount) "
+                    + "\(mediaAlbumItems[0].albumTitle ?? "<no title>")"
+                    + " | \(mediaAlbumItems[0].albumArtist ?? "<no artist>")"
                     + " | \((mediaAlbumItems[0].value(forProperty: "year") as? Int) ?? -1) ")
             }
             let appAlbum = self.makeAndFillAlbum(from: mediaAlbumItems, into: context)

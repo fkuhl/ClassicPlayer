@@ -39,9 +39,9 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
     @IBOutlet weak var movementTable: UITableView!
     weak var playerViewController: AVPlayerViewController?
     weak var selectedPiece: Piece?
+    weak var playerLabel: UILabel?
     var movements: NSOrderedSet?
-    var firstTableIndexInPlayer = 0    //index of first movement in player
-//    var playerRate: Float = 0.0
+    var hasMultipleMovements = true
  
     // MARK: - UIViewController
 
@@ -72,19 +72,23 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
         }
         //Priority lowered on artwork height to prevent unsatisfiable constraint.
         adjustStack()
-        if (selectedPiece?.movements) != nil && (selectedPiece?.movements)!.count > 0 {
+        hasMultipleMovements = (selectedPiece?.movements) != nil && (selectedPiece?.movements)!.count > 0
+        if hasMultipleMovements {
             movementTable?.isHidden = false
         } else {
             movementTable?.isHidden = true
         }
         print("player ID '\(appDelegate.player.settingController)' active: \(appDelegate.player.isActive) " +
-            "current table index: \(appDelegate.player.type == .queue ? String(appDelegate.player.currentTableIndex) : "single") ")
+            "current table index: \(appDelegate.player.type == .queue ? String(appDelegate.player.currentTableIndex) : "single") " +
+            "label: '\(appDelegate.player.label)'")
         playerViewController?.player = appDelegate.player.player
         if appDelegate.player.isActive {
             if appDelegate.player.settingController == myControllerID {
                 indexObserver.start(on: self)
                 rateObserver.start(on: self)
             }
+            playerLabel?.text = labelForPlayer()
+            playerViewController?.contentOverlayView?.setNeedsDisplay()
         } else {
             installPlayer()   //fresh player
         }
@@ -117,6 +121,13 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
         }
     }
 
+    @IBAction func stackWasTapped(_ sender: Any) {
+        print("stack was tapped")
+        if hasMultipleMovements { return }
+        installPlayer()
+    }
+    
+    
     // MARK: - UITableViewDataSource
 
     func tableView(_: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -158,7 +169,6 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
     // MARK: - UITableViewDelegate
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        firstTableIndexInPlayer = indexPath.row
         let partialList = (selectedPiece?.movements)!.array[indexPath.row...]
         let playerItems = partialList.map {
             (movementAny: Any) -> AVPlayerItem in
@@ -167,17 +177,30 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
         }
         indexObserver.stop(on: self)
         rateObserver.stop(on: self)
-        setQueuePlayer(items: playerItems, tableIndex: firstTableIndexInPlayer)
+        setQueuePlayer(items: playerItems,
+                       tableIndex: indexPath.row,
+                       label: labelForPlayer())
         tableView.reloadData()
         playerViewController?.player?.play() //Tap on the table, it starts to play
+    }
+    
+    private func labelForPlayer() -> String {
+        if let composer = selectedPiece?.composer {
+            return composer + ": " + (selectedPiece?.title ?? "")
+        } else {
+            return selectedPiece?.title ?? ""
+        }
     }
 
     // MARK: - Player management
 
-    private func setQueuePlayer(items: [AVPlayerItem], tableIndex: Int) {
+    private func setQueuePlayer(items: [AVPlayerItem], tableIndex: Int, label: String) {
         playerViewController?.player = appDelegate.player.setPlayer(items: items,
                                                                     tableIndex: tableIndex,
-                                                                    settingController: myControllerID)
+                                                                    settingController: myControllerID,
+                                                                    label: label)
+        playerLabel?.text = label
+        playerViewController?.contentOverlayView?.setNeedsDisplay()
         indexObserver.start(on: self)
         rateObserver.start(on: self)
         if items.count == 1 {
@@ -189,24 +212,34 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "PlayTracks" {
             //print("PieceVC.prepareForSegue. playerVC: \(segue.destination)")
-            self.playerViewController = segue.destination as? AVPlayerViewController
+            playerViewController = segue.destination as? AVPlayerViewController
+            playerLabel = add(label: labelForPlayer(), to: playerViewController!)
         }
     }
     
     private func installPlayer() {
-        if (selectedPiece?.movements) != nil && (selectedPiece?.movements)!.count > 0 {
+        let newPlayerLabel = labelForPlayer()
+        if hasMultipleMovements {
             let movements = (selectedPiece?.movements)!.array
             let playerItems = movements.map {
                 movementAny in
                 return AVPlayerItem(url: ((movementAny as? Movement)?.trackURL)!)
             }
-            firstTableIndexInPlayer = 0 //start with all movements
-            setQueuePlayer(items: playerItems, tableIndex: 0)
-        } else {
+            setQueuePlayer(items: playerItems,
+                           tableIndex: 0, //start with all movements
+                           label: newPlayerLabel)
+         } else {
+            indexObserver.stop(on: self)
+            rateObserver.stop(on: self)
             playerViewController?.player = appDelegate.player.setPlayer(url: (selectedPiece?.trackURL)!,
-                                                                        settingController: myControllerID)
+                                                                        settingController: myControllerID,
+                                                                        label: newPlayerLabel)
+            playerLabel?.text = newPlayerLabel
+            playerViewController?.contentOverlayView?.setNeedsDisplay()
             rateObserver.start(on: self)
+            playerViewController?.player?.rate = 1.0 //start 'er up
         }
+
     }
     
     override func observeValue(forKeyPath keyPath: String?,
