@@ -19,7 +19,7 @@ enum PlayerType {
     private var observingContext = Bundle.main.bundleIdentifier! + ".Player"
     private var _player = AVPlayer(playerItem: nil)
     private var _type = PlayerType.single
-    private var _settingController = ""
+    private var _setterID = ""
     private var _label = "not init"
     //controller's table index when player was set. Doesn't change as player runs
     private var _tableIndex = 0
@@ -31,11 +31,11 @@ enum PlayerType {
         get { return _player }
     }
 
-    func setPlayer(url: URL, settingController: String, label: String) -> AVPlayer? {
+    func setPlayer(url: URL, setterID: String, label: String) -> AVPlayer? {
         _player.pause()
         _player = AVPlayer(url: url)
         _type = .single
-        _settingController = settingController
+        _setterID = setterID
         _label = label
         _tableIndex = -1 //nonsensical
         currentPlayerIndex = 0 //but this won't change
@@ -43,7 +43,7 @@ enum PlayerType {
         return _player
     }
 
-    func setPlayer(items: [AVPlayerItem], tableIndex: Int, settingController: String, label: String) -> AVPlayer? {
+    func setPlayer(items: [AVPlayerItem], tableIndex: Int, setterID: String, label: String) -> AVPlayer? {
         //_type is .queue only by going through this code, which installs an observer
 //        if _type == .queue {
 //            _player.removeObserver(self, forKeyPath: #keyPath(AVPlayer.currentItem))
@@ -51,7 +51,7 @@ enum PlayerType {
         _player.pause()
         _player = AVQueuePlayer(items: items)
         _type = .queue
-        _settingController = settingController
+        _setterID = setterID
         _label = label
         _tableIndex = tableIndex
         currentPlayerIndex = 0
@@ -67,8 +67,8 @@ enum PlayerType {
         get { return _type }
     }
     
-    var settingController: String {
-        get { return _settingController }
+    var setterID: String {
+        get { return _setterID }
     }
     
     var isActive: Bool {

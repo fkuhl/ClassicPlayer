@@ -25,7 +25,7 @@ class MovementTableViewCell: UITableViewCell {
 class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     static let enSpace = "\u{2002}"
     static let blackCircle = "\u{25CF}"
-    private let myControllerID = Bundle.main.bundleIdentifier! + ".PieceViewController"
+    //private let myControllerID = Bundle.main.bundleIdentifier! + ".PieceViewController"
     private var observingContext = Bundle.main.bundleIdentifier! + ".PieceViewController"
     private var rateObserver = RateObserver()
     private let indexObserver = IndexObserver()
@@ -78,17 +78,17 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
         } else {
             movementTable?.isHidden = true
         }
-        print("player ID '\(appDelegate.player.settingController)' active: \(appDelegate.player.isActive) " +
+        print("player ID '\(appDelegate.player.setterID)' active: \(appDelegate.player.isActive) " +
             "current table index: \(appDelegate.player.type == .queue ? String(appDelegate.player.currentTableIndex) : "single") " +
             "label: '\(appDelegate.player.label)'")
         playerViewController?.player = appDelegate.player.player
         if appDelegate.player.isActive {
-            if appDelegate.player.settingController == myControllerID {
+            if appDelegate.player.setterID == mySetterID() {
                 indexObserver.start(on: self)
                 rateObserver.start(on: self)
             }
-            playerLabel?.text = labelForPlayer()
-            playerViewController?.contentOverlayView?.setNeedsDisplay()
+            playerLabel?.text = appDelegate.player.label
+            //playerViewController?.contentOverlayView?.setNeedsDisplay()
         } else {
             installPlayer()   //fresh player
         }
@@ -136,7 +136,7 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Movement", for: indexPath) as! MovementTableViewCell
-        if appDelegate.player.settingController == myControllerID {
+        if appDelegate.player.setterID == mySetterID() {
             if indexPath.row == appDelegate.player.currentTableIndex {
                 if appDelegate.player.player.rate < 0.5 {
                     cell.indicator.stopAnimating()
@@ -178,8 +178,7 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
         indexObserver.stop(on: self)
         rateObserver.stop(on: self)
         setQueuePlayer(items: playerItems,
-                       tableIndex: indexPath.row,
-                       label: labelForPlayer())
+                       tableIndex: indexPath.row)
         tableView.reloadData()
         playerViewController?.player?.play() //Tap on the table, it starts to play
     }
@@ -187,19 +186,27 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
     private func labelForPlayer() -> String {
         if let composer = selectedPiece?.composer {
             return composer + ": " + (selectedPiece?.title ?? "")
+        } else if let artist = selectedPiece?.artist {
+            return artist + ": " + (selectedPiece?.title ?? "")
         } else {
             return selectedPiece?.title ?? ""
         }
     }
+    
+    private func mySetterID() -> String {
+        return Bundle.main.bundleIdentifier! + ".PiecesViewController"
+            + "." + (selectedPiece?.title ?? "")
+    }
 
     // MARK: - Player management
 
-    private func setQueuePlayer(items: [AVPlayerItem], tableIndex: Int, label: String) {
+    private func setQueuePlayer(items: [AVPlayerItem], tableIndex: Int) {
+        let newLabel = labelForPlayer()
         playerViewController?.player = appDelegate.player.setPlayer(items: items,
                                                                     tableIndex: tableIndex,
-                                                                    settingController: myControllerID,
-                                                                    label: label)
-        playerLabel?.text = label
+                                                                    setterID: mySetterID(),
+                                                                    label: newLabel)
+        playerLabel?.text = newLabel
         playerViewController?.contentOverlayView?.setNeedsDisplay()
         indexObserver.start(on: self)
         rateObserver.start(on: self)
@@ -213,12 +220,12 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
         if segue.identifier == "PlayTracks" {
             //print("PieceVC.prepareForSegue. playerVC: \(segue.destination)")
             playerViewController = segue.destination as? AVPlayerViewController
-            playerLabel = add(label: labelForPlayer(), to: playerViewController!)
+            //This installs the UILabel. After this, we just change the text.
+            playerLabel = add(label: "not init", to: playerViewController!)
         }
     }
     
     private func installPlayer() {
-        let newPlayerLabel = labelForPlayer()
         if hasMultipleMovements {
             let movements = (selectedPiece?.movements)!.array
             let playerItems = movements.map {
@@ -226,13 +233,13 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
                 return AVPlayerItem(url: ((movementAny as? Movement)?.trackURL)!)
             }
             setQueuePlayer(items: playerItems,
-                           tableIndex: 0, //start with all movements
-                           label: newPlayerLabel)
+                           tableIndex: 0) //start with all movements
          } else {
+            let newPlayerLabel = labelForPlayer()
             indexObserver.stop(on: self)
             rateObserver.stop(on: self)
             playerViewController?.player = appDelegate.player.setPlayer(url: (selectedPiece?.trackURL)!,
-                                                                        settingController: myControllerID,
+                                                                        setterID: mySetterID(),
                                                                         label: newPlayerLabel)
             playerLabel?.text = newPlayerLabel
             playerViewController?.contentOverlayView?.setNeedsDisplay()

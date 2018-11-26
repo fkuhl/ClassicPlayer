@@ -103,14 +103,15 @@ class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableV
         tracks?.text = "tracks: \(/*album?.trackCount ?? 0*/ trackData!.count)"
         //Priority lowered on artwork height to prevent unsatisfiable constraint.
         adjustStack()
-        print("player ID \(appDelegate.player.settingController) active: \(appDelegate.player.isActive) " +
+        print("player ID \(appDelegate.player.setterID) active: \(appDelegate.player.isActive) " +
             "current table index: \(appDelegate.player.type == .queue ? String(appDelegate.player.currentTableIndex) : "single") ")
         playerViewController?.player = appDelegate.player.player
         if appDelegate.player.isActive {
-            if appDelegate.player.settingController == displayID() {
+            if appDelegate.player.setterID == mySetterID() {
                 indexObserver.start(on: self)
                 rateObserver.start(on: self)
             }
+            playerLabel?.text = appDelegate.player.label
         } else {
             installPlayer()   //fresh player
         }
@@ -155,7 +156,7 @@ class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableV
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Track", for: indexPath) as! TrackTableViewCell
-        if appDelegate.player.settingController == displayID() {
+        if appDelegate.player.setterID == mySetterID() {
             if indexPath.row == appDelegate.player.currentTableIndex {
                 if appDelegate.player.player.rate < 0.5 {
                     cell.indicator.stopAnimating()
@@ -215,7 +216,7 @@ class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableV
         }
     }
     
-    private func displayID() -> String {
+    private func mySetterID() -> String {
         return Bundle.main.bundleIdentifier! + ".AlbumTracksViewController"
             + "." + (album?.title ?? "")
     }
@@ -226,7 +227,7 @@ class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableV
         let newLabel = labelForPlayer(atIndex: startingIndex)
         playerViewController?.player = appDelegate.player.setPlayer(items: items,
                                                                     tableIndex: startingIndex,
-                                                                    settingController: displayID(),
+                                                                    setterID: mySetterID(),
                                                                     label: newLabel)
         playerLabel?.text = newLabel
         indexObserver.start(on: self)
@@ -241,7 +242,8 @@ class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableV
         if segue.identifier == "PlayTracks" {
             print("AlbumTracksVC.prepareForSegue")
             playerViewController = segue.destination as? AVPlayerViewController
-            playerLabel = ClassicPlayer.add(label: appDelegate.player.label, to: playerViewController!)
+            //This installs the UILabel. After this, we just change the text.
+            playerLabel = ClassicPlayer.add(label: "not init", to: playerViewController!)
         }
     }
 
