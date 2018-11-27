@@ -25,8 +25,6 @@ class MovementTableViewCell: UITableViewCell {
 class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     static let enSpace = "\u{2002}"
     static let blackCircle = "\u{25CF}"
-    //private let myControllerID = Bundle.main.bundleIdentifier! + ".PieceViewController"
-    private var observingContext = Bundle.main.bundleIdentifier! + ".PieceViewController"
     private var rateObserver = RateObserver()
     private let indexObserver = IndexObserver()
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -88,7 +86,6 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
                 rateObserver.start(on: self)
             }
             playerLabel?.text = appDelegate.player.label
-            //playerViewController?.contentOverlayView?.setNeedsDisplay()
         } else {
             installPlayer()   //fresh player
         }
@@ -195,6 +192,7 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     private func mySetterID() -> String {
         return Bundle.main.bundleIdentifier! + ".PiecesViewController"
+            //Because piece title isn't guaranteed to be unique, hilarity might ensue.
             + "." + (selectedPiece?.title ?? "")
     }
 
@@ -256,16 +254,6 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
         if keyPath == #keyPath(Player.currentPlayerIndex) {
             if let currentItemIndex = change?[.newKey] as? Int {
                 print("new currentItemIndex, index \(currentItemIndex)")
-//                if currentlyPlayingIndex == movements!.count - 1 {
-//                    //Just pause after last item, rather than searching for stuff.
-//                    //.advance makes the player spin; .none makes the player sit there.
-//                    (object as? AVPlayer)?.actionAtItemEnd = .pause
-//                    NotificationCenter.default.addObserver(
-//                        self,
-//                        selector: #selector(self.pieceFinished),
-//                        name: NSNotification.Name.AVPlayerItemDidPlayToEndTime,
-//                        object: nil)
-//                }
                 DispatchQueue.main.async { self.movementTable.reloadData() }
                 //As of iOS 11, the scroll seems to need a little delay.
                 let deadlineTime = DispatchTime.now() + .milliseconds(100)

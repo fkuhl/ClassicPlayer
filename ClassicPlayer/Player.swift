@@ -31,6 +31,7 @@ enum PlayerType {
         get { return _player }
     }
 
+    //The case where one track is to be played, not from a table
     func setPlayer(url: URL, setterID: String, label: String) -> AVPlayer? {
         _player.pause()
         _player = AVPlayer(url: url)
@@ -38,6 +39,19 @@ enum PlayerType {
         _setterID = setterID
         _label = label
         _tableIndex = -1 //nonsensical
+        currentPlayerIndex = 0 //but this won't change
+        _queueSize = 1
+        return _player
+    }
+
+    //The case where one track is to be played, but it's from a table
+    func setPlayer(url: URL, tableIndex: Int, setterID: String, label: String) -> AVPlayer? {
+        _player.pause()
+        _player = AVPlayer(url: url)
+        _type = .single
+        _setterID = setterID
+        _label = label
+        _tableIndex = tableIndex
         currentPlayerIndex = 0 //but this won't change
         _queueSize = 1
         return _player

@@ -17,11 +17,11 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     @IBOutlet weak var trackTable: UITableView!
     let searchController = UISearchController(searchResultsController: nil)
     var playerViewController: AVPlayerViewController?
+    weak var playerLabel: UILabel?
     var songs: [Song]?
-    var currentlyPlayingIndex = 0 //what's in the player
-    var playerRate: Float = 0.0
-    var contextString = "some stuff"
-    
+    private var rateObserver = RateObserver()
+    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+
     private static var indexedSectionCount = 27  //A magic number; that's how many sections any UITableView index can have.
     private var sectionCount = 1
     private var sectionSize = 0
@@ -47,19 +47,22 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         loadSongsSortedBy(currentSort)
-        //Could be returning from
-        if playerViewController?.player == nil {
-            //currentlyPlayingIndex = 0
-            installPlayer()
-            playerRate = 0.0 //On such a return the player is paused
-            trackTable.reloadData()
+        playerViewController?.player = appDelegate.player.player
+        if appDelegate.player.isActive {
+            if appDelegate.player.setterID == mySetterID() {
+                rateObserver.start(on: self)
+            }
+            playerLabel?.text = appDelegate.player.label
+         } else {
+            installPlayer(forIndex: 0)
         }
+        trackTable.reloadData()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         //print("PieceVC.viewWillDisappear")
-        playerViewController?.player = nil
+        rateObserver.stop(on: self)
     }
     
     private func loadSongsSortedBy(_ sort: SongSorts) {
@@ -171,8 +174,8 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Track", for: indexPath) as! SongTableViewCell
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        if indexPath.section * sectionSize + indexPath.row == currentlyPlayingIndex {
-            if playerRate < 0.5 {
+        if indexPath.section * sectionSize + indexPath.row == appDelegate.player.currentTableIndex {
+            if appDelegate.player.player.rate < 0.5 {
                 cell.indicator.stopAnimating()
                 cell.indicator.animationImages = nil
                 cell.indicator.image = appDelegate.audioPaused
@@ -214,19 +217,31 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     // MARK: - UITableViewDelegate
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        currentlyPlayingIndex = indexPath.section * sectionSize + indexPath.row
-        installPlayer()
+        let currentIndex = indexPath.section * sectionSize + indexPath.row
+        installPlayer(forIndex: currentIndex)
+        playerViewController?.player?.play() //start 'er up
         tableView.reloadData()
-        playerViewController?.player?.play() //Tap on the table, it starts to play
+    }
+    
+    private func labelForPlayer(atIndex: Int) -> String {
+        let artist = songs![atIndex].artist
+        let title = songs![atIndex].title
+        if let uArtist = artist {
+            return uArtist + ": " + (title ?? "")
+        } else {
+            return title ?? ""
+        }
+    }
+    
+    private func mySetterID() -> String {
+        return Bundle.main.bundleIdentifier! + ".SongsViewController"
     }
     
     // MARK: - UISearchResultsUpdating Delegate
     
     func updateSearchResults(for searchController: UISearchController) {
-        currentlyPlayingIndex = 0
-        installPlayer()
-        playerRate = 0.0
         loadSongsSortedBy(currentSort)
+        installPlayer(forIndex: 0)
     }
     
     private func searchBarIsEmpty() -> Bool {
@@ -245,16 +260,21 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
         if segue.identifier == "PlayTracks" {
             //print("SongsVC.prepareForSegue")
             self.playerViewController = segue.destination as? AVPlayerViewController
+            //This installs the UILabel. After this, we just change the text.
+            playerLabel = ClassicPlayer.add(label: "not init", to: playerViewController!)
         }
     }
 
-    private func installPlayer() {
+    private func installPlayer(forIndex: Int) {
         if songs != nil && songs!.count > 0 {
-            playerViewController?.player = AVPlayer(url: (songs?[currentlyPlayingIndex].trackURL)!)
-            playerViewController?.player?.addObserver(self,
-                                                      forKeyPath: #keyPath(AVPlayer.rate),
-                                                      options: [.old, .new],
-                                                      context: &contextString)
+            rateObserver.stop(on: self)
+            playerViewController?.player = appDelegate.player.setPlayer(url: (songs?[forIndex].trackURL)!,
+                                                                        tableIndex: forIndex,
+                                                                        setterID: mySetterID(),
+                                                                        label: labelForPlayer(atIndex: forIndex))
+            playerLabel?.text = labelForPlayer(atIndex: forIndex)
+            playerViewController?.contentOverlayView?.setNeedsDisplay()
+            rateObserver.start(on: self)
         }
     }
     
@@ -262,16 +282,8 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
                                of object: Any?,
                                change: [NSKeyValueChangeKey : Any]?,
                                context: UnsafeMutableRawPointer?) {
-        guard context == &contextString else {
-            super.observeValue(forKeyPath: keyPath,
-                               of: object,
-                               change: change,
-                               context: context)
-            return
-        }
         if keyPath == #keyPath(AVPlayer.rate) {
-            if let rate = change?[.newKey] as? NSNumber {
-                playerRate = rate.floatValue
+            if let _ = change?[.newKey] as? NSNumber {
                 DispatchQueue.main.async { self.trackTable.reloadData() }
             }
         }

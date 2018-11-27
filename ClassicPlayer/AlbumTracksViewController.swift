@@ -18,7 +18,6 @@ class TrackTableViewCell: UITableViewCell {
 }
 
 class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
-    private var observingContext = Bundle.main.bundleIdentifier! + ".AlbumTracksViewController"
     private var rateObserver = RateObserver()
     private let indexObserver = IndexObserver()
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -218,7 +217,7 @@ class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableV
     
     private func mySetterID() -> String {
         return Bundle.main.bundleIdentifier! + ".AlbumTracksViewController"
-            + "." + (album?.title ?? "")
+            + "." + (album?.albumID ?? "")
     }
 
     // MARK: - Player management
@@ -240,7 +239,7 @@ class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableV
     //The embed segue that places the AVPlayerViewController in the ContainerVC
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "PlayTracks" {
-            print("AlbumTracksVC.prepareForSegue")
+            //print("AlbumTracksVC.prepareForSegue")
             playerViewController = segue.destination as? AVPlayerViewController
             //This installs the UILabel. After this, we just change the text.
             playerLabel = ClassicPlayer.add(label: "not init", to: playerViewController!)
