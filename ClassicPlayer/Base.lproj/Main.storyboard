@@ -19,8 +19,17 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lx3-9p-6vD" userLabel="Player Container View">
+                                <rect key="frame" x="0.0" y="518" width="375" height="100"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="100" id="EPl-t1-nAA"/>
+                                </constraints>
+                                <connections>
+                                    <segue destination="lUG-gc-0lH" kind="embed" identifier="PlayTracks" id="zJt-Jp-cE9"/>
+                                </connections>
+                            </containerView>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="P8Z-x0-puS">
-                                <rect key="frame" x="0.0" y="116" width="375" height="502"/>
+                                <rect key="frame" x="0.0" y="116" width="375" height="394"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="Album" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="Album" rowHeight="128" id="xJ4-sl-PgV" customClass="AlbumCell" customModule="ClassicPlayer" customModuleProvider="target">
@@ -106,9 +115,12 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
+                            <constraint firstItem="lx3-9p-6vD" firstAttribute="top" secondItem="P8Z-x0-puS" secondAttribute="bottom" constant="8" id="SbM-Ga-nVf"/>
+                            <constraint firstItem="lx3-9p-6vD" firstAttribute="leading" secondItem="w23-Er-RE7" secondAttribute="leading" id="TUa-kk-Leu"/>
                             <constraint firstItem="P8Z-x0-puS" firstAttribute="top" secondItem="w23-Er-RE7" secondAttribute="top" id="XlY-8d-0JL"/>
                             <constraint firstItem="P8Z-x0-puS" firstAttribute="trailing" secondItem="w23-Er-RE7" secondAttribute="trailing" id="bO3-QQ-9Yg"/>
-                            <constraint firstItem="P8Z-x0-puS" firstAttribute="bottom" secondItem="w23-Er-RE7" secondAttribute="bottom" id="cOG-vM-z51"/>
+                            <constraint firstItem="lx3-9p-6vD" firstAttribute="trailing" secondItem="w23-Er-RE7" secondAttribute="trailing" id="eys-3t-64D"/>
+                            <constraint firstItem="lx3-9p-6vD" firstAttribute="bottom" secondItem="w23-Er-RE7" secondAttribute="bottom" id="q0P-8B-byd"/>
                             <constraint firstItem="P8Z-x0-puS" firstAttribute="leading" secondItem="w23-Er-RE7" secondAttribute="leading" id="rkN-78-xl5"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="w23-Er-RE7"/>
@@ -189,8 +201,17 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sza-gR-Bd6" userLabel="Player Container View">
+                                <rect key="frame" x="0.0" y="518" width="375" height="100"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="100" id="qkl-18-b3d"/>
+                                </constraints>
+                                <connections>
+                                    <segue destination="lUG-gc-0lH" kind="embed" identifier="PlayTracks" id="LM2-eO-txZ"/>
+                                </connections>
+                            </containerView>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="fMZ-e6-Ilm">
-                                <rect key="frame" x="0.0" y="116" width="375" height="502"/>
+                                <rect key="frame" x="0.0" y="116" width="375" height="394"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="Composer" textLabel="yar-Db-ec7" style="IBUITableViewCellStyleDefault" id="FCg-FN-Rpl">
@@ -216,7 +237,7 @@
                                 </prototypes>
                             </tableView>
                             <view alpha="0.34999999999999998" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="71T-e2-Jpl">
-                                <rect key="frame" x="122.5" y="352" width="130" height="30"/>
+                                <rect key="frame" x="122.5" y="298" width="130" height="30"/>
                                 <color key="backgroundColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="130" id="8Tj-lv-8PD"/>
@@ -233,14 +254,17 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
+                            <constraint firstItem="fMZ-e6-Ilm" firstAttribute="trailing" secondItem="ktb-Eq-4B3" secondAttribute="trailing" id="DaG-aR-x9C"/>
                             <constraint firstItem="ZeK-PM-TAV" firstAttribute="centerX" secondItem="ktb-Eq-4B3" secondAttribute="centerX" id="DvH-No-WUP"/>
+                            <constraint firstItem="sza-gR-Bd6" firstAttribute="trailing" secondItem="ktb-Eq-4B3" secondAttribute="trailing" id="FTt-SG-pK9"/>
                             <constraint firstItem="ZeK-PM-TAV" firstAttribute="centerY" secondItem="ktb-Eq-4B3" secondAttribute="centerY" id="FWP-fB-hcd"/>
-                            <constraint firstItem="fMZ-e6-Ilm" firstAttribute="bottom" secondItem="ktb-Eq-4B3" secondAttribute="bottom" id="Q47-NY-eXA"/>
+                            <constraint firstItem="sza-gR-Bd6" firstAttribute="top" secondItem="fMZ-e6-Ilm" secondAttribute="bottom" constant="8" id="FuW-tK-2Vg"/>
+                            <constraint firstItem="sza-gR-Bd6" firstAttribute="leading" secondItem="ktb-Eq-4B3" secondAttribute="leading" id="MzP-FX-1HN"/>
+                            <constraint firstItem="fMZ-e6-Ilm" firstAttribute="leading" secondItem="ktb-Eq-4B3" secondAttribute="leading" id="Qz1-I2-OqK"/>
                             <constraint firstItem="71T-e2-Jpl" firstAttribute="centerY" secondItem="fMZ-e6-Ilm" secondAttribute="centerY" id="Tb3-Hu-9Ib"/>
-                            <constraint firstItem="fMZ-e6-Ilm" firstAttribute="top" secondItem="ktb-Eq-4B3" secondAttribute="top" id="fEu-5G-I6s"/>
-                            <constraint firstAttribute="trailing" secondItem="fMZ-e6-Ilm" secondAttribute="trailing" id="m0v-dB-OB0"/>
+                            <constraint firstItem="fMZ-e6-Ilm" firstAttribute="top" secondItem="ktb-Eq-4B3" secondAttribute="top" id="XD3-Yb-5Sj"/>
+                            <constraint firstItem="sza-gR-Bd6" firstAttribute="bottom" secondItem="ktb-Eq-4B3" secondAttribute="bottom" id="fRb-ZY-Kmn"/>
                             <constraint firstItem="71T-e2-Jpl" firstAttribute="centerX" secondItem="fMZ-e6-Ilm" secondAttribute="centerX" id="vPb-Tq-idM"/>
-                            <constraint firstItem="fMZ-e6-Ilm" firstAttribute="leading" secondItem="ktb-Eq-4B3" secondAttribute="leading" id="vv3-GO-V5X"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="ktb-Eq-4B3"/>
                     </view>
@@ -263,8 +287,17 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6ar-FM-1uE" userLabel="Player Container View">
+                                <rect key="frame" x="0.0" y="518" width="375" height="100"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="100" id="E26-It-RgL"/>
+                                </constraints>
+                                <connections>
+                                    <segue destination="lUG-gc-0lH" kind="embed" identifier="PlayTracks" id="TCS-Ho-8nL"/>
+                                </connections>
+                            </containerView>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="0cc-cs-IiJ">
-                                <rect key="frame" x="0.0" y="116" width="375" height="502"/>
+                                <rect key="frame" x="0.0" y="116" width="375" height="394"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="Piece" rowHeight="72" id="NVt-Ac-M8y" customClass="PieceTableViewCell" customModule="ClassicPlayer" customModuleProvider="target">
@@ -324,9 +357,12 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
+                            <constraint firstItem="6ar-FM-1uE" firstAttribute="trailing" secondItem="t14-87-L1G" secondAttribute="trailing" id="3Cf-AX-38a"/>
+                            <constraint firstItem="6ar-FM-1uE" firstAttribute="leading" secondItem="t14-87-L1G" secondAttribute="leading" id="Gj8-X6-8lg"/>
                             <constraint firstItem="t14-87-L1G" firstAttribute="trailing" secondItem="0cc-cs-IiJ" secondAttribute="trailing" id="HT8-N9-Gm9"/>
+                            <constraint firstItem="6ar-FM-1uE" firstAttribute="top" secondItem="0cc-cs-IiJ" secondAttribute="bottom" constant="8" id="fRN-ce-Od8"/>
+                            <constraint firstItem="6ar-FM-1uE" firstAttribute="bottom" secondItem="t14-87-L1G" secondAttribute="bottom" id="fac-6R-0OK"/>
                             <constraint firstItem="0cc-cs-IiJ" firstAttribute="top" secondItem="t14-87-L1G" secondAttribute="top" id="g7E-OD-xgD"/>
-                            <constraint firstItem="t14-87-L1G" firstAttribute="bottom" secondItem="0cc-cs-IiJ" secondAttribute="bottom" id="gAO-S6-VxD"/>
                             <constraint firstItem="0cc-cs-IiJ" firstAttribute="leading" secondItem="t14-87-L1G" secondAttribute="leading" id="jNa-r8-fVD"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="t14-87-L1G"/>
@@ -657,8 +693,17 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="PUS-4I-22a" userLabel="PlayerContainer View">
+                                <rect key="frame" x="0.0" y="518" width="375" height="100"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="100" id="3e9-X5-EzJ"/>
+                                </constraints>
+                                <connections>
+                                    <segue destination="lUG-gc-0lH" kind="embed" identifier="PlayTracks" id="a4Z-oV-lcF"/>
+                                </connections>
+                            </containerView>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="nVm-Np-mEQ">
-                                <rect key="frame" x="0.0" y="116" width="375" height="502"/>
+                                <rect key="frame" x="0.0" y="116" width="375" height="394"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="Artist" textLabel="LyJ-lu-CN8" style="IBUITableViewCellStyleDefault" id="iLv-mL-lCG">
@@ -686,10 +731,13 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="nVm-Np-mEQ" firstAttribute="top" secondItem="i1X-vV-JiZ" secondAttribute="top" id="VSx-wv-5nT"/>
+                            <constraint firstItem="PUS-4I-22a" firstAttribute="top" secondItem="nVm-Np-mEQ" secondAttribute="bottom" constant="8" id="68r-yt-FUC"/>
+                            <constraint firstItem="nVm-Np-mEQ" firstAttribute="top" secondItem="i1X-vV-JiZ" secondAttribute="top" id="OuZ-by-238"/>
                             <constraint firstItem="i1X-vV-JiZ" firstAttribute="trailing" secondItem="nVm-Np-mEQ" secondAttribute="trailing" id="WSc-Mc-Ef2"/>
-                            <constraint firstItem="i1X-vV-JiZ" firstAttribute="bottom" secondItem="nVm-Np-mEQ" secondAttribute="bottom" id="iTu-14-PPn"/>
+                            <constraint firstItem="PUS-4I-22a" firstAttribute="trailing" secondItem="i1X-vV-JiZ" secondAttribute="trailing" id="ckn-Yu-fSa"/>
+                            <constraint firstItem="PUS-4I-22a" firstAttribute="bottom" secondItem="i1X-vV-JiZ" secondAttribute="bottom" id="ix7-Z6-JFR"/>
                             <constraint firstItem="nVm-Np-mEQ" firstAttribute="leading" secondItem="i1X-vV-JiZ" secondAttribute="leading" id="lqd-9y-6NA"/>
+                            <constraint firstItem="PUS-4I-22a" firstAttribute="leading" secondItem="i1X-vV-JiZ" secondAttribute="leading" id="veY-hB-xbw"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="i1X-vV-JiZ"/>
                     </view>
@@ -710,8 +758,17 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="SpZ-JF-tQ1" userLabel="Player Container View">
+                                <rect key="frame" x="0.0" y="518" width="375" height="100"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="100" id="VDt-K2-EAJ"/>
+                                </constraints>
+                                <connections>
+                                    <segue destination="lUG-gc-0lH" kind="embed" identifier="PlayTracks" id="U57-sp-EDp"/>
+                                </connections>
+                            </containerView>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="iiN-OG-mzG">
-                                <rect key="frame" x="0.0" y="116" width="375" height="502"/>
+                                <rect key="frame" x="0.0" y="116" width="375" height="394"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="Playlist" rowHeight="76" id="lix-s7-0dz" customClass="PlaylistTableViewCell" customModule="ClassicPlayer" customModuleProvider="target">
@@ -760,9 +817,12 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="kXH-OR-Taf" firstAttribute="trailing" secondItem="iiN-OG-mzG" secondAttribute="trailing" id="5gA-ck-dMH"/>
-                            <constraint firstItem="kXH-OR-Taf" firstAttribute="bottom" secondItem="iiN-OG-mzG" secondAttribute="bottom" id="DIC-lF-GHK"/>
+                            <constraint firstItem="SpZ-JF-tQ1" firstAttribute="bottom" secondItem="kXH-OR-Taf" secondAttribute="bottom" id="ETe-NV-ehD"/>
                             <constraint firstItem="iiN-OG-mzG" firstAttribute="leading" secondItem="kXH-OR-Taf" secondAttribute="leading" id="FuF-jM-BfX"/>
+                            <constraint firstItem="SpZ-JF-tQ1" firstAttribute="trailing" secondItem="kXH-OR-Taf" secondAttribute="trailing" id="LVg-lU-JSN"/>
                             <constraint firstItem="iiN-OG-mzG" firstAttribute="top" secondItem="kXH-OR-Taf" secondAttribute="top" id="XFa-cK-2al"/>
+                            <constraint firstItem="SpZ-JF-tQ1" firstAttribute="leading" secondItem="kXH-OR-Taf" secondAttribute="leading" id="lkA-HX-C6M"/>
+                            <constraint firstItem="SpZ-JF-tQ1" firstAttribute="top" secondItem="iiN-OG-mzG" secondAttribute="bottom" constant="8" id="ojH-Yz-vVs"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="kXH-OR-Taf"/>
                     </view>
@@ -1252,6 +1312,15 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="OCd-oQ-WEK" userLabel="Player Container View">
+                                <rect key="frame" x="0.0" y="518" width="375" height="100"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="100" id="2tk-D4-0qm"/>
+                                </constraints>
+                                <connections>
+                                    <segue destination="lUG-gc-0lH" kind="embed" identifier="PlayTracks" id="akw-JB-HGr"/>
+                                </connections>
+                            </containerView>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalSpacing" alignment="top" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="JHc-lx-1Ee">
                                 <rect key="frame" x="16" y="36" width="343" height="459.5"/>
                                 <subviews>
@@ -1381,12 +1450,15 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
+                            <constraint firstItem="OCd-oQ-WEK" firstAttribute="bottom" secondItem="dUu-eD-qcu" secondAttribute="bottom" id="4Ax-WR-7Au"/>
                             <constraint firstItem="8Fx-vq-o8J" firstAttribute="centerX" secondItem="jF9-5d-shL" secondAttribute="centerX" id="GOs-FZ-IZr"/>
                             <constraint firstItem="8Fx-vq-o8J" firstAttribute="centerX" secondItem="dUu-eD-qcu" secondAttribute="centerX" id="I53-zh-hlh"/>
                             <constraint firstItem="8Fx-vq-o8J" firstAttribute="centerY" secondItem="dUu-eD-qcu" secondAttribute="centerY" id="OyY-M7-lMe"/>
+                            <constraint firstItem="OCd-oQ-WEK" firstAttribute="trailing" secondItem="dUu-eD-qcu" secondAttribute="trailing" id="PL8-sn-Y0i"/>
                             <constraint firstItem="dUu-eD-qcu" firstAttribute="trailing" secondItem="JHc-lx-1Ee" secondAttribute="trailing" constant="16" id="Pc6-EO-t5s"/>
                             <constraint firstItem="JHc-lx-1Ee" firstAttribute="leading" secondItem="dUu-eD-qcu" secondAttribute="leading" constant="16" id="QEb-aC-LX5"/>
                             <constraint firstItem="JHc-lx-1Ee" firstAttribute="top" secondItem="dUu-eD-qcu" secondAttribute="top" constant="16" id="Xw1-FT-Wug"/>
+                            <constraint firstItem="OCd-oQ-WEK" firstAttribute="leading" secondItem="dUu-eD-qcu" secondAttribute="leading" id="jUG-zM-XNb"/>
                             <constraint firstItem="8Fx-vq-o8J" firstAttribute="centerY" secondItem="jF9-5d-shL" secondAttribute="centerY" id="rGP-Ja-JJq"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="dUu-eD-qcu"/>
@@ -1424,8 +1496,8 @@
         </namedColor>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="obt-4U-61W"/>
-        <segue reference="nBS-bV-W5Y"/>
+        <segue reference="akw-JB-HGr"/>
+        <segue reference="ZtY-Y8-VAT"/>
     </inferredMetricsTieBreakers>
     <color key="tintColor" name="TheBlue"/>
 </document>

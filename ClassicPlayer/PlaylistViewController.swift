@@ -189,7 +189,8 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     private func mySetterID() -> String {
-        return Bundle.main.bundleIdentifier! + ".PlaylistViewController"
+        return Bundle.main.bundleIdentifier! + ".PlaylistViewController" +
+            ">" + AppDelegate.encodeForCoreData(id: playlist!.persistentID) 
     }
 
     // MARK: - Player management

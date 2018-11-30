@@ -9,6 +9,8 @@
 import UIKit
 import CoreData
 import MediaPlayer
+import AVFoundation
+import AVKit
 
 class PieceTableViewCell: UITableViewCell {
     @IBOutlet weak var artAndLabelsStack: UIStackView!
@@ -18,6 +20,7 @@ class PieceTableViewCell: UITableViewCell {
 }
 
 class SelectedPiecesViewController: UIViewController, NSFetchedResultsControllerDelegate, UITableViewDelegate, UITableViewDataSource {
+    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private static let indexedSectionCount = 27  //A magic number; that's how many sections any UITableView index can have.
     @IBOutlet weak var tableView: UITableView!
     var selectionValue: String?
@@ -28,6 +31,8 @@ class SelectedPiecesViewController: UIViewController, NSFetchedResultsController
     private var sectionCount = 1
     private var sectionSize = 0
     private var sectionTitles: [String]?
+    weak var playerViewController: AVPlayerViewController?
+    weak var playerLabel: UILabel?
 
     // MARK: - UIViewController
 
@@ -45,6 +50,8 @@ class SelectedPiecesViewController: UIViewController, NSFetchedResultsController
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        playerViewController?.player = appDelegate.player.player
+        playerLabel?.text = appDelegate.player.label
         if !tableIsLoaded {
             updateUI()
             tableIsLoaded = true
@@ -164,6 +171,12 @@ class SelectedPiecesViewController: UIViewController, NSFetchedResultsController
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "PlayTracks" {
+            //print("SelectedPiecesVC.prepareForSegue. playerVC: \(segue.destination)")
+            playerViewController = segue.destination as? AVPlayerViewController
+            //This installs the UILabel. After this, we just change the text.
+            playerLabel = add(label: "not init", to: playerViewController!)
+        }
         if segue.identifier == "PieceSelected" {
             let secondViewController = segue.destination as! PieceViewController
             if let selected = tableView?.indexPathForSelectedRow {

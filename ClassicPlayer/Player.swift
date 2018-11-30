@@ -20,7 +20,7 @@ enum PlayerType {
     private var _player = AVPlayer(playerItem: nil)
     private var _type = PlayerType.single
     private var _setterID = ""
-    private var _label = "not init"
+    private var _label = "not playing"
     //controller's table index when player was set. Doesn't change as player runs
     private var _tableIndex = 0
     //index of current tracks in player

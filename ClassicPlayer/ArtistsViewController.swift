@@ -8,17 +8,22 @@
 
 import UIKit
 import MediaPlayer
+import AVFoundation
+import AVKit
 
 class ArtistsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchResultsUpdating {
     @IBOutlet weak var tableView: UITableView!
     let searchController = UISearchController(searchResultsController: nil)
     private var tableIsLoaded = false
-    
+    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+
     private static var indexedSectionCount = 27  //A magic number; that's how many sections any UITableView index can have.
     private var artistObjects: [MPMediaItem]?
     private var sectionCount = 1
     private var sectionSize = 0
     private var sectionTitles: [String]?
+    weak var playerViewController: AVPlayerViewController?
+    weak var playerLabel: UILabel?
 
     // MARK: - UIViewController
 
@@ -37,6 +42,8 @@ class ArtistsViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        playerViewController?.player = appDelegate.player.player
+        playerLabel?.text = appDelegate.player.label
         updateUI()
     }
     
@@ -133,6 +140,12 @@ class ArtistsViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "PlayTracks" {
+            print("ArtistsVC.prepareForSegue. playerVC: \(segue.destination)")
+            playerViewController = segue.destination as? AVPlayerViewController
+            //This installs the UILabel. After this, we just change the text.
+            playerLabel = add(label: "not init", to: playerViewController!)
+        }
         if segue.identifier == "ArtistSelected" {
             let secondViewController = segue.destination as! SelectedPiecesViewController
             if let selected = tableView?.indexPathForSelectedRow {

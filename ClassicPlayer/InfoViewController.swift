@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import AVFoundation
+import AVKit
 
 protocol ProgressDelegate {
     func setProgress(progress: Float)
@@ -15,7 +17,9 @@ protocol ProgressDelegate {
 class InfoViewController: UIViewController, ProgressDelegate {
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    
+    weak var playerViewController: AVPlayerViewController?
+    weak var playerLabel: UILabel?
+
     @IBOutlet weak var buildAndVersionStack: UIStackView!
     @IBOutlet weak var version: UILabel!
     @IBOutlet weak var buildNumber: UILabel!
@@ -62,6 +66,8 @@ class InfoViewController: UIViewController, ProgressDelegate {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        playerViewController?.player = appDelegate.player.player
+        playerLabel?.text = appDelegate.player.label
         updateUI()
     }
     
@@ -154,6 +160,15 @@ class InfoViewController: UIViewController, ProgressDelegate {
     }
     
     
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "PlayTracks" {
+            print("InfoVC.prepareForSegue. playerVC: \(segue.destination)")
+            playerViewController = segue.destination as? AVPlayerViewController
+            //This installs the UILabel. After this, we just change the text.
+            playerLabel = add(label: "not init", to: playerViewController!)
+        }
+    }
+
     // MARK: - ProgressDelegate
     
 

@@ -8,6 +8,8 @@
 
 import UIKit
 import CoreData
+import AVFoundation
+import AVKit
 
 class AlbumCell: UITableViewCell {
     @IBOutlet weak var artAndLabelsStack: UIStackView!
@@ -23,6 +25,7 @@ class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     @IBOutlet weak var sortButton: UIBarButtonItem!
     @IBOutlet weak var tableView: UITableView!
     let searchController = UISearchController(searchResultsController: nil)
+    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var albums: [Album]?
     
     private static var indexedSectionCount = 27  //A magic number; that's how many sections any UITableView index can have.
@@ -30,7 +33,9 @@ class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     private var sectionSize = 0
     private var sectionTitles: [String]?
     private var currentSort: AlbumSorts = .title
- 
+    weak var playerViewController: AVPlayerViewController?
+    weak var playerLabel: UILabel?
+
     // MARK: - UIViewController
 
     override func viewDidLoad() {
@@ -49,6 +54,8 @@ class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        playerViewController?.player = appDelegate.player.player
+        playerLabel?.text = appDelegate.player.label
         //NSLog("AlbumsVC.VWA")
         //This load is fast enough there's no reason not to do it every time,
         //thus dealing with changes to the library since last appearance
@@ -198,6 +205,12 @@ class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "PlayTracks" {
+            print("AlbumsVC.prepareForSegue. playerVC: \(segue.destination)")
+            playerViewController = segue.destination as? AVPlayerViewController
+            //This installs the UILabel. After this, we just change the text.
+            playerLabel = add(label: "not init", to: playerViewController!)
+        }
         if segue.identifier == "AlbumSelected" {
             let secondViewController = segue.destination as! AlbumTracksViewController
             if let selected = tableView?.indexPathForSelectedRow {
