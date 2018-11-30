@@ -252,8 +252,8 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
                                change: [NSKeyValueChangeKey : Any]?,
                                context: UnsafeMutableRawPointer?) {
         if keyPath == #keyPath(Player.currentPlayerIndex) {
-            if let currentItemIndex = change?[.newKey] as? Int {
-                print("new currentItemIndex, index \(currentItemIndex)")
+            if let currentPlayerIndex = change?[.newKey] as? Int {
+                print("new currentPlayerIndex: \(currentPlayerIndex), table index: \(appDelegate.player.currentTableIndex)")
                 DispatchQueue.main.async { self.movementTable.reloadData() }
                 //As of iOS 11, the scroll seems to need a little delay.
                 let deadlineTime = DispatchTime.now() + .milliseconds(100)
