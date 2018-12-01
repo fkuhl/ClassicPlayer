@@ -174,7 +174,8 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Track", for: indexPath) as! SongTableViewCell
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        if indexPath.section * sectionSize + indexPath.row == appDelegate.player.currentTableIndex {
+        if appDelegate.player.setterID == mySetterID() &&
+            indexPath.section * sectionSize + indexPath.row == appDelegate.player.currentTableIndex {
             if appDelegate.player.player.rate < 0.5 {
                 cell.indicator.stopAnimating()
                 cell.indicator.animationImages = nil
@@ -188,7 +189,7 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
             }
             cell.artwork.isOpaque = false
             cell.artwork.alpha = 0.5
-       } else {
+        } else {
             cell.indicator.stopAnimating()
             cell.indicator.animationImages = nil
             cell.indicator.image = appDelegate.audioNotCurrent
