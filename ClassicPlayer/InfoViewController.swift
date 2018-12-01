@@ -20,14 +20,12 @@ class InfoViewController: UIViewController, ProgressDelegate {
     weak var playerViewController: AVPlayerViewController?
     weak var playerLabel: UILabel?
 
-    @IBOutlet weak var buildAndVersionStack: UIStackView!
-    @IBOutlet weak var version: UILabel!
-    @IBOutlet weak var buildNumber: UILabel!
+    @IBOutlet weak var buildVersion: UILabel!
     @IBOutlet weak var libraryDate: UILabel!
-    @IBOutlet weak var albums: UILabel!
-    @IBOutlet weak var songs: UILabel!
-    @IBOutlet weak var pieces: UILabel!
-    @IBOutlet weak var movements: UILabel!
+    @IBOutlet weak var albumCount: UILabel!
+    @IBOutlet weak var trackCount: UILabel!
+    @IBOutlet weak var pieceCount: UILabel!
+    @IBOutlet weak var movementCount: UILabel!
     @IBOutlet weak var activityBackground: UIView!
     @IBOutlet weak var progressBar: UIProgressView!
     
@@ -80,15 +78,24 @@ class InfoViewController: UIViewController, ProgressDelegate {
             self.progressBar.isHidden = true
             self.appDelegate.progressDelegate = nil
             let appDelegate = UIApplication.shared.delegate as! AppDelegate
-            self.version?.text = "version \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") ?? "")"
-            self.buildNumber?.text = "build \(Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") ?? "")"
+            self.buildVersion?.text = "v \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") ?? ""), " +
+                "build \(Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") ?? "")"
 //            NSLog("updating info with \(appDelegate.mediaLibraryInfo?.albumCount ?? 0) albums and \(appDelegate.mediaLibraryInfo?.songCount ?? 0) songs at \(appDelegate.mediaLibraryInfo?.lastModifiedDate)" )
-            let dateString = appDelegate.mediaLibraryInfo?.lastModifiedDate?.description(with: Locale.current) ?? "[n.d.]"
-            self.libraryDate?.text = "Media library date: \(dateString)"
-            self.albums?.text = "Albums: \(appDelegate.mediaLibraryInfo?.albumCount ?? 0)"
-            self.songs?.text = "Songs (tracks): \(appDelegate.mediaLibraryInfo?.songCount ?? 0)"
-            self.pieces?.text = "Pieces: \(appDelegate.mediaLibraryInfo?.pieceCount ?? 0)"
-            self.movements?.text = "Movements: \(appDelegate.mediaLibraryInfo?.movementCount ?? 0)"
+            let dateFormatter = DateFormatter()
+            dateFormatter.locale = Locale.current
+            dateFormatter.dateStyle = .short
+            dateFormatter.timeStyle = .medium
+            let dateString: String
+            if let date = appDelegate.mediaLibraryInfo?.lastModifiedDate {
+                dateString = dateFormatter.string(from: date)
+            } else {
+                dateString = "[n.d.]"
+            }
+            self.libraryDate?.text = "Media lib date: \(dateString)"
+            self.albumCount?.text = "\(appDelegate.mediaLibraryInfo?.albumCount ?? 0)"
+            self.trackCount?.text = "\(appDelegate.mediaLibraryInfo?.songCount ?? 0)"
+            self.pieceCount?.text = "\(appDelegate.mediaLibraryInfo?.pieceCount ?? 0)"
+            self.movementCount?.text = "\(appDelegate.mediaLibraryInfo?.movementCount ?? 0)"
             self.view.setNeedsDisplay()
         }
     }
