@@ -1322,7 +1322,7 @@
                                 </connections>
                             </containerView>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalSpacing" alignment="top" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="JHc-lx-1Ee">
-                                <rect key="frame" x="16" y="36" width="288" height="277.5"/>
+                                <rect key="frame" x="16" y="36" width="288" height="262.5"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" alignment="top" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="bur-QW-kq5" userLabel="Identity">
                                         <rect key="frame" x="0.0" y="0.0" width="278.5" height="122.5"/>
@@ -1373,7 +1373,7 @@
                                         </constraints>
                                     </view>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalSpacing" alignment="top" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="t0z-lA-zLn" userLabel="statistics">
-                                        <rect key="frame" x="0.0" y="156.5" width="278.5" height="75"/>
+                                        <rect key="frame" x="0.0" y="156.5" width="278.5" height="63"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lib date" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rS4-8o-ayz">
                                                 <rect key="frame" x="0.0" y="0.0" width="50.5" height="18"/>
@@ -1382,71 +1382,71 @@
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" alignment="top" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="b9b-y3-dsc" userLabel="Stats Stack">
-                                                <rect key="frame" x="0.0" y="26" width="271.5" height="49"/>
+                                                <rect key="frame" x="0.0" y="26" width="207" height="37"/>
                                                 <subviews>
                                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalSpacing" alignment="top" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="bOM-uH-M3S" userLabel="album stack">
-                                                        <rect key="frame" x="0.0" y="0.0" width="57.5" height="49"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="42.5" height="37"/>
                                                         <subviews>
-                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Albums" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1y7-XU-jOu">
-                                                                <rect key="frame" x="0.0" y="0.0" width="57.5" height="20.5"/>
-                                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Albums" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1y7-XU-jOu">
+                                                                <rect key="frame" x="0.0" y="0.0" width="42.5" height="14.5"/>
+                                                                <fontDescription key="fontDescription" style="UICTFontTextStyleCaption1"/>
                                                                 <nil key="textColor"/>
                                                                 <nil key="highlightedColor"/>
                                                             </label>
-                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Btm-rT-F61" userLabel="album count">
-                                                                <rect key="frame" x="0.0" y="28.5" width="42" height="20.5"/>
-                                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Btm-rT-F61" userLabel="album count">
+                                                                <rect key="frame" x="0.0" y="22.5" width="31" height="14.5"/>
+                                                                <fontDescription key="fontDescription" style="UICTFontTextStyleCaption1"/>
                                                                 <nil key="textColor"/>
                                                                 <nil key="highlightedColor"/>
                                                             </label>
                                                         </subviews>
                                                     </stackView>
                                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalSpacing" alignment="top" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="kFa-LX-xyh" userLabel="tracks stack">
-                                                        <rect key="frame" x="65.5" y="0.0" width="50.5" height="49"/>
+                                                        <rect key="frame" x="50.5" y="0.0" width="37.5" height="37"/>
                                                         <subviews>
-                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Tracks" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4Zu-ta-BBY">
-                                                                <rect key="frame" x="0.0" y="0.0" width="50.5" height="20.5"/>
-                                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Tracks" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4Zu-ta-BBY">
+                                                                <rect key="frame" x="0.0" y="0.0" width="37.5" height="14.5"/>
+                                                                <fontDescription key="fontDescription" style="UICTFontTextStyleCaption1"/>
                                                                 <nil key="textColor"/>
                                                                 <nil key="highlightedColor"/>
                                                             </label>
-                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hSN-YQ-qRP" userLabel="track count">
-                                                                <rect key="frame" x="0.0" y="28.5" width="42" height="20.5"/>
-                                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hSN-YQ-qRP" userLabel="track count">
+                                                                <rect key="frame" x="0.0" y="22.5" width="31" height="14.5"/>
+                                                                <fontDescription key="fontDescription" style="UICTFontTextStyleCaption1"/>
                                                                 <nil key="textColor"/>
                                                                 <nil key="highlightedColor"/>
                                                             </label>
                                                         </subviews>
                                                     </stackView>
                                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalSpacing" alignment="top" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="hcw-0T-4DS" userLabel="pieces stack">
-                                                        <rect key="frame" x="124" y="0.0" width="50.5" height="49"/>
+                                                        <rect key="frame" x="96" y="0.0" width="37.5" height="37"/>
                                                         <subviews>
-                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Pieces" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="t0t-7D-kTt">
-                                                                <rect key="frame" x="0.0" y="0.0" width="50.5" height="20.5"/>
-                                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Pieces" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="t0t-7D-kTt">
+                                                                <rect key="frame" x="0.0" y="0.0" width="37.5" height="14.5"/>
+                                                                <fontDescription key="fontDescription" style="UICTFontTextStyleCaption1"/>
                                                                 <nil key="textColor"/>
                                                                 <nil key="highlightedColor"/>
                                                             </label>
-                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kGP-0P-Thx" userLabel="piece count">
-                                                                <rect key="frame" x="0.0" y="28.5" width="42" height="20.5"/>
-                                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kGP-0P-Thx" userLabel="piece count">
+                                                                <rect key="frame" x="0.0" y="22.5" width="31" height="14.5"/>
+                                                                <fontDescription key="fontDescription" style="UICTFontTextStyleCaption1"/>
                                                                 <nil key="textColor"/>
                                                                 <nil key="highlightedColor"/>
                                                             </label>
                                                         </subviews>
                                                     </stackView>
                                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalSpacing" alignment="top" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="Uup-Wv-hjx" userLabel="movements stack">
-                                                        <rect key="frame" x="182.5" y="0.0" width="89" height="49"/>
+                                                        <rect key="frame" x="141.5" y="0.0" width="65.5" height="37"/>
                                                         <subviews>
-                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Movements" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="oKX-ZL-XQR">
-                                                                <rect key="frame" x="0.0" y="0.0" width="89" height="20.5"/>
-                                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Movements" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="oKX-ZL-XQR">
+                                                                <rect key="frame" x="0.0" y="0.0" width="65.5" height="14.5"/>
+                                                                <fontDescription key="fontDescription" style="UICTFontTextStyleCaption1"/>
                                                                 <nil key="textColor"/>
                                                                 <nil key="highlightedColor"/>
                                                             </label>
-                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cZ9-It-gDn" userLabel="movement count">
-                                                                <rect key="frame" x="0.0" y="28.5" width="42" height="20.5"/>
-                                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cZ9-It-gDn" userLabel="movement count">
+                                                                <rect key="frame" x="0.0" y="22.5" width="31" height="14.5"/>
+                                                                <fontDescription key="fontDescription" style="UICTFontTextStyleCaption1"/>
                                                                 <nil key="textColor"/>
                                                                 <nil key="highlightedColor"/>
                                                             </label>
@@ -1458,18 +1458,19 @@
                                         <color key="backgroundColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" alignment="top" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="g0X-ze-Lo2" userLabel="Buttons Stack">
-                                        <rect key="frame" x="0.0" y="247.5" width="233" height="30"/>
+                                        <rect key="frame" x="0.0" y="235.5" width="196" height="27"/>
                                         <subviews>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qrn-fo-acw">
-                                                <rect key="frame" x="0.0" y="0.0" width="147" height="30"/>
-                                                <fontDescription key="fontDescription" style="UICTFontTextStyleSubhead"/>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" adjustsImageSizeForAccessibilityContentSizeCategory="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qrn-fo-acw">
+                                                <rect key="frame" x="0.0" y="0.0" width="122" height="27"/>
+                                                <fontDescription key="fontDescription" style="UICTFontTextStyleCaption1"/>
                                                 <state key="normal" title="Reload iTunes Library"/>
                                                 <connections>
                                                     <action selector="reloadLibrary:" destination="NgQ-eN-OD8" eventType="touchUpInside" id="eJt-Mn-I0v"/>
                                                 </connections>
                                             </button>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wyI-a0-RLj">
-                                                <rect key="frame" x="163" y="0.0" width="70" height="30"/>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" adjustsImageSizeForAccessibilityContentSizeCategory="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wyI-a0-RLj">
+                                                <rect key="frame" x="138" y="0.0" width="58" height="27"/>
+                                                <fontDescription key="fontDescription" style="UICTFontTextStyleCaption1"/>
                                                 <state key="normal" title="Mail Titles"/>
                                             </button>
                                         </subviews>
