@@ -9,12 +9,13 @@
 import UIKit
 import AVFoundation
 import AVKit
+import MessageUI
 
 protocol ProgressDelegate {
     func setProgress(progress: Float)
 }
 
-class InfoViewController: UIViewController, ProgressDelegate {
+class InfoViewController: UIViewController, ProgressDelegate, MFMailComposeViewControllerDelegate {
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     weak var playerViewController: AVPlayerViewController?
@@ -125,6 +126,39 @@ class InfoViewController: UIViewController, ProgressDelegate {
         }
     }
     
+    @IBAction func mailTitles(_ sender: UIButton) {
+        if !MFMailComposeViewController.canSendMail() {
+            let alert = UIAlertController(title: "Can't Send Mail",
+                                          message: "Your phone isn't configured to send mail.",
+                                          preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
+            self.present(alert, animated: true)
+        }
+        let mc = MFMailComposeViewController()
+        mc.mailComposeDelegate = self
+        mc.setSubject("titles not parsing correctly")
+        mc.setMessageBody("This is the body", isHTML: false)
+        mc.setToRecipients(["fkuhl@tyndalesoft.com"])
+        mc.addAttachmentData("an attachment".data(using: .utf8)!, mimeType: "application/json", fileName: "yourdata.txt")
+        self.present(mc, animated: true, completion: nil)
+    }
+    
+    func mailComposeController(_ controller:MFMailComposeViewController, didFinishWith result:MFMailComposeResult, error:Error?) {
+        switch result {
+        case .cancelled:
+            print("Mail cancelled")
+        case .saved:
+            print("Mail saved")
+        case .sent:
+            print("Mail sent")
+        case .failed:
+            print("Mail sent failure: \(String(describing: error?.localizedDescription))")
+        default:
+            break
+        }
+        self.dismiss(animated: true, completion: nil)
+    }
+
     @objc
     private func handleClearingError(notification: NSNotification) {
         let message = "\(String(describing: notification.userInfo))"
