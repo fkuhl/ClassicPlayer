@@ -302,74 +302,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
     
-    private enum LoadingState {
-        case beginPiece
-        case continuePiece
-    }
-    
     private func loadParsedPieces(for album: Album, from collection: [MPMediaItem], into context: NSManagedObjectContext) {
-        if collection.count < 1 { return }
-//        if collection.count < 2 {
-//            _ = storePiece(from: collection[0], entitled: collection[0].title ?? "", to: album, into: context)
-//            return
-//        }
-        var state = LoadingState.beginPiece
-        var i = 0
         var piece: Piece?
-        var firstParse = ParseResult.undefined //compiler needs a default value
-        var nextParse: ParseResult?
-        repeat {
-            let unwrappedTitle = collection[i].title ?? ""
-            switch state {
-            case .beginPiece:
-                firstParse = bestParse(in: unwrappedTitle)
-                if AppDelegate.showParses {
-                    print("composer: '\(collection[i].composer ?? "")' raw: '\(unwrappedTitle)'")
-                    print("   piece: '\(firstParse.firstMatch)' movement: '\(firstParse.secondMatch)' (\(firstParse.parse.name))")
-                }
-                if i + 1 >= collection.count {
-                    //no more songs to be movements
-                    //so piece name is the track name
-                    piece = storePiece(from: collection[i], entitled: firstParse.firstMatch, to: album, into: context)
-                    i += 1
-                    continue
-                }
-                let secondTitle = collection[i + 1].title ?? ""
-                nextParse = matchSubsequentMovement(raw: secondTitle, against: firstParse)
-                if let matchedNext = nextParse {
-                    if AppDelegate.showParses {
-                        print("      2nd raw: '\(secondTitle)' second movt: '\(matchedNext.secondMatch)' (\(matchedNext.parse.name))")
-                    }
-                    //at least two movements: record piece, then first two movements
-                    let pieceTitle = firstParse.firstMatch
-                    piece = storePiece(from: collection[i], entitled: pieceTitle, to: album, into: context)
-                    storeMovement(from: collection[i],     named: firstParse.secondMatch,  for: piece!, into: context)
-                    storeMovement(from: collection[i + 1], named: matchedNext.secondMatch, for: piece!, into: context)
-                    //see what other movement(s) you can find
-                    i += 2
-                    state = .continuePiece
-                } else {
-                    //next is different piece
-                    //so piece name is what we found at first
-                    piece = storePiece(from: collection[i], entitled: firstParse.firstMatch, to: album, into: context)
-                    i += 1
-                    state = .beginPiece
-                }
-            case .continuePiece:
-                if i >= collection.count { continue }
-                let subsequentTitle = collection[i].title ?? ""
-                let subsequentParse = matchSubsequentMovement(raw: subsequentTitle, against: firstParse)
-                 if let matchedSubsequent = subsequentParse {
-                    if AppDelegate.showParses {
-                        print("      Subsq raw: '\(subsequentTitle)' subsq movt: '\(matchedSubsequent.secondMatch)' (\(matchedSubsequent.parse.name))")
-                    }
-                    storeMovement(from: collection[i], named: matchedSubsequent.secondMatch, for: piece!, into: context)
-                    i += 1
-                } else {
-                    state = .beginPiece //don't increment i
-                }
-            }
-        } while i < collection.count
+        if collection.count < 1 { return }
+        let trackTitles = collection.map { return $0.title ?? "" }
+        parsePieces(from: trackTitles,
+                    recordPiece: { (collectionIndex: Int, pieceTitle: String, parseResult: ParseResult) in
+                        piece = storePiece(from: collection[collectionIndex], entitled: pieceTitle, to: album, into: context)
+                        if AppDelegate.showParses {
+                            print("composer: '\(collection[collectionIndex].composer ?? "")' raw: '\(trackTitles[collectionIndex])'")
+                            print("   piece: '\(parseResult.firstMatch)' movement: '\(parseResult.secondMatch)' (\(parseResult.parse.name))")
+                        }
+        },
+                    recordMovement: { (collectionIndex: Int, movementTitle: String, parseResult: ParseResult) in
+                        storeMovement(from: collection[collectionIndex], named: movementTitle, for: piece!, into: context)
+                        if AppDelegate.showParses {
+                            print("      movt raw: '\(trackTitles[collectionIndex])' second title: '\(movementTitle)' (\(parseResult.parse.name))")
+                        }
+        })
     }
 
     private func storeMovement(from item: MPMediaItem, named: String, for piece: Piece, into context: NSManagedObjectContext) {

@@ -366,3 +366,74 @@ fileprivate func composersContains(candidate: String) -> Bool {
     return false
 }
 
+private enum ParsingState {
+    case beginPiece
+    case continuePiece
+}
+
+/**
+ Take the track titles from an album and find pieces and movements.
+ The rationale for this function is that it abstracts the parsing away from the details
+ of the media library, so (eventually) the same parsing can be applied to track titles reported by a user.
+ 
+ - Parameter titles: unparsed track titles in the order they appear in the album
+ - Parameter recordPiece: function to call when a piece has been found
+ - Parameter collectionIndex: index of the first track in the piece
+ - Parameter pieceTitle: title parsed for piece
+ - Parameter parseResult: the parse that yielded this piece
+ - Parameter recordMovement: function to call when a movement has been found in a piece
+ - Parameter collectionIndex: track index of this movement
+ - Parameter pieceTitle: title parsed for movement
+ - Parameter parseResult: the parse that yielded this movement
+
+ */
+func parsePieces(from titles: [String],
+                 recordPiece: (_ collectionIndex: Int, _ pieceTitle: String, _ parseResult: ParseResult) -> (),
+                 recordMovement: (_ collectionIndex: Int, _ movementTitle: String, _ parseResult: ParseResult) -> ()) {
+    if titles.count < 1 { return }
+    var state = ParsingState.beginPiece
+    var i = 0
+    var firstParse = ParseResult.undefined //compiler needs a default value
+    var nextParse: ParseResult?
+    repeat {
+        let unwrappedTitle = titles[i]
+        switch state {
+        case .beginPiece:
+            firstParse = bestParse(in: unwrappedTitle)
+            if i + 1 >= titles.count {
+                //no more songs to be movements
+                //so piece name is the track name
+                recordPiece(i, firstParse.firstMatch, firstParse)
+                i += 1
+                continue
+            }
+            let secondTitle = titles[i + 1]
+            nextParse = matchSubsequentMovement(raw: secondTitle, against: firstParse)
+            if let matchedNext = nextParse {
+                //at least two movements: record piece, then first two movements
+                recordPiece(i, firstParse.firstMatch, firstParse)
+                recordMovement(i,     firstParse.secondMatch,  matchedNext)
+                recordMovement(i + 1, matchedNext.secondMatch, matchedNext)
+                //see what other movement(s) you can find
+                i += 2
+                state = .continuePiece
+            } else {
+                //next is different piece
+                //so piece name is what we found at first
+                recordPiece(i, firstParse.firstMatch, firstParse)
+                i += 1
+                state = .beginPiece
+            }
+        case .continuePiece:
+            if i >= titles.count { continue }
+            let subsequentTitle = titles[i]
+            let subsequentParse = matchSubsequentMovement(raw: subsequentTitle, against: firstParse)
+            if let matchedSubsequent = subsequentParse {
+                recordMovement(i, matchedSubsequent.secondMatch, matchedSubsequent)
+                i += 1
+            } else {
+                state = .beginPiece //don't increment i
+            }
+        }
+    } while i < titles.count
+}
