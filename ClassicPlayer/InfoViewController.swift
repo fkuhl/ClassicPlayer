@@ -137,9 +137,9 @@ class InfoViewController: UIViewController, ProgressDelegate, MFMailComposeViewC
         let mc = MFMailComposeViewController()
         mc.mailComposeDelegate = self
         mc.setSubject("titles not parsing correctly")
-        mc.setMessageBody("This is the body", isHTML: false)
+        mc.setMessageBody("Please explain the problem you're seeing here!", isHTML: false)
         mc.setToRecipients(["fkuhl@tyndalesoft.com"])
-        mc.addAttachmentData("an attachment".data(using: .utf8)!, mimeType: "application/json", fileName: "yourdata.txt")
+        mc.addAttachmentData(reportLibrary(), mimeType: "application/json", fileName: "yourdata.txt")
         self.present(mc, animated: true, completion: nil)
     }
     

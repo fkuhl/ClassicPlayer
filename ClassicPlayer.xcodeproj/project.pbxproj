@@ -12,6 +12,7 @@
 		2718224A204B4678003345C0 /* InfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27182249204B4678003345C0 /* InfoViewController.swift */; };
 		27188EAB201D238B00CB5427 /* AlbumTracksViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27188EAA201D238B00CB5427 /* AlbumTracksViewController.swift */; };
 		271D2E23202CD7E4005FE857 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 271D2E22202CD7E4005FE857 /* Settings.bundle */; };
+		2721823C21B8927B0099B808 /* LibraryReporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2721823B21B8927B0099B808 /* LibraryReporter.swift */; };
 		2728D4C221877C2B005DB467 /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2728D4C121877C2B005DB467 /* Player.swift */; };
 		2733A60C1FE5FDE000E1EE77 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2733A60B1FE5FDE000E1EE77 /* AppDelegate.swift */; };
 		2733A60F1FE5FDE000E1EE77 /* ClassicPlayer.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2733A60D1FE5FDE000E1EE77 /* ClassicPlayer.xcdatamodeld */; };
@@ -57,6 +58,7 @@
 		27182249204B4678003345C0 /* InfoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InfoViewController.swift; sourceTree = "<group>"; };
 		27188EAA201D238B00CB5427 /* AlbumTracksViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumTracksViewController.swift; sourceTree = "<group>"; };
 		271D2E22202CD7E4005FE857 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
+		2721823B21B8927B0099B808 /* LibraryReporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryReporter.swift; sourceTree = "<group>"; };
 		2728D4C121877C2B005DB467 /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
 		2733A6081FE5FDE000E1EE77 /* ClassicPlayer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClassicPlayer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2733A60B1FE5FDE000E1EE77 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -151,6 +153,7 @@
 				2733A61C1FE5FDE000E1EE77 /* Info.plist */,
 				27182249204B4678003345C0 /* InfoViewController.swift */,
 				2733A6191FE5FDE000E1EE77 /* LaunchScreen.storyboard */,
+				2721823B21B8927B0099B808 /* LibraryReporter.swift */,
 				2733A6141FE5FDE000E1EE77 /* Main.storyboard */,
 				274404A02103ABF1004E0152 /* MovementParsing.swift */,
 				27FCDEDD1FF2D8D6001D81CE /* PieceViewController.swift */,
@@ -294,6 +297,7 @@
 			files = (
 				270CA5D2203B7D7100325862 /* PlaylistViewController.swift in Sources */,
 				27FCDEDC1FF2D220001D81CE /* ComposersViewController.swift in Sources */,
+				2721823C21B8927B0099B808 /* LibraryReporter.swift in Sources */,
 				2755D7341FE9629C006F49AE /* Movement+CoreDataProperties.swift in Sources */,
 				2755D72F1FE9629C006F49AE /* Piece+CoreDataClass.swift in Sources */,
 				2728D4C221877C2B005DB467 /* Player.swift in Sources */,
