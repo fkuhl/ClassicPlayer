@@ -253,7 +253,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             //For now, just parse everything irrespective of genre. One less thing to explain.
             self.loadParsedPieces(for: appAlbum, from: mediaAlbumItems, into: context)
         }
-        NSLog("found \(libraryAlbumCount) albums, \(libraryPieceCount) pieces, \(libraryMovementCount) movements, \(librarySongCount) tracks")
+        NSLog("found \(composersFound.count) composers, \(libraryAlbumCount) albums, \(libraryPieceCount) pieces, \(libraryMovementCount) movements, \(librarySongCount) tracks")
         storeMediaLibraryInfo(into: context)
     }
     
