@@ -219,7 +219,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     private func loadAppFromMediaLibrary(context: NSManagedObjectContext) {
         NSLog("started finding composers")
-        let totalAlbumCount = Float(findComposers())
+        let composerResults = findComposers()
+        let totalAlbumCount = Float(composerResults.0)
+        composersFound = composerResults.1
         let progressIncrement = Int32(totalAlbumCount / 20) //update progress bar 20 times
         NSLog("finished finding composers")
         libraryAlbumCount = 0
@@ -352,7 +354,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         album.addToPieces(piece)
         return piece
     }
-    
+
     // MARK: - Graphics
     
     private static var _defaultImage: UIImage? = nil
@@ -508,6 +510,53 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
 }
+
+// MARK: - Composers
+
+
+fileprivate var composersFound = Set<String>()
+
+func composersInLibrary() -> [String] {
+    return Array(composersFound)
+}
+
+/**
+ Find and store all the composers that occur in songs.
+ 
+ */
+func findComposers() -> (Int, Set<String>) {
+    var albumCount = 0
+    var found = Set<String>()
+    let mediaAlbums = MPMediaQuery.albums()
+    if mediaAlbums.collections == nil { return (0, found) }
+    for mediaAlbum in mediaAlbums.collections! {
+        let mediaAlbumItems = mediaAlbum.items
+        for item in mediaAlbumItems {
+            if let composer = item.composer {
+                found.insert(composer)
+            }
+        }
+        albumCount += 1
+    }
+    return (albumCount, found)
+}
+
+/**
+ Does the set of previously found composers contain this (possibly partial) composer name?
+ 
+ - Parameter candidate: composer name from song title, e.g., "Brahms"
+ 
+ - Returns: true if the candidate appears somewhere in one of the stored composers, e.g., "Brahms, Johannes".
+ */
+func composersContains(candidate: String) -> Bool {
+    for composer in composersFound {
+        if composer.range(of: candidate, options: String.CompareOptions.caseInsensitive) != nil { return true }
+    }
+    return false
+}
+
+// MARK: - Helper function
+
 
 
 // Helper function inserted by Swift 4.2 migrator.

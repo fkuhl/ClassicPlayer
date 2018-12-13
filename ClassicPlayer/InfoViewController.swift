@@ -133,13 +133,18 @@ class InfoViewController: UIViewController, ProgressDelegate, MFMailComposeViewC
                                           preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
             self.present(alert, animated: true)
+            return
         }
+        let dateFormatter = ISO8601DateFormatter()
+        dateFormatter.formatOptions = .withFullDate
         let mc = MFMailComposeViewController()
         mc.mailComposeDelegate = self
         mc.setSubject("titles not parsing correctly")
-        mc.setMessageBody("Please explain the problem you're seeing here!", isHTML: false)
+        mc.setMessageBody("<html><body>Please explain the problem you're seeing here!</body></html>", isHTML: true)
         mc.setToRecipients(["fkuhl@tyndalesoft.com"])
-        mc.addAttachmentData(reportLibrary(), mimeType: "application/json", fileName: "yourdata.txt")
+        mc.addAttachmentData(reportLibrary(),
+                             mimeType: "application/json",
+                             fileName: dateFormatter.string(from: Date()) + "-library-report.json")
         self.present(mc, animated: true, completion: nil)
     }
     

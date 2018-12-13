@@ -7,7 +7,12 @@
 //
 
 import Foundation
-import MediaPlayer
+
+/**
+ Everything associated with parsing pieces and movements.
+ This is used by ClassicPrinter as well as ClassicPlayer, so it imports
+ nothing not common to iOS and macOS.
+ */
 
 //https://developer.apple.com/documentation/foundation/nsregularexpression?changes=_9
 
@@ -225,8 +230,6 @@ fileprivate let noComposerPatterns = [
 fileprivate let separator: Character = "|"
 fileprivate let parseTemplate = "$1\(separator)$2"
 
-fileprivate var composersFound = Set<String>()
-
 struct ParseResult: Equatable {
     let firstMatch: String
     let secondMatch: String
@@ -331,41 +334,6 @@ fileprivate func extract(from: String, range: NSRange) -> String {
     return String(from[startIndex..<endIndex])
 }
 
-/**
- Find and store all the composers that occur in songs. Called from AppDelegate.
-
- */
-func findComposers() -> Int {
-    var albumCount = 0
-    composersFound = Set<String>()
-    let mediaAlbums = MPMediaQuery.albums()
-    if mediaAlbums.collections == nil { return 0 }
-    for mediaAlbum in mediaAlbums.collections! {
-        let mediaAlbumItems = mediaAlbum.items
-        for item in mediaAlbumItems {
-            if let composer = item.composer {
-                composersFound.insert(composer)
-            }
-        }
-        albumCount += 1
-    }
-    return albumCount
-}
-
-/**
- Does the set of previously found composers contain this (possibly partial) composer name?
- 
- - Parameter candidate: composer name from song title, e.g., "Brahms"
- 
- - Returns: true if the candidate appears somewhere in one of the stored composers, e.g., "Brahms, Johannes".
- */
-fileprivate func composersContains(candidate: String) -> Bool {
-    for composer in composersFound {
-        if composer.range(of: candidate, options: String.CompareOptions.caseInsensitive) != nil { return true }
-    }
-    return false
-}
-
 private enum ParsingState {
     case beginPiece
     case continuePiece
@@ -374,7 +342,7 @@ private enum ParsingState {
 /**
  Take the track titles from an album and find pieces and movements.
  The rationale for this function is that it abstracts the parsing away from the details
- of the media library, so (eventually) the same parsing can be applied to track titles reported by a user.
+ of the media library, so the same parsing can be applied to track titles reported by a user.
  
  - Parameter titles: unparsed track titles in the order they appear in the album
  - Parameter recordPiece: function to call when a piece has been found

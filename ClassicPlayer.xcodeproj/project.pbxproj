@@ -32,6 +32,7 @@
 		277B21E1202258F20052DF42 /* AlbumSortViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 277B21E0202258F20052DF42 /* AlbumSortViewController.swift */; };
 		277CD96821A72ABF00473897 /* RateObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 277CD96721A72ABF00473897 /* RateObserver.swift */; };
 		277CD96A21A730DE00473897 /* IndexObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 277CD96921A730DE00473897 /* IndexObserver.swift */; };
+		27BC456321C2BAA900928490 /* ReportingStructures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27BC456221C2BAA900928490 /* ReportingStructures.swift */; };
 		27CC6FB720337DEB00614150 /* ArtistsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27CC6FB620337DEB00614150 /* ArtistsViewController.swift */; };
 		27CFA1582034D35D00D6F613 /* PlaylistsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27CFA1572034D35D00D6F613 /* PlaylistsViewController.swift */; };
 		27D61043203E1EF6001075BF /* SongTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27D61042203E1EF6001075BF /* SongTableViewCell.swift */; };
@@ -83,6 +84,7 @@
 		277B21E0202258F20052DF42 /* AlbumSortViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumSortViewController.swift; sourceTree = "<group>"; };
 		277CD96721A72ABF00473897 /* RateObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RateObserver.swift; sourceTree = "<group>"; };
 		277CD96921A730DE00473897 /* IndexObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IndexObserver.swift; sourceTree = "<group>"; };
+		27BC456221C2BAA900928490 /* ReportingStructures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportingStructures.swift; sourceTree = "<group>"; };
 		27CC6FB620337DEB00614150 /* ArtistsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArtistsViewController.swift; sourceTree = "<group>"; };
 		27CFA1572034D35D00D6F613 /* PlaylistsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlaylistsViewController.swift; sourceTree = "<group>"; };
 		27D61042203E1EF6001075BF /* SongTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongTableViewCell.swift; sourceTree = "<group>"; };
@@ -162,6 +164,7 @@
 				270CA5D1203B7D7100325862 /* PlaylistViewController.swift */,
 				277CD96721A72ABF00473897 /* RateObserver.swift */,
 				2733A6301FE5FE8600E1EE77 /* README.md */,
+				27BC456221C2BAA900928490 /* ReportingStructures.swift */,
 				27FCDED71FF2B0BB001D81CE /* SelectedPiecesViewController.swift */,
 				271D2E22202CD7E4005FE857 /* Settings.bundle */,
 				27DAEB9F20264B3B00F8D5DA /* SongSortViewController.swift */,
@@ -315,6 +318,7 @@
 				27FCDED81FF2B0BB001D81CE /* SelectedPiecesViewController.swift in Sources */,
 				274404A12103ABF1004E0152 /* MovementParsing.swift in Sources */,
 				2755D7301FE9629C006F49AE /* Piece+CoreDataProperties.swift in Sources */,
+				27BC456321C2BAA900928490 /* ReportingStructures.swift in Sources */,
 				270B337920192365007D1E35 /* AlbumsViewController.swift in Sources */,
 				2755D7321FE9629C006F49AE /* Album+CoreDataProperties.swift in Sources */,
 				27DAEBA220264BE700F8D5DA /* SongsViewController.swift in Sources */,
