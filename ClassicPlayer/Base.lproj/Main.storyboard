@@ -534,8 +534,8 @@
                     <connections>
                         <segue destination="hLs-Ij-OdU" kind="relationship" relationship="viewControllers" id="wvY-NO-bMI"/>
                         <segue destination="Q8w-Uo-PWf" kind="relationship" relationship="viewControllers" id="ozY-DO-2hZ"/>
-                        <segue destination="NgQ-eN-OD8" kind="relationship" relationship="viewControllers" id="uYs-s3-PbB"/>
                         <segue destination="nfY-Pk-VTT" kind="relationship" relationship="viewControllers" id="dhR-LG-sqM"/>
+                        <segue destination="NgQ-eN-OD8" kind="relationship" relationship="viewControllers" id="uYs-s3-PbB"/>
                         <segue destination="MhH-Hw-5cU" kind="relationship" relationship="viewControllers" id="YSS-XU-KXe"/>
                         <segue destination="6kv-xn-BYR" kind="relationship" relationship="viewControllers" id="xu9-pg-zNC"/>
                     </connections>
