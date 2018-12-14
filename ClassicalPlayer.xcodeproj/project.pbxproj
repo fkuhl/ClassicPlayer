@@ -15,7 +15,7 @@
 		2721823C21B8927B0099B808 /* LibraryReporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2721823B21B8927B0099B808 /* LibraryReporter.swift */; };
 		2728D4C221877C2B005DB467 /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2728D4C121877C2B005DB467 /* Player.swift */; };
 		2733A60C1FE5FDE000E1EE77 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2733A60B1FE5FDE000E1EE77 /* AppDelegate.swift */; };
-		2733A60F1FE5FDE000E1EE77 /* ClassicPlayer.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2733A60D1FE5FDE000E1EE77 /* ClassicPlayer.xcdatamodeld */; };
+		2733A60F1FE5FDE000E1EE77 /* ClassicalPlayer.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2733A60D1FE5FDE000E1EE77 /* ClassicalPlayer.xcdatamodeld */; };
 		2733A6161FE5FDE000E1EE77 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2733A6141FE5FDE000E1EE77 /* Main.storyboard */; };
 		2733A6181FE5FDE000E1EE77 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2733A6171FE5FDE000E1EE77 /* Assets.xcassets */; };
 		2733A61B1FE5FDE000E1EE77 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2733A6191FE5FDE000E1EE77 /* LaunchScreen.storyboard */; };
@@ -61,14 +61,14 @@
 		271D2E22202CD7E4005FE857 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		2721823B21B8927B0099B808 /* LibraryReporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryReporter.swift; sourceTree = "<group>"; };
 		2728D4C121877C2B005DB467 /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
-		2733A6081FE5FDE000E1EE77 /* ClassicPlayer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClassicPlayer.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		2733A6081FE5FDE000E1EE77 /* ClassicalPlayer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClassicalPlayer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2733A60B1FE5FDE000E1EE77 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		2733A60E1FE5FDE000E1EE77 /* ClassicPlayer.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ClassicPlayer.xcdatamodel; sourceTree = "<group>"; };
 		2733A6151FE5FDE000E1EE77 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		2733A6171FE5FDE000E1EE77 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2733A61A1FE5FDE000E1EE77 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		2733A61C1FE5FDE000E1EE77 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		2733A6211FE5FDE100E1EE77 /* ClassicPlayerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ClassicPlayerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		2733A6211FE5FDE100E1EE77 /* ClassicalPlayerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ClassicalPlayerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2733A6251FE5FDE100E1EE77 /* ClassicPlayerUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassicPlayerUITests.swift; sourceTree = "<group>"; };
 		2733A6271FE5FDE100E1EE77 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2733A6301FE5FE8600E1EE77 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -134,8 +134,8 @@
 		2733A6091FE5FDE000E1EE77 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				2733A6081FE5FDE000E1EE77 /* ClassicPlayer.app */,
-				2733A6211FE5FDE100E1EE77 /* ClassicPlayerUITests.xctest */,
+				2733A6081FE5FDE000E1EE77 /* ClassicalPlayer.app */,
+				2733A6211FE5FDE100E1EE77 /* ClassicalPlayerUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -149,7 +149,7 @@
 				2733A60B1FE5FDE000E1EE77 /* AppDelegate.swift */,
 				27CC6FB620337DEB00614150 /* ArtistsViewController.swift */,
 				2733A6171FE5FDE000E1EE77 /* Assets.xcassets */,
-				2733A60D1FE5FDE000E1EE77 /* ClassicPlayer.xcdatamodeld */,
+				2733A60D1FE5FDE000E1EE77 /* ClassicalPlayer.xcdatamodeld */,
 				27FCDEDB1FF2D220001D81CE /* ComposersViewController.swift */,
 				277CD96921A730DE00473897 /* IndexObserver.swift */,
 				2733A61C1FE5FDE000E1EE77 /* Info.plist */,
@@ -195,9 +195,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		2733A6071FE5FDE000E1EE77 /* ClassicPlayer */ = {
+		2733A6071FE5FDE000E1EE77 /* ClassicalPlayer */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 2733A62A1FE5FDE100E1EE77 /* Build configuration list for PBXNativeTarget "ClassicPlayer" */;
+			buildConfigurationList = 2733A62A1FE5FDE100E1EE77 /* Build configuration list for PBXNativeTarget "ClassicalPlayer" */;
 			buildPhases = (
 				2733A6041FE5FDE000E1EE77 /* Sources */,
 				2733A6051FE5FDE000E1EE77 /* Frameworks */,
@@ -207,14 +207,14 @@
 			);
 			dependencies = (
 			);
-			name = ClassicPlayer;
+			name = ClassicalPlayer;
 			productName = ClassicPlayer;
-			productReference = 2733A6081FE5FDE000E1EE77 /* ClassicPlayer.app */;
+			productReference = 2733A6081FE5FDE000E1EE77 /* ClassicalPlayer.app */;
 			productType = "com.apple.product-type.application";
 		};
-		2733A6201FE5FDE100E1EE77 /* ClassicPlayerUITests */ = {
+		2733A6201FE5FDE100E1EE77 /* ClassicalPlayerUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 2733A62D1FE5FDE100E1EE77 /* Build configuration list for PBXNativeTarget "ClassicPlayerUITests" */;
+			buildConfigurationList = 2733A62D1FE5FDE100E1EE77 /* Build configuration list for PBXNativeTarget "ClassicalPlayerUITests" */;
 			buildPhases = (
 				2733A61D1FE5FDE100E1EE77 /* Sources */,
 				2733A61E1FE5FDE100E1EE77 /* Frameworks */,
@@ -225,9 +225,9 @@
 			dependencies = (
 				2733A6231FE5FDE100E1EE77 /* PBXTargetDependency */,
 			);
-			name = ClassicPlayerUITests;
+			name = ClassicalPlayerUITests;
 			productName = ClassicPlayerUITests;
-			productReference = 2733A6211FE5FDE100E1EE77 /* ClassicPlayerUITests.xctest */;
+			productReference = 2733A6211FE5FDE100E1EE77 /* ClassicalPlayerUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -253,7 +253,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 2733A6031FE5FDE000E1EE77 /* Build configuration list for PBXProject "ClassicPlayer" */;
+			buildConfigurationList = 2733A6031FE5FDE000E1EE77 /* Build configuration list for PBXProject "ClassicalPlayer" */;
 			compatibilityVersion = "Xcode 8.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -266,8 +266,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				2733A6071FE5FDE000E1EE77 /* ClassicPlayer */,
-				2733A6201FE5FDE100E1EE77 /* ClassicPlayerUITests */,
+				2733A6071FE5FDE000E1EE77 /* ClassicalPlayer */,
+				2733A6201FE5FDE100E1EE77 /* ClassicalPlayerUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -312,7 +312,7 @@
 				27DAEBA020264B3B00F8D5DA /* SongSortViewController.swift in Sources */,
 				27FCDEDE1FF2D8D6001D81CE /* PieceViewController.swift in Sources */,
 				2718224A204B4678003345C0 /* InfoViewController.swift in Sources */,
-				2733A60F1FE5FDE000E1EE77 /* ClassicPlayer.xcdatamodeld in Sources */,
+				2733A60F1FE5FDE000E1EE77 /* ClassicalPlayer.xcdatamodeld in Sources */,
 				27CC6FB720337DEB00614150 /* ArtistsViewController.swift in Sources */,
 				27D61043203E1EF6001075BF /* SongTableViewCell.swift in Sources */,
 				27FCDED81FF2B0BB001D81CE /* SelectedPiecesViewController.swift in Sources */,
@@ -341,7 +341,7 @@
 /* Begin PBXTargetDependency section */
 		2733A6231FE5FDE100E1EE77 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 2733A6071FE5FDE000E1EE77 /* ClassicPlayer */;
+			target = 2733A6071FE5FDE000E1EE77 /* ClassicalPlayer */;
 			targetProxy = 2733A6221FE5FDE100E1EE77 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -416,7 +416,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -469,7 +469,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
@@ -486,7 +486,7 @@
 				DEVELOPMENT_TEAM = KRGB7TX9DU;
 				INFOPLIST_FILE = ClassicPlayer/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.tyndalesoft.ClassicPlayer;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tyndalesoft.ClassicalPlayer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -501,7 +501,7 @@
 				DEVELOPMENT_TEAM = KRGB7TX9DU;
 				INFOPLIST_FILE = ClassicPlayer/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.tyndalesoft.ClassicPlayer;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tyndalesoft.ClassicalPlayer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -513,7 +513,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 7LKQP3MSCV;
+				DEVELOPMENT_TEAM = KRGB7TX9DU;
 				INFOPLIST_FILE = ClassicPlayerUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.tyndalesoft.ClassicPlayerUITests;
@@ -529,7 +529,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 7LKQP3MSCV;
+				DEVELOPMENT_TEAM = KRGB7TX9DU;
 				INFOPLIST_FILE = ClassicPlayerUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.tyndalesoft.ClassicPlayerUITests;
@@ -543,7 +543,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		2733A6031FE5FDE000E1EE77 /* Build configuration list for PBXProject "ClassicPlayer" */ = {
+		2733A6031FE5FDE000E1EE77 /* Build configuration list for PBXProject "ClassicalPlayer" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2733A6281FE5FDE100E1EE77 /* Debug */,
@@ -552,7 +552,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		2733A62A1FE5FDE100E1EE77 /* Build configuration list for PBXNativeTarget "ClassicPlayer" */ = {
+		2733A62A1FE5FDE100E1EE77 /* Build configuration list for PBXNativeTarget "ClassicalPlayer" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2733A62B1FE5FDE100E1EE77 /* Debug */,
@@ -561,7 +561,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		2733A62D1FE5FDE100E1EE77 /* Build configuration list for PBXNativeTarget "ClassicPlayerUITests" */ = {
+		2733A62D1FE5FDE100E1EE77 /* Build configuration list for PBXNativeTarget "ClassicalPlayerUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2733A62E1FE5FDE100E1EE77 /* Debug */,
@@ -573,13 +573,13 @@
 /* End XCConfigurationList section */
 
 /* Begin XCVersionGroup section */
-		2733A60D1FE5FDE000E1EE77 /* ClassicPlayer.xcdatamodeld */ = {
+		2733A60D1FE5FDE000E1EE77 /* ClassicalPlayer.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
 				2733A60E1FE5FDE000E1EE77 /* ClassicPlayer.xcdatamodel */,
 			);
 			currentVersion = 2733A60E1FE5FDE000E1EE77 /* ClassicPlayer.xcdatamodel */;
-			path = ClassicPlayer.xcdatamodeld;
+			path = ClassicalPlayer.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
 		};

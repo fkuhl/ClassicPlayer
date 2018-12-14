@@ -1,4 +1,4 @@
-#  ClassicPlayer
+#  ClassicalPlayer
 iOS music player intended for classical music.
 Most classical music isn't just "songs," but consists of pieces comprising multiple movements. Access your iTunes library by composer and piece/work.
 

@@ -242,7 +242,7 @@ class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableV
             //print("AlbumTracksVC.prepareForSegue")
             playerViewController = segue.destination as? AVPlayerViewController
             //This installs the UILabel. After this, we just change the text.
-            playerLabel = ClassicPlayer.add(label: "not init", to: playerViewController!)
+            playerLabel = ClassicalPlayer.add(label: "not init", to: playerViewController!)
         }
     }
 

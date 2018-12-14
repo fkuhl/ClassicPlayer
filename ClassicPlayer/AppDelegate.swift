@@ -12,13 +12,13 @@ import MediaPlayer
 import AVKit
 
 extension Notification.Name {
-    static let dataAvailable       = Notification.Name("com.tyndalesoft.ClassicPlayer.DataAvailable")
-    static let libraryChanged      = Notification.Name("com.tyndalesoft.ClassicPlayer.LibraryChanged")
-    static let clearingError       = Notification.Name("com.tyndalesoft.ClassicPlayer.ClearingError")
-    static let initializingError   = Notification.Name("com.tyndalesoft.ClassicPlayer.InitializingError")
-    static let loadingError        = Notification.Name("com.tyndalesoft.ClassicPlayer.LoadingError")
-    static let savingError         = Notification.Name("com.tyndalesoft.ClassicPlayer.SavingError")
-    static let storeError          = Notification.Name("com.tyndalesoft.ClassicPlayer.StoreError")
+    static let dataAvailable       = Notification.Name("com.tyndalesoft.ClassicalPlayer.DataAvailable")
+    static let libraryChanged      = Notification.Name("com.tyndalesoft.ClassicalPlayer.LibraryChanged")
+    static let clearingError       = Notification.Name("com.tyndalesoft.ClassicalPlayer.ClearingError")
+    static let initializingError   = Notification.Name("com.tyndalesoft.ClassicalPlayer.InitializingError")
+    static let loadingError        = Notification.Name("com.tyndalesoft.ClassicalPlayer.LoadingError")
+    static let savingError         = Notification.Name("com.tyndalesoft.ClassicalPlayer.SavingError")
+    static let storeError          = Notification.Name("com.tyndalesoft.ClassicalPlayer.StoreError")
 }
 
 @UIApplicationMain
@@ -255,6 +255,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         NSLog("found \(composersFound.count) composers, \(libraryAlbumCount) albums, \(libraryPieceCount) pieces, \(libraryMovementCount) movements, \(librarySongCount) tracks")
         storeMediaLibraryInfo(into: context)
+        save(context: context)
     }
     
     private func makeAndFillAlbum(from mediaAlbumItems: [MPMediaItem],  into context: NSManagedObjectContext) -> Album {
@@ -283,6 +284,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         mediaInfoObject.movementCount = libraryMovementCount
         mediaInfoObject.pieceCount = libraryPieceCount
         mediaInfoObject.songCount = librarySongCount
+        self.mediaLibraryInfo = mediaInfoObject
         NSLog("saved \(libraryAlbumCount) albums and \(libraryPieceCount) pieces for lib at \(mediaInfoObject.lastModifiedDate!)")
     }
     
@@ -475,7 +477,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     */
     lazy var persistentContainer: NSPersistentContainer = {
-        let container = NSPersistentContainer(name: "ClassicPlayer")
+        let container = NSPersistentContainer(name: "ClassicalPlayer")
         container.loadPersistentStores(completionHandler: { (storeDescription, error) in
             if let error = error as NSError? {
                 NotificationCenter.default.post(Notification(name: .storeError,

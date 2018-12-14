@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:ClassicPlayer.xcodeproj">
+      location = "self:/Users/fkuhl/Documents/Xcode 9/ClassicPlayer/ClassicalPlayer.xcodeproj">
    </FileRef>
 </Workspace>

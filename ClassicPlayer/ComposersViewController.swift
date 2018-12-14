@@ -45,7 +45,7 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
         navigationItem.searchController = searchController
         definesPresentationContext = true
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(updateUI),
+                                               selector: #selector(dataDidArrive),
                                                name: .dataAvailable,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
@@ -105,6 +105,14 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
     }
     
     @objc
+    private func dataDidArrive() {
+        //Notification arrives on a notification thread
+        DispatchQueue.main.async {
+            self.updateUI()
+        }
+    }
+    
+
     private func updateUI() {
         let context:NSManagedObjectContext! = self.appDelegate.mainThreadContext
         let request = NSFetchRequest<NSDictionary>()
@@ -122,7 +130,7 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
                                                      selector: #selector(NSString.localizedCaseInsensitiveCompare)) ]
         do {
             self.composerObjects = try context!.fetch(request)
-            //NSLog("fetch returned \(self.composerObjects!.count) composer things")
+            NSLog("fetch returned \(self.composerObjects!.count) composer things")
             self.computeSections()
             DispatchQueue.main.async {
                 self.tableView.reloadData()
