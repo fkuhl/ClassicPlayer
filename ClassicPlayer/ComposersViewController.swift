@@ -297,7 +297,7 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "PlayTracks" {
-            print("ComposersVC.prepareForSegue. playerVC: \(segue.destination)")
+            //print("ComposersVC.prepareForSegue. playerVC: \(segue.destination)")
             playerViewController = segue.destination as? AVPlayerViewController
             //This installs the UILabel. After this, we just change the text.
             playerLabel = add(label: "not init", to: playerViewController!)

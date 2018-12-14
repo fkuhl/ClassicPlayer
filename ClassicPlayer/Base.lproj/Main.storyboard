@@ -128,7 +128,7 @@
                     <navigationItem key="navigationItem" title="Albums" id="4Ih-vU-67n">
                         <barButtonItem key="rightBarButtonItem" id="m1S-5v-vpk">
                             <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="mLD-4z-Z3e">
-                                <rect key="frame" x="258" y="7" width="46" height="30"/>
+                                <rect key="frame" x="258" y="10" width="46" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" name=".AppleSystemUIFont" family=".AppleSystemUIFont" pointSize="15"/>
                                 <state key="normal" title="Sort"/>
@@ -666,7 +666,7 @@
                     <navigationItem key="navigationItem" title="Songs" id="WlO-GM-0PD">
                         <barButtonItem key="rightBarButtonItem" id="xRN-oi-qya">
                             <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="3iV-Fp-g3w">
-                                <rect key="frame" x="212" y="7" width="92" height="30"/>
+                                <rect key="frame" x="212" y="10" width="92" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Sort"/>
                                 <connections>
@@ -1273,7 +1273,7 @@
                     <tabBarItem key="tabBarItem" title="Artists" image="1656-piano" landscapeImage="1656-piano" selectedImage="1656-piano" id="TOT-2A-Rrh"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" largeTitles="YES" id="9Aa-Hy-W3F">
-                        <rect key="frame" x="0.0" y="20" width="320" height="102"/>
+                        <rect key="frame" x="0.0" y="20" width="320" height="96"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
@@ -1322,7 +1322,7 @@
                                 </connections>
                             </containerView>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalSpacing" alignment="top" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="JHc-lx-1Ee">
-                                <rect key="frame" x="16" y="36" width="288" height="262.5"/>
+                                <rect key="frame" x="16" y="36" width="288" height="305.5"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" alignment="top" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="bur-QW-kq5" userLabel="Identity">
                                         <rect key="frame" x="0.0" y="0.0" width="278.5" height="122.5"/>
@@ -1334,7 +1334,7 @@
                                                     <constraint firstAttribute="width" constant="120" id="nbR-oi-tJC"/>
                                                 </constraints>
                                             </imageView>
-                                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalSpacing" alignment="top" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="F42-Bd-LmN">
+                                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalSpacing" alignment="top" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="F42-Bd-LmN" userLabel="Identity Stack View">
                                                 <rect key="frame" x="128" y="0.0" width="150.5" height="122.5"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="751" text="ClassicPlayer" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AVr-dI-y6f">
@@ -1457,7 +1457,7 @@
                                         </subviews>
                                         <color key="backgroundColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     </stackView>
-                                    <stackView opaque="NO" contentMode="scaleToFill" alignment="top" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="g0X-ze-Lo2" userLabel="Buttons Stack">
+                                    <stackView opaque="NO" contentMode="scaleToFill" alignment="top" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="g0X-ze-Lo2" userLabel="1st row Buttons Stack">
                                         <rect key="frame" x="0.0" y="235.5" width="196" height="27"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" adjustsImageSizeForAccessibilityContentSizeCategory="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qrn-fo-acw">
@@ -1478,6 +1478,14 @@
                                             </button>
                                         </subviews>
                                     </stackView>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="IhD-Rb-qXR">
+                                        <rect key="frame" x="0.0" y="278.5" width="85" height="27"/>
+                                        <fontDescription key="fontDescription" style="UICTFontTextStyleCaption1"/>
+                                        <state key="normal" title="Enable artwork"/>
+                                        <connections>
+                                            <action selector="enableArtwork:" destination="NgQ-eN-OD8" eventType="touchUpInside" id="zh9-B5-Rei"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                                 <constraints>
                                     <constraint firstItem="bur-QW-kq5" firstAttribute="trailing" secondItem="t0z-lA-zLn" secondAttribute="trailing" id="19U-ld-Qmh"/>
