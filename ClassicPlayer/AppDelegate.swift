@@ -19,6 +19,7 @@ extension Notification.Name {
     static let loadingError        = Notification.Name("com.tyndalesoft.ClassicalPlayer.LoadingError")
     static let savingError         = Notification.Name("com.tyndalesoft.ClassicalPlayer.SavingError")
     static let storeError          = Notification.Name("com.tyndalesoft.ClassicalPlayer.StoreError")
+    static let dataMissing         = Notification.Name("com.tyndalesoft.ClassicalPlayer.DataMissing")
 }
 
 @UIApplicationMain
@@ -76,7 +77,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
         // Saves changes in the application's managed object context before the application terminates.
-        self.save(context: mainThreadContext)
+        do {
+            try self.mainThreadContext.save()
+        } catch {
+            let error = error as NSError
+            NSLog("error saving on applicationWillTerminate: \(error), \(error.userInfo)")
+        }
     }
 
     // MARK: - Audio and library
@@ -163,8 +169,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
      - Precondition: App has authorization to access library
     */
     private func loadMediaLibraryToApp(context: NSManagedObjectContext) {
-        self.loadAppFromMediaLibrary(context: context)
-        NotificationCenter.default.post(Notification(name: .dataAvailable))
+        let loadReturn = self.loadAppFromMediaLibrary(context: context)
+        do {
+            try context.save()
+            switch (loadReturn) {
+            case .normal:
+                NotificationCenter.default.post(Notification(name: .dataAvailable))
+            case .missingData:
+                NotificationCenter.default.post(Notification(name: .dataMissing))
+            }
+        } catch {
+            let error = error as NSError
+            NotificationCenter.default.post(Notification(name: .storeError,
+                                                         object: self,
+                                                         userInfo: error.userInfo))
+            NSLog("error saving after loadAppFromMediaLibrary: \(error), \(error.userInfo)")
+        }
     }
 
     /**
@@ -177,10 +197,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         //loadAppFromMediaLibrary makes progress calls back to a delegate,
         //which must handle its UI updates on main thread.
         persistentContainer.performBackgroundTask() { (context) in
+            
             self.clearOldData(from: context)
-            self.loadAppFromMediaLibrary(context: context)
-            self.save(context: context)
-            NotificationCenter.default.post(Notification(name: .dataAvailable))
+            let loadReturn = self.loadAppFromMediaLibrary(context: context)
+            do {
+                try context.save()
+                switch (loadReturn) {
+                case .normal:
+                    NotificationCenter.default.post(Notification(name: .dataAvailable))
+                case .missingData:
+                    NotificationCenter.default.post(Notification(name: .dataMissing))
+                }
+            } catch {
+                let error = error as NSError
+                NotificationCenter.default.post(Notification(name: .storeError,
+                                                             object: self,
+                                                             userInfo: error.userInfo))
+            }
         }
     }
     
@@ -190,13 +223,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             try clearEntities(ofType: "Piece", from: context)
             try clearEntities(ofType: "Album", from: context)
             try clearEntities(ofType: "Song", from: context)
-            save(context: context)
-        } catch {
+         } catch {
             let error = error as NSError
             NotificationCenter.default.post(Notification(name: .clearingError,
                                                          object: self,
                                                          userInfo: error.userInfo))
             NSLog("error clearing old data: \(error), \(error.userInfo)")
+            return
+        }
+        do {
+            try context.save()
+        } catch {
+            let error = error as NSError
+            NotificationCenter.default.post(Notification(name: .storeError,
+                                                         object: self,
+                                                         userInfo: error.userInfo))
         }
     }
 
@@ -222,8 +263,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         case missingData
     }
     
+    /**
+     Load the app's lib (CoreData) from media lib.
+     Before this calls any parsing functions it strips any MediaItems whose assetURL is nil.
+     This may affect parsing, but all parsing functions can assume no nil URLs.
+     
+     - Parameters:
+     - context: Coredata context
+     
+     - Returns:
+     whether any media (asset URLs) were missing.
+     */
     private func loadAppFromMediaLibrary(context: NSManagedObjectContext) -> LoadReturn {
-        var dataWereMissing = false
+        var allMediaDataPresent = true
         NSLog("started finding composers")
         let composerResults = findComposers()
         let totalAlbumCount = Float(composerResults.0)
@@ -237,7 +289,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let mediaAlbums = MPMediaQuery.albums()
         if mediaAlbums.collections == nil { return .normal }
         for mediaAlbum in mediaAlbums.collections! {
-            let mediaAlbumItems = mediaAlbum.items
+            var mediaAlbumItems = mediaAlbum.items
+            //Remove items with nil assetURLs, which may mess up parsing, but oh well
+            mediaAlbumItems.removeAll(where: { $0.assetURL == nil })
+            allMediaDataPresent = mediaAlbum.items.count == mediaAlbumItems.count
             self.libraryAlbumCount += 1
             if self.libraryAlbumCount % progressIncrement == 0 {
                 self.progressDelegate?.setProgress(progress: Float(self.libraryAlbumCount) / totalAlbumCount)
@@ -261,7 +316,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         NSLog("found \(composersFound.count) composers, \(libraryAlbumCount) albums, \(libraryPieceCount) pieces, \(libraryMovementCount) movements, \(librarySongCount) tracks")
         storeMediaLibraryInfo(into: context)
-        save(context: context)
+        return allMediaDataPresent ? .normal : .missingData
     }
     
     private func makeAndFillAlbum(from mediaAlbumItems: [MPMediaItem],  into context: NSManagedObjectContext) -> Album {
@@ -294,37 +349,32 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         NSLog("saved \(libraryAlbumCount) albums and \(libraryPieceCount) pieces for lib at \(mediaInfoObject.lastModifiedDate!)")
     }
     
-    private func loadSongs(for album: Album, from collection: [MPMediaItem], into context: NSManagedObjectContext) -> LoadReturn {
-        var allMediaDataPresent = true
+    private func loadSongs(for album: Album, from collection: [MPMediaItem], into context: NSManagedObjectContext) {
         librarySongCount += Int32(collection.count)
         for item in collection {
-            if let assetURL = item.assetURL {
-                //Only record song if media data present
-                let song = NSEntityDescription.insertNewObject(forEntityName: "Song", into: context) as! Song
-                song.albumID = AppDelegate.encodeForCoreData(id: item.albumPersistentID)
-                song.artist = item.artist
-                song.duration = AppDelegate.durationAsString(item.playbackDuration)
-                song.title = item.title
-                song.trackURL = assetURL
-            } else {
-                allMediaDataPresent = false
-                NSLog("Song '\(item.title ?? "<no title>")' was missing asset URL")
-            }
+            //Only record song if media data present
+            let song = NSEntityDescription.insertNewObject(forEntityName: "Song", into: context) as! Song
+            song.albumID = AppDelegate.encodeForCoreData(id: item.albumPersistentID)
+            song.artist = item.artist
+            song.duration = AppDelegate.durationAsString(item.playbackDuration)
+            song.title = item.title
+            song.trackURL = item.assetURL
         }
-        return allMediaDataPresent ? .normal : .missingData
     }
     
-    private func loadSongsAsPieces(for album: Album, from collection: [MPMediaItem], into context: NSManagedObjectContext) -> LoadReturn {
-        var allMediaDataPresent = true
+    /**
+     Load the songs (tracks) of an album as individual pieces.
+     Used when an album is a genre that we don't bother to parse.
+     
+     - Parameters:
+     - for: Album CoreData object
+     - from: MPMediaItems of album
+     - into: Coredata context
+     */
+    private func loadSongsAsPieces(for album: Album, from collection: [MPMediaItem], into context: NSManagedObjectContext) {
         for mediaItem in collection {
-            if mediaItem.assetURL != nil {
-                _ = storePiece(from: mediaItem, entitled: mediaItem.title ?? "", to: album, into: context)
-            } else {
-                allMediaDataPresent = false
-                NSLog("Song as piece '\(mediaItem.title ?? "<no title>")' was missing asset URL ")
-            }
+            _ = storePiece(from: mediaItem, entitled: mediaItem.title ?? "", to: album, into: context)
         }
-        return allMediaDataPresent ? .normal : .missingData
     }
     
     private func loadParsedPieces(for album: Album, from collection: [MPMediaItem], into context: NSManagedObjectContext) {
@@ -347,21 +397,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         })
     }
 
-    private func storeMovement(from item: MPMediaItem, named: String, for piece: Piece, into context: NSManagedObjectContext) -> LoadReturn {
-        if let assetURL = item.assetURL {
-            let mov = NSEntityDescription.insertNewObject(forEntityName: "Movement", into: context) as! Movement
-            mov.title = named
-            mov.trackID = AppDelegate.encodeForCoreData(id: item.persistentID)
-            mov.trackURL = assetURL
-            mov.duration = AppDelegate.durationAsString(item.playbackDuration)
-            libraryMovementCount += 1
-            piece.addToMovements(mov)
-            if AppDelegate.showPieces { print("    '\(mov.title ?? "")'") }
-            return .normal
-        } else {
-            NSLog("Movement \(named) of piece \(piece.title ?? "<no title>") was missing asset URL")
-            return .missingData
-        }
+    private func storeMovement(from item: MPMediaItem, named: String, for piece: Piece, into context: NSManagedObjectContext) {
+        let mov = NSEntityDescription.insertNewObject(forEntityName: "Movement", into: context) as! Movement
+        mov.title = named
+        mov.trackID = AppDelegate.encodeForCoreData(id: item.persistentID)
+        mov.trackURL = item.assetURL
+        mov.duration = AppDelegate.durationAsString(item.playbackDuration)
+        libraryMovementCount += 1
+        piece.addToMovements(mov)
+        if AppDelegate.showPieces { print("    '\(mov.title ?? "")'") }
     }
 
     //assumption: check has been performed by caller that assetURL is not nil
@@ -526,18 +570,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     // MARK: - Core Data Saving support
 
-    private func save(context: NSManagedObjectContext) {
-        do {
-            NSLog("Saving changes")
-            try context.save()
-        } catch {
-            let error = error as NSError
-            NotificationCenter.default.post(Notification(name: .storeError,
-                                                         object: self,
-                                                         userInfo: error.userInfo))
-            NSLog("store error \(error), \(error.userInfo)")
-        }
-    }
+//    private func save(context: NSManagedObjectContext) throws {
+//        NSLog("Saving changes")
+//        try context.save()
+//    }
 
 }
 

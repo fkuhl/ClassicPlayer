@@ -37,11 +37,15 @@ class InfoViewController: UIViewController, ProgressDelegate, MFMailComposeViewC
         self.activityBackground.isHidden = true
         self.progressBar.isHidden = true
         appDelegate.progressDelegate = nil
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(updateUI),
+                                               selector: #selector(dataDidArrive),
                                                name: .dataAvailable,
                                                object: nil)
-       NotificationCenter.default.addObserver(self,
+        NotificationCenter.default.addObserver(self,
                                                selector: #selector(handleClearingError),
                                                name: .clearingError,
                                                object: nil)
@@ -61,44 +65,45 @@ class InfoViewController: UIViewController, ProgressDelegate, MFMailComposeViewC
                                                selector: #selector(handleStoreError),
                                                name: .storeError,
                                                object: nil)
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(handleDataMissing),
+                                               name: .dataMissing,
+                                               object: nil)
         playerViewController?.player = appDelegate.player.player
         playerLabel?.text = appDelegate.player.label
         updateUI()
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        NotificationCenter.default.removeObserver(self)
+    }
+
     @objc
     private func updateUI() {
-        //You might not think this needs to put a task on the main thread, but this gets called from
-        //a number of places.
-        DispatchQueue.main.async {
-            self.activityBackground.isHidden = true
-            self.progressBar.isHidden = true
-            self.appDelegate.progressDelegate = nil
-            let appDelegate = UIApplication.shared.delegate as! AppDelegate
-            self.buildVersion?.text = "v \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") ?? ""), " +
-                "build \(Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") ?? "")"
-//            NSLog("updating info with \(appDelegate.mediaLibraryInfo?.albumCount ?? 0) albums and \(appDelegate.mediaLibraryInfo?.songCount ?? 0) songs at \(appDelegate.mediaLibraryInfo?.lastModifiedDate)" )
-            let dateFormatter = DateFormatter()
-            dateFormatter.locale = Locale.current
-            dateFormatter.dateStyle = .short
-            dateFormatter.timeStyle = .medium
-            let dateString: String
-            if let date = appDelegate.mediaLibraryInfo?.lastModifiedDate {
-                dateString = dateFormatter.string(from: date)
-            } else {
-                dateString = "[n.d.]"
-            }
-            self.libraryDate?.text = "Media lib date: \(dateString)"
-            self.albumCount?.text = "\(appDelegate.mediaLibraryInfo?.albumCount ?? 0)"
-            self.trackCount?.text = "\(appDelegate.mediaLibraryInfo?.songCount ?? 0)"
-            self.pieceCount?.text = "\(appDelegate.mediaLibraryInfo?.pieceCount ?? 0)"
-            self.movementCount?.text = "\(appDelegate.mediaLibraryInfo?.movementCount ?? 0)"
-            self.view.setNeedsDisplay()
+        self.activityBackground.isHidden = true
+        self.progressBar.isHidden = true
+        self.appDelegate.progressDelegate = nil
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        self.buildVersion?.text = "v \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") ?? ""), " +
+        "build \(Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") ?? "")"
+        //            NSLog("updating info with \(appDelegate.mediaLibraryInfo?.albumCount ?? 0) albums and \(appDelegate.mediaLibraryInfo?.songCount ?? 0) songs at \(appDelegate.mediaLibraryInfo?.lastModifiedDate)" )
+        let dateFormatter = DateFormatter()
+        dateFormatter.locale = Locale.current
+        dateFormatter.dateStyle = .short
+        dateFormatter.timeStyle = .medium
+        let dateString: String
+        if let date = appDelegate.mediaLibraryInfo?.lastModifiedDate {
+            dateString = dateFormatter.string(from: date)
+        } else {
+            dateString = "[n.d.]"
         }
+        self.libraryDate?.text = "Media lib date: \(dateString)"
+        self.albumCount?.text = "\(appDelegate.mediaLibraryInfo?.albumCount ?? 0)"
+        self.trackCount?.text = "\(appDelegate.mediaLibraryInfo?.songCount ?? 0)"
+        self.pieceCount?.text = "\(appDelegate.mediaLibraryInfo?.pieceCount ?? 0)"
+        self.movementCount?.text = "\(appDelegate.mediaLibraryInfo?.movementCount ?? 0)"
+        self.view.setNeedsDisplay()
     }
     
     @IBAction func reloadLibrary(_ sender: UIButton) {
@@ -169,6 +174,14 @@ class InfoViewController: UIViewController, ProgressDelegate, MFMailComposeViewC
     }
     
     @objc
+    private func dataDidArrive() {
+        //Notification arrives on a notification thread
+        DispatchQueue.main.async {
+            self.updateUI()
+        }
+    }
+
+    @objc
     private func handleClearingError(notification: NSNotification) {
         let message = "\(String(describing: notification.userInfo))"
         alertAndExit(title: "Error Clearing Old Media", message: message)
@@ -209,6 +222,19 @@ class InfoViewController: UIViewController, ProgressDelegate, MFMailComposeViewC
         }
     }
     
+    @objc
+    private func  handleDataMissing(notification: NSNotification) {
+        let title = "Missing Media"
+        let message = "Some tracks do not have media. This probably can be fixed by synchronizing your device again."
+        DispatchQueue.main.async { //we're on a notification thread!
+            self.updateUI() //clears the progress bar, before we show this alert
+            let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
+            }))
+            self.present(alert, animated: true)
+        }
+    }
+
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "PlayTracks" {

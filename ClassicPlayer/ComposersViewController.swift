@@ -44,6 +44,11 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
         searchController.searchBar.placeholder = "Search Composers"
         navigationItem.searchController = searchController
         definesPresentationContext = true
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        print("ComposersVC.viewWillAppear: \(self) player: \(appDelegate.player)")
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(dataDidArrive),
                                                name: .dataAvailable,
@@ -72,11 +77,10 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
                                                selector: #selector(handleStoreError),
                                                name: .storeError,
                                                object: nil)
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        print("ComposersVC.viewWillAppear: \(self) player: \(appDelegate.player)")
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(handleDataMissing),
+                                               name: .dataMissing,
+                                               object: nil)
         playerViewController?.player = appDelegate.player.player
         playerLabel?.text = appDelegate.player.label
         if !tableIsLoaded {
@@ -102,6 +106,11 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
             }
             self.libraryAccessChecked = true
        }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        NotificationCenter.default.removeObserver(self)
     }
     
     @objc
@@ -226,6 +235,21 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
             let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "Exit App", style: .default, handler: { _ in
                 exit(1)
+            }))
+            self.present(alert, animated: true)
+        }
+    }
+    
+    @objc
+    private func  handleDataMissing(notification: NSNotification) {
+        let title = "Missing Media"
+        let message = "Some tracks do not have media. This probably can be fixed by synchronizing your device again."
+        DispatchQueue.main.async {
+            let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
+                DispatchQueue.main.async {
+                    self.updateUI()
+                }
             }))
             self.present(alert, animated: true)
         }
