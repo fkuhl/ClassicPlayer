@@ -217,7 +217,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return AppDelegate.parsedGenres.contains(genre)
     }
     
-    private func loadAppFromMediaLibrary(context: NSManagedObjectContext) {
+    private enum LoadReturn {
+        case normal
+        case missingData
+    }
+    
+    private func loadAppFromMediaLibrary(context: NSManagedObjectContext) -> LoadReturn {
+        var dataWereMissing = false
         NSLog("started finding composers")
         let composerResults = findComposers()
         let totalAlbumCount = Float(composerResults.0)
@@ -229,7 +235,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         librarySongCount = 0
         libraryMovementCount = 0
         let mediaAlbums = MPMediaQuery.albums()
-        if mediaAlbums.collections == nil { return }
+        if mediaAlbums.collections == nil { return .normal }
         for mediaAlbum in mediaAlbums.collections! {
             let mediaAlbumItems = mediaAlbum.items
             self.libraryAlbumCount += 1
@@ -288,22 +294,37 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         NSLog("saved \(libraryAlbumCount) albums and \(libraryPieceCount) pieces for lib at \(mediaInfoObject.lastModifiedDate!)")
     }
     
-    private func loadSongs(for album: Album, from collection: [MPMediaItem], into context: NSManagedObjectContext) {
+    private func loadSongs(for album: Album, from collection: [MPMediaItem], into context: NSManagedObjectContext) -> LoadReturn {
+        var allMediaDataPresent = true
         librarySongCount += Int32(collection.count)
         for item in collection {
-            let song = NSEntityDescription.insertNewObject(forEntityName: "Song", into: context) as! Song
-            song.albumID = AppDelegate.encodeForCoreData(id: item.albumPersistentID)
-            song.artist = item.artist
-            song.duration = AppDelegate.durationAsString(item.playbackDuration)
-            song.title = item.title
-            song.trackURL = item.assetURL
+            if let assetURL = item.assetURL {
+                //Only record song if media data present
+                let song = NSEntityDescription.insertNewObject(forEntityName: "Song", into: context) as! Song
+                song.albumID = AppDelegate.encodeForCoreData(id: item.albumPersistentID)
+                song.artist = item.artist
+                song.duration = AppDelegate.durationAsString(item.playbackDuration)
+                song.title = item.title
+                song.trackURL = assetURL
+            } else {
+                allMediaDataPresent = false
+                NSLog("Song '\(item.title ?? "<no title>")' was missing asset URL")
+            }
         }
+        return allMediaDataPresent ? .normal : .missingData
     }
     
-    private func loadSongsAsPieces(for album: Album, from collection: [MPMediaItem], into context: NSManagedObjectContext) {
+    private func loadSongsAsPieces(for album: Album, from collection: [MPMediaItem], into context: NSManagedObjectContext) -> LoadReturn {
+        var allMediaDataPresent = true
         for mediaItem in collection {
-            _ = storePiece(from: mediaItem, entitled: mediaItem.title ?? "", to: album, into: context)
+            if mediaItem.assetURL != nil {
+                _ = storePiece(from: mediaItem, entitled: mediaItem.title ?? "", to: album, into: context)
+            } else {
+                allMediaDataPresent = false
+                NSLog("Song as piece '\(mediaItem.title ?? "<no title>")' was missing asset URL ")
+            }
         }
+        return allMediaDataPresent ? .normal : .missingData
     }
     
     private func loadParsedPieces(for album: Album, from collection: [MPMediaItem], into context: NSManagedObjectContext) {
@@ -326,17 +347,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         })
     }
 
-    private func storeMovement(from item: MPMediaItem, named: String, for piece: Piece, into context: NSManagedObjectContext) {
-        let mov = NSEntityDescription.insertNewObject(forEntityName: "Movement", into: context) as! Movement
-        mov.title = named
-        mov.trackID = AppDelegate.encodeForCoreData(id: item.persistentID)
-        mov.trackURL = item.assetURL
-        mov.duration = AppDelegate.durationAsString(item.playbackDuration)
-        libraryMovementCount += 1
-        piece.addToMovements(mov)
-        if AppDelegate.showPieces { print("    '\(mov.title ?? "")'") }
+    private func storeMovement(from item: MPMediaItem, named: String, for piece: Piece, into context: NSManagedObjectContext) -> LoadReturn {
+        if let assetURL = item.assetURL {
+            let mov = NSEntityDescription.insertNewObject(forEntityName: "Movement", into: context) as! Movement
+            mov.title = named
+            mov.trackID = AppDelegate.encodeForCoreData(id: item.persistentID)
+            mov.trackURL = assetURL
+            mov.duration = AppDelegate.durationAsString(item.playbackDuration)
+            libraryMovementCount += 1
+            piece.addToMovements(mov)
+            if AppDelegate.showPieces { print("    '\(mov.title ?? "")'") }
+            return .normal
+        } else {
+            NSLog("Movement \(named) of piece \(piece.title ?? "<no title>") was missing asset URL")
+            return .missingData
+        }
     }
 
+    //assumption: check has been performed by caller that assetURL is not nil
     private func storePiece(from mediaItem: MPMediaItem, entitled title: String, to album: Album, into context: NSManagedObjectContext) -> Piece {
         if AppDelegate.showPieces && mediaItem.genre == "Classical" {
             let genreMark = (mediaItem.genre == "Classical") ? "!" : ""
