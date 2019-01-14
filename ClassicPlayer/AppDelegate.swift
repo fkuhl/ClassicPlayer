@@ -108,7 +108,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let libraryInfos = getMediaLibraryInfo(from: context)
         if libraryInfos.count < 1 {
             NSLog("No app library found: load media lib to app")
-            loadMediaLibraryToApp(context: context)
+            loadMediaLibraryInitially(context: context)
             return
         }
         mediaLibraryInfo = libraryInfos[0]
@@ -168,7 +168,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
      
      - Precondition: App has authorization to access library
     */
-    private func loadMediaLibraryToApp(context: NSManagedObjectContext) {
+    private func loadMediaLibraryInitially(context: NSManagedObjectContext) {
         let loadReturn = self.loadAppFromMediaLibrary(context: context)
         do {
             try context.save()
@@ -190,14 +190,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     /**
      Clear out old app library, and replace with media library contents.
      
+     Note that the load is done on a background thread!
+     Because we can't update the progress bar if the CoreData stuff is hogging the main thread.
+     loadAppFromMediaLibrary makes progress calls back to a delegate,
+     which must handle its UI updates on main thread.
+     
      - Precondition: App has authorization to access library
      */
     func replaceAppLibraryWithMedia() {
-        //Note that the load is done on a background thread!
-        //loadAppFromMediaLibrary makes progress calls back to a delegate,
-        //which must handle its UI updates on main thread.
-        persistentContainer.performBackgroundTask() { (context) in
-            
+        persistentContainer.performBackgroundTask() { context in
+        
             self.clearOldData(from: context)
             let loadReturn = self.loadAppFromMediaLibrary(context: context)
             do {
@@ -210,6 +212,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 }
             } catch {
                 let error = error as NSError
+                NSLog("save error in replaceAppLibraryWithMedia: \(error), \(error.userInfo)")
                 NotificationCenter.default.post(Notification(name: .storeError,
                                                              object: self,
                                                              userInfo: error.userInfo))
@@ -319,7 +322,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return allMediaDataPresent ? .normal : .missingData
     }
     
-    private func makeAndFillAlbum(from mediaAlbumItems: [MPMediaItem],  into context: NSManagedObjectContext) -> Album {
+    private func makeAndFillAlbum(from mediaAlbumItems: [MPMediaItem], into context: NSManagedObjectContext) -> Album {
         let album = NSEntityDescription.insertNewObject(forEntityName: "Album", into: context) as! Album
         //Someday we may purpose "artist" as a composite field containing ensemble, director, soloists
         album.artist = mediaAlbumItems[0].albumArtist
@@ -397,7 +400,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         })
     }
 
-    private func storeMovement(from item: MPMediaItem, named: String, for piece: Piece, into context: NSManagedObjectContext) {
+    private func storeMovement(from item: MPMediaItem,
+                               named: String,
+                               for piece: Piece,
+                               into context: NSManagedObjectContext) {
         let mov = NSEntityDescription.insertNewObject(forEntityName: "Movement", into: context) as! Movement
         mov.title = named
         mov.trackID = AppDelegate.encodeForCoreData(id: item.persistentID)
@@ -409,7 +415,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     //assumption: check has been performed by caller that assetURL is not nil
-    private func storePiece(from mediaItem: MPMediaItem, entitled title: String, to album: Album, into context: NSManagedObjectContext) -> Piece {
+    private func storePiece(from mediaItem: MPMediaItem,
+                            entitled title: String,
+                            to album: Album,
+                            into context: NSManagedObjectContext) -> Piece {
         if AppDelegate.showPieces && mediaItem.genre == "Classical" {
             let genreMark = (mediaItem.genre == "Classical") ? "!" : ""
             print("  \(genreMark)|\(mediaItem.composer ?? "<anon>")| \(title)")

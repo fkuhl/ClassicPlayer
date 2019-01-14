@@ -50,11 +50,11 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
         super.viewWillAppear(animated)
         print("ComposersVC.viewWillAppear: \(self) player: \(appDelegate.player)")
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(dataDidArrive),
+                                               selector: #selector(handleDataIsAvailable),
                                                name: .dataAvailable,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(libraryDidChange),
+                                               selector: #selector(handleLibraryChanged),
                                                name: .libraryChanged,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
@@ -98,11 +98,15 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
             case .notDetermined:
                 break //not clear how you'd ever get here, as the request will determine authorization
             case .authorized:
-                self.appDelegate.checkLibraryChanged(context: self.appDelegate.mainThreadContext)
+                //Avoid the assumption that we know what thread requestAuthorization returns on
+                DispatchQueue.main.async {
+                    self.appDelegate.checkLibraryChanged(context: self.appDelegate.mainThreadContext)
+                }
             case .restricted:
                 self.alertAndGoToSettings(message: "Media library access restricted by corporate or parental controls")
             case .denied:
-                self.alertAndGoToSettings(message: "Media library access denied by user")
+                self.alertAndGoToSettings(message:
+                    "Please give ClassicalPlayer access to your Media Library and restart it.")
             }
             self.libraryAccessChecked = true
        }
@@ -114,14 +118,20 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
     }
     
     @objc
-    private func dataDidArrive() {
+    private func handleDataIsAvailable() {
         //Notification arrives on a notification thread
+        //Which, according to docs, is thread it was posted on.
+        //Make no assumptions!
         DispatchQueue.main.async {
             self.updateUI()
         }
     }
-    
 
+    /**
+     Update UI to latest app database info.
+     
+     - Precondition: Called on main thread!
+     */
     private func updateUI() {
         let context:NSManagedObjectContext! = self.appDelegate.mainThreadContext
         let request = NSFetchRequest<NSDictionary>()
@@ -141,11 +151,9 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
             self.composerObjects = try context!.fetch(request)
             NSLog("fetch returned \(self.composerObjects!.count) composer things")
             self.computeSections()
-            DispatchQueue.main.async {
-                self.tableView.reloadData()
-                self.activityBackground.isHidden = true
-                self.progressBar.isHidden = true
-           }
+            self.tableView.reloadData()
+            self.activityBackground.isHidden = true
+            self.progressBar.isHidden = true
         }
         catch {
             let error = error as NSError
@@ -156,7 +164,7 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
     }
     
     @objc
-    private func libraryDidChange() {
+    private func handleLibraryChanged() {
         DispatchQueue.main.async {
             //The actions are dispatched async to avoid the dread "_BSMachError"
             let alert = UIAlertController(title: "iTunes Library Changed",
@@ -186,7 +194,7 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
     private func alertAndGoToSettings(message: String) {
         DispatchQueue.main.async {
             //The action is dispatched async to avoid the dread "_BSMachError"
-            let alert = UIAlertController(title: "No Access to Media Library", message: message, preferredStyle: .alert)
+            let alert = UIAlertController(title: "ClassicalPlayer Requests Access", message: message, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "Go to Settings", style: .default, handler: { _ in
                 DispatchQueue.main.async {
                     UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!,
@@ -243,7 +251,7 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
     @objc
     private func  handleDataMissing(notification: NSNotification) {
         let title = "Missing Media"
-        let message = "Some tracks do not have media. This probably can be fixed by synchronizing your device again."
+        let message = "Some tracks do not have media. This probably can be fixed by synchronizing your device."
         DispatchQueue.main.async {
             let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in

@@ -42,7 +42,7 @@ class InfoViewController: UIViewController, ProgressDelegate, MFMailComposeViewC
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(dataDidArrive),
+                                               selector: #selector(handleDataIsAvailable),
                                                name: .dataAvailable,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
@@ -79,7 +79,11 @@ class InfoViewController: UIViewController, ProgressDelegate, MFMailComposeViewC
         NotificationCenter.default.removeObserver(self)
     }
 
-    @objc
+    /**
+     Update UI to latest app database info.
+     
+     - Precondition: Called on main thread!
+     */
     private func updateUI() {
         self.activityBackground.isHidden = true
         self.progressBar.isHidden = true
@@ -174,9 +178,11 @@ class InfoViewController: UIViewController, ProgressDelegate, MFMailComposeViewC
     }
     
     @objc
-    private func dataDidArrive() {
+    private func handleDataIsAvailable() {
         //Notification arrives on a notification thread
-        DispatchQueue.main.async {
+        //Which, according to docs, is thread it was posted on.
+        //Make no assumptions!
+       DispatchQueue.main.async {
             self.updateUI()
         }
     }
@@ -225,7 +231,7 @@ class InfoViewController: UIViewController, ProgressDelegate, MFMailComposeViewC
     @objc
     private func  handleDataMissing(notification: NSNotification) {
         let title = "Missing Media"
-        let message = "Some tracks do not have media. This probably can be fixed by synchronizing your device again."
+        let message = "Some tracks do not have media. This probably can be fixed by synchronizing your device."
         DispatchQueue.main.async { //we're on a notification thread!
             self.updateUI() //clears the progress bar, before we show this alert
             let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
