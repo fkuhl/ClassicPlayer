@@ -87,13 +87,14 @@ enum PlayerType {
     
     var isActive: Bool {
         get {
-            switch _type {
-            case .single:
-                return _player.rate > 0.0
-            case .queue:
-                //Actually, user might have paused during the last track
-                return !(currentPlayerIndex == _queueSize - 1 && _player.rate <= 0.0)
-            }
+            return _player.rate > 0.0
+//            switch _type {
+//            case .single:
+//                return _player.rate > 0.0
+//            case .queue:
+//                //Actually, user might have paused during the last track
+//                return !(currentPlayerIndex == _queueSize - 1 && _player.rate <= 0.0)
+//            }
         }
     }
     
