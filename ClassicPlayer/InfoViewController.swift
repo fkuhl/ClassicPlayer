@@ -21,6 +21,7 @@ class InfoViewController: UIViewController, ProgressDelegate, MFMailComposeViewC
     weak var playerViewController: AVPlayerViewController?
     weak var playerLabel: UILabel?
 
+    @IBOutlet weak var appName: UILabel!
     @IBOutlet weak var buildVersion: UILabel!
     @IBOutlet weak var libraryDate: UILabel!
     @IBOutlet weak var albumCount: UILabel!
@@ -89,6 +90,7 @@ class InfoViewController: UIViewController, ProgressDelegate, MFMailComposeViewC
         self.progressBar.isHidden = true
         self.appDelegate.progressDelegate = nil
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        self.appName.text = "Classical\u{200B}Player" //zero-width space make name break properly on narrow screens!
         self.buildVersion?.text = "v \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") ?? ""), " +
         "build \(Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") ?? "")"
         //            NSLog("updating info with \(appDelegate.mediaLibraryInfo?.albumCount ?? 0) albums and \(appDelegate.mediaLibraryInfo?.songCount ?? 0) songs at \(appDelegate.mediaLibraryInfo?.lastModifiedDate)" )
