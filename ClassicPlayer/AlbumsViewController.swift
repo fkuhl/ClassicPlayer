@@ -79,9 +79,14 @@ class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 let format = "\(sort.sortDescriptor) CONTAINS[cd] %@"
                 request.predicate = NSPredicate(format: format, searchController.searchBar.text!)
             }
-            request.sortDescriptors = [ NSSortDescriptor(key: sort.sortDescriptor,
-                                                         ascending: true,
-                                                         selector: #selector(NSString.localizedCaseInsensitiveCompare)) ]
+            request.sortDescriptors = [
+                NSSortDescriptor(key: sort.sortDescriptor,
+                                 ascending: true,
+                                 selector: #selector(NSString.localizedCaseInsensitiveCompare)),
+                NSSortDescriptor(key: AlbumSorts.title.sortDescriptor,
+                                 ascending: true,
+                                 selector: #selector(NSString.localizedCaseInsensitiveCompare))
+            ]
             albums = try context.fetch(request)
             computeSectionsSortedBy(sort)
             title = "Albums by \(sort.dropDownDisplayName)"
