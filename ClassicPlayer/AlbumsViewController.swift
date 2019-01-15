@@ -80,6 +80,8 @@ class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 request.predicate = NSPredicate(format: format, searchController.searchBar.text!)
             }
             request.sortDescriptors = [
+                //simply putting in my own comparator for anarthrous behavior isn't supported by SQLite:
+                //https://stackoverflow.com/questions/27969763/custom-selector-for-nssortdescriptor-and-nsfetchedresultscontroller
                 NSSortDescriptor(key: sort.sortDescriptor,
                                  ascending: true,
                                  selector: #selector(NSString.localizedCaseInsensitiveCompare)),
