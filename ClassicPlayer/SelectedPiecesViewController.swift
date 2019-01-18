@@ -72,9 +72,10 @@ class SelectedPiecesViewController: UIViewController, NSFetchedResultsController
         request.predicate = NSPredicate(format: "%K == %@", selectionField!, selectionValue!)
         request.resultType = .managedObjectResultType
         request.returnsDistinctResults = true
-        request.sortDescriptors = [ NSSortDescriptor(key: "title", ascending: true) ]
+        //request.sortDescriptors = [ NSSortDescriptor(key: "title", ascending: true) ]
         do {
             pieces = try context.fetch(request)
+            pieces?.sort(by: titlePredicate)
             computeSections()
             tableView.reloadData()
         }
@@ -107,7 +108,7 @@ class SelectedPiecesViewController: UIViewController, NSFetchedResultsController
         sectionTitles = []
         for i in 0 ..< SelectedPiecesViewController.indexedSectionCount {
             let piece = pieces![i * sectionSize]
-            let entry = piece.title ?? ""
+            let entry = removeArticle(from: piece.title ?? "") //section titles reflect anarthrous ordering
             let title = entry.prefix(2)
             //print("title \(i) is \(title ?? "nada")")
             sectionTitles?.append(String(title))
@@ -185,4 +186,10 @@ class SelectedPiecesViewController: UIViewController, NSFetchedResultsController
         }
     }
 
+}
+
+func titlePredicate(a: Piece, b: Piece) -> Bool {
+    let aTitle = a.title ?? ""
+    let bTitle = b.title ?? ""
+    return aTitle.anarthrousCompare(bTitle) == .orderedAscending
 }

@@ -10,7 +10,6 @@ import Foundation
 
 extension NSString {
     
-    @objc
     func anarthrousCompare(_ string: String) -> ComparisonResult {
         let meCopy = removeArticle(from: self as String)
         let stringCopy = removeArticle(from: string)
@@ -18,7 +17,7 @@ extension NSString {
     }
 }
 
-fileprivate func removeArticle(from: String) -> String {
+func removeArticle(from: String) -> String {
     let fromRange = NSRange(from.startIndex..., in: from)
     let checkingResult = articleExpression.matches(in: from, options: [], range: fromRange)
     if checkingResult.isEmpty { return from }
@@ -28,6 +27,6 @@ fileprivate func removeArticle(from: String) -> String {
     return String(from[endIndex...])
 }
 
-fileprivate let articleExpression = try! NSRegularExpression(pattern:
-    "(A|An|The)\\s+",
-    options: [])
+fileprivate let articleExpression = try! NSRegularExpression(
+    pattern: "^(A|An|The)\\s+",
+    options: [.caseInsensitive])

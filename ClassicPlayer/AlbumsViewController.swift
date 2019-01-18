@@ -79,17 +79,21 @@ class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 let format = "\(sort.sortDescriptor) CONTAINS[cd] %@"
                 request.predicate = NSPredicate(format: format, searchController.searchBar.text!)
             }
-            request.sortDescriptors = [
-                //simply putting in my own comparator for anarthrous behavior isn't supported by SQLite:
-                //https://stackoverflow.com/questions/27969763/custom-selector-for-nssortdescriptor-and-nsfetchedresultscontroller
-                NSSortDescriptor(key: sort.sortDescriptor,
-                                 ascending: true,
-                                 selector: #selector(NSString.localizedCaseInsensitiveCompare)),
-                NSSortDescriptor(key: AlbumSorts.title.sortDescriptor,
-                                 ascending: true,
-                                 selector: #selector(NSString.localizedCaseInsensitiveCompare))
-            ]
+//            request.sortDescriptors = [
+//                //simply putting in my own comparator for anarthrous behavior isn't supported by SQLite:
+//                //https://stackoverflow.com/questions/27969763/custom-selector-for-nssortdescriptor-and-nsfetchedresultscontroller
+//                NSSortDescriptor(key: sort.sortDescriptor,
+//                                 ascending: true,
+//                                 selector: #selector(NSString.localizedCaseInsensitiveCompare)),
+//                NSSortDescriptor(key: AlbumSorts.title.sortDescriptor,
+//                                 ascending: true,
+//                                 selector: #selector(NSString.localizedCaseInsensitiveCompare))
+//            ]
             albums = try context.fetch(request)
+//            if let theAlbums = albums {
+//            print("got \(theAlbums.count) albums, 1st title \(theAlbums[0].title ?? "<>"))")
+//            }
+            albums?.sort(by: sort.predicate)
             computeSectionsSortedBy(sort)
             title = "Albums by \(sort.dropDownDisplayName)"
             tableView.reloadData()
@@ -123,13 +127,13 @@ class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         for i in 0 ..< AlbumsViewController.indexedSectionCount {
             let album = albums?[i * sectionSize]
             let indexString: String
-            switch (sort) {
+            switch (sort) { //section titles reflect anarthrous ordering on some sorts
             case .title:
-                indexString = album?.title ?? ""
+                indexString = removeArticle(from: album?.title ?? "")
             case .composer:
                 indexString = album?.composer ?? "[]"
             case .artist:
-                indexString = album?.artist ?? ""
+                indexString = removeArticle(from: album?.artist ?? "")
             case .genre:
                 indexString = album?.genre ?? ""
             }

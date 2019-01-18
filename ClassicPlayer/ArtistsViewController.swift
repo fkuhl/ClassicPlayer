@@ -85,22 +85,23 @@ class ArtistsViewController: UIViewController, UITableViewDelegate, UITableViewD
             sectionTitles = []
             return
         }
-            if artistObjects!.count < ArtistsViewController.indexedSectionCount {
-                sectionCount = 1
-                sectionSize = artistObjects!.count
-                sectionTitles = []
-            } else {
-                sectionCount = ArtistsViewController.indexedSectionCount
-                sectionSize = artistObjects!.count / ArtistsViewController.indexedSectionCount
-                sectionTitles = []
-                for i in 0 ..< ArtistsViewController.indexedSectionCount {
-                    let item = artistObjects![i * sectionSize]
-                    let artist = item.artist
-                    let title = artist?.prefix(2)
-                    //print("title \(i) is \(title ?? "nada")")
-                    sectionTitles?.append(String(title!))
-                }
+        if artistObjects!.count < ArtistsViewController.indexedSectionCount {
+            sectionCount = 1
+            sectionSize = artistObjects!.count
+            sectionTitles = []
+        } else {
+            sectionCount = ArtistsViewController.indexedSectionCount
+            sectionSize = artistObjects!.count / ArtistsViewController.indexedSectionCount
+            sectionTitles = []
+            for i in 0 ..< ArtistsViewController.indexedSectionCount {
+                let item = artistObjects![i * sectionSize]
+                //media lib returns artists anarthrously; make section titles correspond
+                let artist = removeArticle(from: (item.artist ?? ""))
+                let title = artist.prefix(2)
+                //print("title \(i) is \(title ?? "nada")")
+                sectionTitles?.append(String(title))
             }
+        }
     }
     
     private func presentAsOneSection() -> Bool {

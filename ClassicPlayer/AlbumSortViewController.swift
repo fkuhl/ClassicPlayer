@@ -44,6 +44,72 @@ enum AlbumSorts: Int {
             }
         }
     }
+    
+    var predicate: (_ a: Album, _ b: Album) -> Bool {
+        get {
+            switch self {
+            case .title:
+                return titlePredicate
+            case .composer:
+                return composerPredicate
+            case .artist:
+                return artistPredicate
+            case .genre:
+                return genrePredicate
+            }
+        }
+    }
+}
+
+func titlePredicate(a: Album, b: Album) -> Bool {
+    let aTitle = a.title ?? ""
+    let bTitle = b.title ?? ""
+    return aTitle.anarthrousCompare(bTitle) == .orderedAscending
+}
+
+func composerPredicate(a: Album, b: Album) -> Bool {
+    let aComposer = removeArticle(from: a.composer ?? "")
+    let bComposer = removeArticle(from: b.composer ?? "")
+    switch (aComposer.localizedCaseInsensitiveCompare(bComposer)) {
+    case .orderedAscending:
+        return true
+    case .orderedDescending:
+        return false
+    case .orderedSame:
+        let aTitle = a.title ?? ""
+        let bTitle = b.title ?? ""
+        return aTitle.anarthrousCompare(bTitle) == .orderedAscending
+    }
+}
+
+func artistPredicate(a: Album, b: Album) -> Bool {
+    let aArtist = removeArticle(from: a.artist ?? "")
+    let bArtist = removeArticle(from: b.artist ?? "")
+    switch (aArtist.localizedCaseInsensitiveCompare(bArtist)) {
+    case .orderedAscending:
+        return true
+    case .orderedDescending:
+        return false
+    case .orderedSame:
+        let aTitle = a.title ?? ""
+        let bTitle = b.title ?? ""
+        return aTitle.anarthrousCompare(bTitle) == .orderedAscending
+    }
+}
+
+func genrePredicate(a: Album, b: Album) -> Bool {
+    let aGenre = a.genre ?? ""
+    let bGenre = b.genre ?? ""
+    switch (aGenre.localizedCaseInsensitiveCompare(bGenre)) {
+    case .orderedAscending:
+        return true
+    case .orderedDescending:
+        return false
+    case .orderedSame:
+        let aTitle = a.title ?? ""
+        let bTitle = b.title ?? ""
+        return aTitle.anarthrousCompare(bTitle) == .orderedAscending
+    }
 }
 
 class AlbumSortViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
