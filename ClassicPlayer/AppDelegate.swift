@@ -307,6 +307,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     + " | \(mediaAlbumItems[0].albumArtist ?? "<no artist>")"
                     + " | \((mediaAlbumItems[0].value(forProperty: "year") as? Int) ?? -1) ")
             }
+            if mediaAlbumItems.isEmpty {
+                NSLog("empty album, title: '\(mediaAlbum.representativeItem?.albumTitle ?? "")'")
+                continue
+            }
             let appAlbum = self.makeAndFillAlbum(from: mediaAlbumItems, into: context)
             self.loadSongs(for: appAlbum, from: mediaAlbumItems, into: context)
 //            if self.isGenreToParse(appAlbum.genre) {
