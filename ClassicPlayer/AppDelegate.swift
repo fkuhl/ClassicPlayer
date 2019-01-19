@@ -39,11 +39,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var audioNotCurrent: UIImage?
     var progressDelegate: ProgressDelegate?
     
+    private var libraryDate: Date?
     private var libraryAlbumCount: Int32 = 0
     private var librarySongCount: Int32 = 0
     private var libraryPieceCount: Int32 = 0
     private var libraryMovementCount: Int32 = 0
-    var mediaLibraryInfo: MediaLibraryInfo?
+    
+    var mediaLibraryInfo: (date: Date?, albums: Int32, songs: Int32, pieces: Int32, movements: Int32) {
+        get {
+            return (date: libraryDate,
+                    albums: libraryAlbumCount,
+                    songs: librarySongCount,
+                    pieces: libraryPieceCount,
+                    movements: libraryMovementCount)
+        }
+    }
     
     // MARK: - AVPlayer
     
@@ -111,12 +121,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             loadMediaLibraryInitially(context: context)
             return
         }
-        mediaLibraryInfo = libraryInfos[0]
-        if let storedLastModDate = mediaLibraryInfo!.lastModifiedDate {
+        let mediaLibraryInfo = libraryInfos[0]
+        if let storedLastModDate = mediaLibraryInfo.lastModifiedDate {
             if MPMediaLibrary.default().lastModifiedDate <= storedLastModDate {
                 //use current data
                 NSLog("media lib stored \(MPMediaLibrary.default().lastModifiedDate), app lib stored \(storedLastModDate): use current app lib")
                 logCurrentNumberOfAlbums(context: context)
+                updateAppDelegateLibraryInfo(from: mediaLibraryInfo)
                 NotificationCenter.default.post(Notification(name: .dataAvailable))
                 return
             }  else {
@@ -131,6 +142,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                                                          userInfo: ["message" : "Last modification date not set in media library info"]))
             NSLog("Last modification date not set in media library info")
         }
+    }
+    
+    private func updateAppDelegateLibraryInfo(from info: MediaLibraryInfo) {
+        libraryDate = info.lastModifiedDate
+        libraryAlbumCount = info.albumCount
+        librarySongCount = info.songCount
+        libraryPieceCount = info.pieceCount
+        libraryMovementCount = info.movementCount
     }
     
     private func getMediaLibraryInfo(from context: NSManagedObjectContext) -> [MediaLibraryInfo] {
@@ -285,6 +304,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         composersFound = composerResults.1
         let progressIncrement = Int32(totalAlbumCount / 20) //update progress bar 20 times
         NSLog("finished finding composers")
+        libraryDate = MPMediaLibrary.default().lastModifiedDate
         libraryAlbumCount = 0
         libraryPieceCount = 0
         librarySongCount = 0
@@ -352,8 +372,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         mediaInfoObject.movementCount = libraryMovementCount
         mediaInfoObject.pieceCount = libraryPieceCount
         mediaInfoObject.songCount = librarySongCount
-        self.mediaLibraryInfo = mediaInfoObject
-        NSLog("saved \(libraryAlbumCount) albums and \(libraryPieceCount) pieces for lib at \(mediaInfoObject.lastModifiedDate!)")
     }
     
     private func loadSongs(for album: Album, from collection: [MPMediaItem], into context: NSManagedObjectContext) {

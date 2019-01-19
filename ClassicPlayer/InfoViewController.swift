@@ -89,26 +89,25 @@ class InfoViewController: UIViewController, ProgressDelegate, MFMailComposeViewC
         self.activityBackground.isHidden = true
         self.progressBar.isHidden = true
         self.appDelegate.progressDelegate = nil
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
         self.appName.text = "Classical\u{200B}Player" //zero-width space make name break properly on narrow screens!
         self.buildVersion?.text = "v \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") ?? ""), " +
         "build \(Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") ?? "")"
-        //            NSLog("updating info with \(appDelegate.mediaLibraryInfo?.albumCount ?? 0) albums and \(appDelegate.mediaLibraryInfo?.songCount ?? 0) songs at \(appDelegate.mediaLibraryInfo?.lastModifiedDate)" )
+        let mediaLibraryInfo = appDelegate.mediaLibraryInfo
         let dateFormatter = DateFormatter()
         dateFormatter.locale = Locale.current
         dateFormatter.dateStyle = .short
         dateFormatter.timeStyle = .medium
         let dateString: String
-        if let date = appDelegate.mediaLibraryInfo?.lastModifiedDate {
-            dateString = dateFormatter.string(from: date)
+        if let mediaDate = mediaLibraryInfo.date  {
+            dateString = dateFormatter.string(from: mediaDate)
         } else {
             dateString = "[n.d.]"
         }
         self.libraryDate?.text = "Media lib date: \(dateString)"
-        self.albumCount?.text = "\(appDelegate.mediaLibraryInfo?.albumCount ?? 0)"
-        self.trackCount?.text = "\(appDelegate.mediaLibraryInfo?.songCount ?? 0)"
-        self.pieceCount?.text = "\(appDelegate.mediaLibraryInfo?.pieceCount ?? 0)"
-        self.movementCount?.text = "\(appDelegate.mediaLibraryInfo?.movementCount ?? 0)"
+        self.albumCount?.text = "\(mediaLibraryInfo.albums)"
+        self.trackCount?.text = "\(mediaLibraryInfo.songs)"
+        self.pieceCount?.text = "\(mediaLibraryInfo.pieces)"
+        self.movementCount?.text = "\(mediaLibraryInfo.movements)"
         self.view.setNeedsDisplay()
     }
     

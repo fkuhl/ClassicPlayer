@@ -149,7 +149,8 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
                                                      selector: #selector(NSString.localizedCaseInsensitiveCompare)) ]
         do {
             self.composerObjects = try context!.fetch(request)
-            NSLog("fetch returned \(self.composerObjects!.count) composer things")
+            NSLog("ComposersVC: fetch returned \(self.composerObjects!.count) composer things")
+//            NSLog("ComposersVC: albums: \(self.appDelegate.mediaLibraryInfo?.albumCount), songs: \(self.appDelegate.mediaLibraryInfo?.songCount)")
             self.computeSections()
             self.tableView.reloadData()
             self.activityBackground.isHidden = true
