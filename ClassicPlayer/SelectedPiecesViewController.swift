@@ -33,6 +33,7 @@ class SelectedPiecesViewController: UIViewController, NSFetchedResultsController
     private var sectionTitles: [String]?
     weak var playerViewController: AVPlayerViewController?
     weak var playerLabel: UILabel?
+    weak var playingPiece: Piece?
 
     // MARK: - UIViewController
 
@@ -78,6 +79,15 @@ class SelectedPiecesViewController: UIViewController, NSFetchedResultsController
             pieces?.sort(by: titlePredicate)
             computeSections()
             tableView.reloadData()
+            if pieces?.count == 1 && !appDelegate.player.isActive {
+                let solePiece = pieces![0]
+                let newPlayerLabel = labelForPlayer(for: solePiece)
+                playerViewController?.player = appDelegate.player.setPlayer(url: (solePiece.trackURL)!,
+                                                                            setterID: mySetterID(for: solePiece),
+                                                                            label: newPlayerLabel)
+                playerLabel?.text = newPlayerLabel
+                playerViewController?.contentOverlayView?.setNeedsDisplay()
+           }
         }
         catch {
             let error = error as NSError
@@ -185,10 +195,25 @@ class SelectedPiecesViewController: UIViewController, NSFetchedResultsController
             }
         }
     }
+    
+    private func mySetterID(for solePiece: Piece) -> String {
+        return Bundle.main.bundleIdentifier! + ".SelectedPiecesViewController"
+            + "." + (solePiece.title ?? "")
+    }
+    
+    private func labelForPlayer(for solePiece: Piece) -> String {
+        if let composer = solePiece.composer {
+            return composer + ": " + (solePiece.title ?? "")
+        } else if let artist = solePiece.artist {
+            return artist + ": " + (solePiece.title ?? "")
+        } else {
+            return solePiece.title ?? ""
+        }
+    }
 
 }
 
-func titlePredicate(a: Piece, b: Piece) -> Bool {
+fileprivate func titlePredicate(a: Piece, b: Piece) -> Bool {
     let aTitle = a.title ?? ""
     let bTitle = b.title ?? ""
     return aTitle.anarthrousCompare(bTitle) == .orderedAscending
