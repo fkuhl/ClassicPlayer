@@ -16,7 +16,7 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     @IBOutlet weak var sortButton: UIBarButtonItem!
     @IBOutlet weak var trackTable: UITableView!
     let searchController = UISearchController(searchResultsController: nil)
-    var playerViewController: AVPlayerViewController?
+    var playerViewController: MPMusicPlayerController?
     weak var playerLabel: UILabel?
     var songs: [Song]?
     private var rateObserver = RateObserver()
@@ -47,7 +47,7 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         loadSongsSortedBy(currentSort)
-        playerViewController?.player = appDelegate.player.player
+        playerViewController = MPMusicPlayerController.applicationMusicPlayer
         if appDelegate.player.isActive {
             if appDelegate.player.setterID == mySetterID() {
                 rateObserver.start(on: self)
@@ -220,7 +220,7 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let currentIndex = indexPath.section * sectionSize + indexPath.row
         installPlayer(forIndex: currentIndex)
-        playerViewController?.player?.play() //start 'er up
+        //playerViewController?.play() //start 'er up
         tableView.reloadData()
     }
     
@@ -260,23 +260,50 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "PlayTracks" {
             //print("SongsVC.prepareForSegue")
-            self.playerViewController = segue.destination as? AVPlayerViewController
+            //self.playerViewController = segue.destination as? MPMusicPlayerController
             //This installs the UILabel. After this, we just change the text.
-            playerLabel = ClassicalPlayer.add(label: "not init", to: playerViewController!)
+            //playerLabel = ClassicalPlayer.add(label: "not init", to: playerViewController!)
         }
     }
 
-    private func installPlayer(forIndex: Int) {
+    private func installPlayer(forIndex index: Int) {
         if songs != nil && songs!.count > 0 {
-            rateObserver.stop(on: self)
-            playerViewController?.player = appDelegate.player.setPlayer(url: (songs?[forIndex].trackURL)!,
-                                                                        tableIndex: forIndex,
-                                                                        setterID: mySetterID(),
-                                                                        label: labelForPlayer(atIndex: forIndex))
-            playerLabel?.text = labelForPlayer(atIndex: forIndex)
-            playerViewController?.contentOverlayView?.setNeedsDisplay()
-            rateObserver.start(on: self)
+            var itemsToPlay = [MPMediaItem]()
+            if let retrieved = retrieveItem(forIndex: index) {
+                itemsToPlay.append(retrieved)
+            }
+//            if let retrieved = retrieveItem(forIndex: index+1) {
+//                itemsToPlay.append(retrieved)
+//            }
+//            if let retrieved = retrieveItem(forIndex: index+3) {
+//                itemsToPlay.append(retrieved)
+//            }
+            MPMusicPlayerController.applicationMusicPlayer.setQueue(with: MPMediaItemCollection(items: itemsToPlay))
+            MPMusicPlayerController.applicationMusicPlayer.prepareToPlay()
+            MPMusicPlayerController.applicationMusicPlayer.pause()
+//            rateObserver.stop(on: self)
+//            playerViewController?.player = appDelegate.player.setPlayer(url: (songs?[forIndex].trackURL)!,
+//                                                                        tableIndex: forIndex,
+//                                                                        setterID: mySetterID(),
+//                                                                        label: labelForPlayer(atIndex: forIndex))
+//            playerLabel?.text = labelForPlayer(atIndex: forIndex)
+//            playerViewController?.contentOverlayView?.setNeedsDisplay()
+//            rateObserver.start(on: self)
         }
+    }
+    
+    private func retrieveItem(forIndex index: Int) -> MPMediaItem? {
+        var item: MPMediaItem?
+        if songs != nil && songs!.count > 0 {
+            let persistentID = AppDelegate.decodeIDFrom(coreDataRepresentation: songs![index].persistentID!)
+            let songQuery = MPMediaQuery.songs()
+            let predicate = MPMediaPropertyPredicate(value: persistentID, forProperty: MPMediaItemPropertyPersistentID)
+            songQuery.addFilterPredicate(predicate)
+            if let returned = songQuery.items {
+                if returned.count > 0 { item = returned[0] }
+            }
+        }
+        return item
     }
     
     override func observeValue(forKeyPath keyPath: String?,

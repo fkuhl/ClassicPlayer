@@ -28,6 +28,7 @@
 		2755D7321FE9629C006F49AE /* Album+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2755D72C1FE9629C006F49AE /* Album+CoreDataProperties.swift */; };
 		2755D7331FE9629C006F49AE /* Movement+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2755D72D1FE9629C006F49AE /* Movement+CoreDataClass.swift */; };
 		2755D7341FE9629C006F49AE /* Movement+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2755D72E1FE9629C006F49AE /* Movement+CoreDataProperties.swift */; };
+		275A425121FA123C00212297 /* MusicViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 275A425021FA123C00212297 /* MusicViewController.swift */; };
 		275D8F341FFFFDDA00F403A8 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 275D8F331FFFFDDA00F403A8 /* AVFoundation.framework */; };
 		2776973720013BCF002B2963 /* AVKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2776973620013BCF002B2963 /* AVKit.framework */; };
 		277B21E1202258F20052DF42 /* AlbumSortViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 277B21E0202258F20052DF42 /* AlbumSortViewController.swift */; };
@@ -81,6 +82,7 @@
 		2755D72C1FE9629C006F49AE /* Album+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Album+CoreDataProperties.swift"; path = "ClassicPlayer/Album+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		2755D72D1FE9629C006F49AE /* Movement+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Movement+CoreDataClass.swift"; path = "ClassicPlayer/Movement+CoreDataClass.swift"; sourceTree = "<group>"; };
 		2755D72E1FE9629C006F49AE /* Movement+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Movement+CoreDataProperties.swift"; path = "ClassicPlayer/Movement+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		275A425021FA123C00212297 /* MusicViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicViewController.swift; sourceTree = "<group>"; };
 		275D8F331FFFFDDA00F403A8 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		2776973620013BCF002B2963 /* AVKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVKit.framework; path = System/Library/Frameworks/AVKit.framework; sourceTree = SDKROOT; };
 		277B21E0202258F20052DF42 /* AlbumSortViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumSortViewController.swift; sourceTree = "<group>"; };
@@ -161,6 +163,7 @@
 				2721823B21B8927B0099B808 /* LibraryReporter.swift */,
 				2733A6141FE5FDE000E1EE77 /* Main.storyboard */,
 				274404A02103ABF1004E0152 /* MovementParsing.swift */,
+				275A425021FA123C00212297 /* MusicViewController.swift */,
 				27FCDEDD1FF2D8D6001D81CE /* PieceViewController.swift */,
 				2728D4C121877C2B005DB467 /* Player.swift */,
 				27CFA1572034D35D00D6F613 /* PlaylistsViewController.swift */,
@@ -319,6 +322,7 @@
 				2733A60F1FE5FDE000E1EE77 /* ClassicalPlayer.xcdatamodeld in Sources */,
 				27CC6FB720337DEB00614150 /* ArtistsViewController.swift in Sources */,
 				27D61043203E1EF6001075BF /* SongTableViewCell.swift in Sources */,
+				275A425121FA123C00212297 /* MusicViewController.swift in Sources */,
 				27FCDED81FF2B0BB001D81CE /* SelectedPiecesViewController.swift in Sources */,
 				274404A12103ABF1004E0152 /* MovementParsing.swift in Sources */,
 				2755D7301FE9629C006F49AE /* Piece+CoreDataProperties.swift in Sources */,

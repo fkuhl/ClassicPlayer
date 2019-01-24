@@ -407,6 +407,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         for item in collection {
             //Only record song if media data present
             let song = NSEntityDescription.insertNewObject(forEntityName: "Song", into: context) as! Song
+            song.persistentID = AppDelegate.encodeForCoreData(id: item.persistentID)
             song.albumID = AppDelegate.encodeForCoreData(id: item.albumPersistentID)
             song.artist = item.artist
             song.duration = AppDelegate.durationAsString(item.playbackDuration)

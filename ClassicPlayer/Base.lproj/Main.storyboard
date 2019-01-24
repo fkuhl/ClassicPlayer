@@ -645,7 +645,7 @@
                                     <constraint firstAttribute="height" constant="100" id="bAk-R3-p1d"/>
                                 </constraints>
                                 <connections>
-                                    <segue destination="lUG-gc-0lH" kind="embed" identifier="PlayTracks" id="B9W-Rh-xiV"/>
+                                    <segue destination="mPp-Cg-Agn" kind="embed" identifier="PlayTracks" id="muv-tl-Ez7"/>
                                 </connections>
                             </containerView>
                         </subviews>
@@ -1016,6 +1016,47 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="OOy-xZ-ISa" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-3835.1999999999998" y="-2537.6311844077964"/>
+        </scene>
+        <!--Music View Controller-->
+        <scene sceneID="eWr-kn-X2S">
+            <objects>
+                <viewController id="mPp-Cg-Agn" customClass="MusicViewController" customModule="ClassicalPlayer" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="8wP-p4-6sj">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="100"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nWv-Vd-Bx4">
+                                <rect key="frame" x="20" y="20" width="30" height="30"/>
+                                <state key="normal" title="Play"/>
+                                <connections>
+                                    <action selector="playTouched:" destination="mPp-Cg-Agn" eventType="touchUpInside" id="Iah-Ae-g0F"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nPD-SP-Q5T">
+                                <rect key="frame" x="313" y="20" width="42" height="30"/>
+                                <state key="normal" title="Pause"/>
+                                <connections>
+                                    <action selector="pauseTouched:" destination="mPp-Cg-Agn" eventType="touchUpInside" id="YPN-ei-WJn"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="gkW-J7-kiB" firstAttribute="trailing" secondItem="nPD-SP-Q5T" secondAttribute="trailing" constant="20" id="8Ec-gk-6qE"/>
+                            <constraint firstItem="nWv-Vd-Bx4" firstAttribute="top" secondItem="gkW-J7-kiB" secondAttribute="top" constant="20" id="ASv-Oj-uPD"/>
+                            <constraint firstItem="nPD-SP-Q5T" firstAttribute="top" secondItem="gkW-J7-kiB" secondAttribute="top" constant="20" id="AuC-1A-HyB"/>
+                            <constraint firstItem="nWv-Vd-Bx4" firstAttribute="leading" secondItem="gkW-J7-kiB" secondAttribute="leading" constant="20" id="QTS-ZN-CCY"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="gkW-J7-kiB"/>
+                    </view>
+                    <connections>
+                        <outlet property="pauseButton" destination="nPD-SP-Q5T" id="9fy-nW-XI2"/>
+                        <outlet property="playButton" destination="nWv-Vd-Bx4" id="WOK-X2-KnK"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="fZa-hv-AT6" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-666" y="-2310"/>
         </scene>
         <!--Player View Controller-->
         <scene sceneID="64D-lZ-jz6">
@@ -1556,7 +1597,7 @@
         </namedColor>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="TCS-Ho-8nL"/>
+        <segue reference="akw-JB-HGr"/>
         <segue reference="nBS-bV-W5Y"/>
     </inferredMetricsTieBreakers>
     <color key="tintColor" name="TheBlue"/>
