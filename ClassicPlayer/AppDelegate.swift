@@ -314,7 +314,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         for mediaAlbum in mediaAlbums.collections! {
             var mediaAlbumItems = mediaAlbum.items
             //Remove items with nil assetURLs, which may mess up parsing, but oh well
-            mediaAlbumItems.removeAll(where: { $0.assetURL == nil })
+            mediaAlbumItems.removeAll(where: { $0.assetURL == nil && !$0.isCloudItem })
             if scanForItemsLackingMedia(from: mediaAlbumItems) { allMediaDataPresent = false }
             self.libraryAlbumCount += 1
             if self.libraryAlbumCount % progressIncrement == 0 {
