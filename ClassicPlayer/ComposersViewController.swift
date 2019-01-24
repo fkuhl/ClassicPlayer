@@ -184,6 +184,7 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
             }))
             alert.addAction(UIAlertAction(title: "Skip the load for now", style: .cancel, handler: { _ in
                 DispatchQueue.main.async {
+                    self.appDelegate.retrieveMediaLibraryInfo(from: self.appDelegate.mainThreadContext)
                     self.updateUI()
                 }
             }))

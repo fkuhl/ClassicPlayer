@@ -80,12 +80,7 @@ class SelectedPiecesViewController: UIViewController, NSFetchedResultsController
             computeSections()
             tableView.reloadData()
             if pieces?.count == 1 && !appDelegate.player.isActive {
-                let solePiece = pieces![0]
-                let newPlayerLabel = labelForPlayer(for: solePiece)
-                playerViewController?.player = appDelegate.player.setPlayer(url: (solePiece.trackURL)!,
-                                                                            setterID: mySetterID(for: solePiece),
-                                                                            label: newPlayerLabel)
-                playerLabel?.text = newPlayerLabel
+                playerLabel?.text = "no piece selected"
                 playerViewController?.contentOverlayView?.setNeedsDisplay()
            }
         }
@@ -195,22 +190,6 @@ class SelectedPiecesViewController: UIViewController, NSFetchedResultsController
             }
         }
     }
-    
-    private func mySetterID(for solePiece: Piece) -> String {
-        return Bundle.main.bundleIdentifier! + ".SelectedPiecesViewController"
-            + "." + (solePiece.title ?? "")
-    }
-    
-    private func labelForPlayer(for solePiece: Piece) -> String {
-        if let composer = solePiece.composer {
-            return composer + ": " + (solePiece.title ?? "")
-        } else if let artist = solePiece.artist {
-            return artist + ": " + (solePiece.title ?? "")
-        } else {
-            return solePiece.title ?? ""
-        }
-    }
-
 }
 
 fileprivate func titlePredicate(a: Piece, b: Piece) -> Bool {

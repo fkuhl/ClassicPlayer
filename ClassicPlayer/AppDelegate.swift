@@ -315,7 +315,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             var mediaAlbumItems = mediaAlbum.items
             //Remove items with nil assetURLs, which may mess up parsing, but oh well
             mediaAlbumItems.removeAll(where: { $0.assetURL == nil })
-            allMediaDataPresent = mediaAlbum.items.count == mediaAlbumItems.count
+            if scanForItemsLackingMedia(from: mediaAlbumItems) { allMediaDataPresent = false }
             self.libraryAlbumCount += 1
             if self.libraryAlbumCount % progressIncrement == 0 {
                 self.progressDelegate?.setProgress(progress: Float(self.libraryAlbumCount) / totalAlbumCount)
@@ -346,6 +346,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return allMediaDataPresent ? .normal : .missingData
     }
     
+    private func scanForItemsLackingMedia(from items: [MPMediaItem]) -> Bool {
+        var mediaUnaccountablyMissing = false
+        for item in items {
+            if item.assetURL == nil {
+                if item.hasProtectedAsset { NSLog("item '\(item.title ?? "")' has protected asset") }
+                if item.isCloudItem { NSLog("item '\(item.title ?? "")' is cloud item") }
+                if !item.hasProtectedAsset && !item.isCloudItem {
+                    NSLog("item '\(item.title ?? "")' is missing media")
+                    mediaUnaccountablyMissing = true
+                }
+            }
+        }
+        return mediaUnaccountablyMissing
+    }
+    
     private func makeAndFillAlbum(from mediaAlbumItems: [MPMediaItem], into context: NSManagedObjectContext) -> Album {
         let album = NSEntityDescription.insertNewObject(forEntityName: "Album", into: context) as! Album
         //Someday we may purpose "artist" as a composite field containing ensemble, director, soloists
@@ -357,6 +372,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         album.albumID = AppDelegate.encodeForCoreData(id: mediaAlbumItems[0].albumPersistentID)
         album.year = mediaAlbumItems[0].value(forProperty: "year") as! Int32  //slightly undocumented!
         return album
+    }
+    
+    func retrieveMediaLibraryInfo(from context: NSManagedObjectContext) {
+        var mediaInfoObject: MediaLibraryInfo
+        let mediaLibraryInfosInStore = getMediaLibraryInfo(from: context)
+        if mediaLibraryInfosInStore.count >= 1 {
+            mediaInfoObject = mediaLibraryInfosInStore[0]
+            libraryDate = mediaInfoObject.lastModifiedDate
+            libraryAlbumCount = mediaInfoObject.albumCount
+            librarySongCount = mediaInfoObject.songCount
+            libraryPieceCount = mediaInfoObject.pieceCount
+            libraryMovementCount = mediaInfoObject.movementCount
+        }
     }
     
     private func storeMediaLibraryInfo(into context: NSManagedObjectContext) {
