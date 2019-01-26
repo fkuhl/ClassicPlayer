@@ -16,8 +16,7 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     @IBOutlet weak var sortButton: UIBarButtonItem!
     @IBOutlet weak var trackTable: UITableView!
     let searchController = UISearchController(searchResultsController: nil)
-    var playerViewController: MPMusicPlayerController?
-    weak var playerLabel: UILabel?
+    weak var musicViewController: MusicViewController?
     var songs: [Song]?
     private var rateObserver = RateObserver()
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -47,14 +46,13 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         loadSongsSortedBy(currentSort)
-        playerViewController = MPMusicPlayerController.applicationMusicPlayer
         if appDelegate.player.isActive {
             if appDelegate.player.setterID == mySetterID() {
                 rateObserver.start(on: self)
             }
-            playerLabel?.text = appDelegate.player.label
+            //playerLabel?.text = appDelegate.player.label
          } else {
-            installPlayer(forIndex: 0)
+            installPlayer(forIndex: 0, paused: true)
         }
         trackTable.reloadData()
     }
@@ -219,7 +217,7 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let currentIndex = indexPath.section * sectionSize + indexPath.row
-        installPlayer(forIndex: currentIndex)
+        installPlayer(forIndex: currentIndex, paused: false)
         //playerViewController?.play() //start 'er up
         tableView.reloadData()
     }
@@ -242,7 +240,7 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     func updateSearchResults(for searchController: UISearchController) {
         loadSongsSortedBy(currentSort)
-        installPlayer(forIndex: 0)
+        installPlayer(forIndex: 0, paused: true)
     }
     
     private func searchBarIsEmpty() -> Bool {
@@ -259,6 +257,7 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     //The embed segue that places the AVPlayerViewController in the ContainerVC
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "PlayTracks" {
+            self.musicViewController = segue.destination as? MusicViewController
             //print("SongsVC.prepareForSegue")
             //self.playerViewController = segue.destination as? MPMusicPlayerController
             //This installs the UILabel. After this, we just change the text.
@@ -266,21 +265,35 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
         }
     }
 
-    private func installPlayer(forIndex index: Int) {
+    private func installPlayer(forIndex index: Int, paused: Bool) {
         if songs != nil && songs!.count > 0 {
             var itemsToPlay = [MPMediaItem]()
             if let retrieved = retrieveItem(forIndex: index) {
                 itemsToPlay.append(retrieved)
             }
-            if let retrieved = retrieveItem(forIndex: index+1) {
-                itemsToPlay.append(retrieved)
-            }
-            if let retrieved = retrieveItem(forIndex: index+2) {
-                itemsToPlay.append(retrieved)
-            }
-            MPMusicPlayerController.applicationMusicPlayer.setQueue(with: MPMediaItemCollection(items: itemsToPlay))
-            MPMusicPlayerController.applicationMusicPlayer.prepareToPlay()
+//            if let retrieved = retrieveItem(forIndex: index+1) {
+//                itemsToPlay.append(retrieved)
+//            }
+//            if let retrieved = retrieveItem(forIndex: index+2) {
+//                itemsToPlay.append(retrieved)
+//            }
             MPMusicPlayerController.applicationMusicPlayer.pause()
+            MPMusicPlayerController.applicationMusicPlayer.setQueue(with: MPMediaItemCollection(items: itemsToPlay))
+            MPMusicPlayerController.applicationMusicPlayer.prepareToPlay() {
+                (inError: Error?) in
+                if let error = inError {
+                    NSLog("prepareToPlay completion error: \(error), \(error.localizedDescription)")
+                } else {
+                    if paused {
+                        MPMusicPlayerController.applicationMusicPlayer.pause()
+                    } else {
+                        MPMusicPlayerController.applicationMusicPlayer.play()
+                    }
+                }
+            }
+                
+            //MPMusicPlayerController.applicationMusicPlayer.pause()
+            musicViewController?.setInitialItem(item: itemsToPlay[0])
 //            rateObserver.stop(on: self)
 //            playerViewController?.player = appDelegate.player.setPlayer(url: (songs?[forIndex].trackURL)!,
 //                                                                        tableIndex: forIndex,

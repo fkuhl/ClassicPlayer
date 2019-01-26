@@ -1031,44 +1031,70 @@
                                 <color key="textColor" name="IconBeige"/>
                                 <color key="highlightedColor" name="IconBeige"/>
                             </label>
-                            <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" spacing="2" translatesAutoresizingMaskIntoConstraints="NO" id="Kj3-P7-Kcr">
-                                <rect key="frame" x="8" y="56" width="359" height="36"/>
+                            <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="2" translatesAutoresizingMaskIntoConstraints="NO" id="Kj3-P7-Kcr">
+                                <rect key="frame" x="8" y="46" width="359" height="46"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" horizontalCompressionResistancePriority="751" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nWv-Vd-Bx4">
-                                        <rect key="frame" x="0.0" y="0.0" width="30" height="36"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="20"/>
-                                        <state key="normal" title="P"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="23" height="46"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="23" id="4nE-By-p8v"/>
+                                        </constraints>
+                                        <state key="normal" image="play"/>
                                         <connections>
                                             <action selector="playTouched:" destination="mPp-Cg-Agn" eventType="touchUpInside" id="Iah-Ae-g0F"/>
                                         </connections>
                                     </button>
+                                    <view contentMode="scaleToFill" horizontalHuggingPriority="500" horizontalCompressionResistancePriority="800" translatesAutoresizingMaskIntoConstraints="NO" id="yrw-at-WiE" userLabel="spacer">
+                                        <rect key="frame" x="25" y="18" width="10" height="10"/>
+                                        <color key="backgroundColor" name="DarkBlue"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="10" id="Rc7-dJ-skn"/>
+                                            <constraint firstAttribute="width" constant="10" id="gB3-VH-Kpg"/>
+                                        </constraints>
+                                    </view>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="252" verticalHuggingPriority="251" horizontalCompressionResistancePriority="751" text="00.00" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fi5-33-Ziw">
-                                        <rect key="frame" x="32" y="0.0" width="40" height="36"/>
+                                        <rect key="frame" x="37" y="14" width="44" height="18"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="44" id="yAj-cI-3TI"/>
+                                        </constraints>
                                         <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                         <color key="textColor" name="IconBeige"/>
                                         <color key="highlightedColor" name="IconBeige"/>
                                     </label>
-                                    <slider opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="2Zi-5s-gVz">
-                                        <rect key="frame" x="72" y="0.0" width="215" height="37"/>
+                                    <slider opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" continuous="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2Zi-5s-gVz">
+                                        <rect key="frame" x="81" y="8" width="197" height="31"/>
+                                        <connections>
+                                            <action selector="sliderValueChanged:" destination="mPp-Cg-Agn" eventType="valueChanged" id="7jZ-Jn-eoQ"/>
+                                        </connections>
                                     </slider>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="252" verticalHuggingPriority="251" horizontalCompressionResistancePriority="751" text="00.00" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="b5o-sr-v1T">
-                                        <rect key="frame" x="287" y="0.0" width="40" height="36"/>
+                                        <rect key="frame" x="278" y="14" width="44" height="18"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="44" id="ydA-KJ-glB"/>
+                                        </constraints>
                                         <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                         <color key="textColor" name="IconBeige"/>
                                         <color key="highlightedColor" name="IconBeige"/>
                                     </label>
+                                    <view contentMode="scaleToFill" horizontalHuggingPriority="500" horizontalCompressionResistancePriority="800" translatesAutoresizingMaskIntoConstraints="NO" id="hOx-Yj-tdf" userLabel="spacer">
+                                        <rect key="frame" x="324" y="18" width="10" height="10"/>
+                                        <color key="backgroundColor" name="DarkBlue"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="10" id="88n-DS-aYD"/>
+                                            <constraint firstAttribute="height" constant="10" id="qnx-yG-zdq"/>
+                                        </constraints>
+                                    </view>
                                     <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="252" horizontalCompressionResistancePriority="751" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Rkf-Eu-s3F">
-                                        <rect key="frame" x="329" y="0.0" width="30" height="36"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="20"/>
-                                        <state key="normal" title="A"/>
+                                        <rect key="frame" x="336" y="13.5" width="23" height="19"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="23" id="dLH-V8-Vts"/>
+                                        </constraints>
+                                        <state key="normal" image="1533-airplay"/>
                                         <connections>
                                             <action selector="playTouched:" destination="mPp-Cg-Agn" eventType="touchUpInside" id="PgC-Lx-mhS"/>
                                         </connections>
                                     </button>
                                 </subviews>
-                                <constraints>
-                                    <constraint firstItem="Rkf-Eu-s3F" firstAttribute="leading" secondItem="b5o-sr-v1T" secondAttribute="trailing" constant="2" id="4NF-WK-3Pu"/>
-                                </constraints>
                             </stackView>
                         </subviews>
                         <color key="backgroundColor" name="DarkBlue"/>
@@ -1624,12 +1650,14 @@
     </scenes>
     <resources>
         <image name="1515-albums" width="21" height="21"/>
+        <image name="1533-airplay" width="23" height="19"/>
         <image name="1548-gear" width="23" height="23"/>
         <image name="1587-users" width="23" height="20"/>
         <image name="1649-music-playlist" width="21" height="21"/>
         <image name="1656-piano" width="23" height="19"/>
         <image name="1706-music-note" width="19" height="23"/>
         <image name="info-icon" width="83.5" height="83.5"/>
+        <image name="play" width="46" height="46"/>
         <namedColor name="DarkBlue">
             <color red="0.074509803921568626" green="0.14509803921568629" blue="0.4823529411764706" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>

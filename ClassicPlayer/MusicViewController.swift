@@ -24,14 +24,14 @@ class MusicViewController: UIViewController {
     var timer: Timer?
     var currentTrack: MPMediaItem?
     var trackDuration: TimeInterval?
+    var seekGoal: Float?
     
     // MARK: - UIViewController
     
     override func viewDidLoad() {
         super.viewDidLoad()
         trackLabel?.text = "nothing playing"
-        setToPlay()
-        airplayButton?.setTitle(" \u{2324}", for: .normal)
+        setButtonToDisplayPlay()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -54,6 +54,11 @@ class MusicViewController: UIViewController {
         MPMusicPlayerController.applicationMusicPlayer.endGeneratingPlaybackNotifications()
         NotificationCenter.default.removeObserver(self)
     }
+    
+    func setInitialItem(item: MPMediaItem) {
+        currentTrack = item
+        resetForNewItem()
+    }
 
     
     @IBAction func playTouched(_ sender: Any) {
@@ -67,15 +72,24 @@ class MusicViewController: UIViewController {
         }
     }
     
+    @IBAction func sliderValueChanged(_ sender: UISlider) {
+        MPMusicPlayerController.applicationMusicPlayer.currentPlaybackTime = TimeInterval(timeSlider.value)
+    }
+    
     @objc
     func nowPlayingItemDidChange() {
         NSLog("now playing item index: \(MPMusicPlayerController.applicationMusicPlayer.indexOfNowPlayingItem)")
         currentTrack = MPMusicPlayerController.applicationMusicPlayer.nowPlayingItem
+        resetForNewItem()
+    }
+    
+    private func resetForNewItem() {
         trackDuration = currentTrack?.playbackDuration
         if let duration = trackDuration {
             timeSlider.maximumValue = Float(duration)
         }
         trackLabel?.text = labelForPlayer()
+        displayCurrentPlaybackTime()
     }
     
     @objc
@@ -86,10 +100,10 @@ class MusicViewController: UIViewController {
             state = "stopped"
         case .playing:
             state = "playing"
-            setToPause()
+            setButtonToDisplayPause()
         case .paused:
             state = "paused"
-            setToPlay()
+            setButtonToDisplayPlay()
         case .interrupted:
             state = "interrupted"
         case .seekingForward:
@@ -103,20 +117,42 @@ class MusicViewController: UIViewController {
     @objc
     func timerDidFire() {
         let trackElapsed = MPMusicPlayerController.applicationMusicPlayer.currentPlaybackTime
-        NSLog("dur: \(trackDuration) elapsed: \(trackElapsed)")
+        switch (MPMusicPlayerController.applicationMusicPlayer.playbackState) {
+        case .stopped:
+            break
+        case .playing:
+            displayCurrentPlaybackTime()
+        case .paused:
+            break
+        case .interrupted:
+            NSLog("player interrupted at \(trackElapsed)")
+        case .seekingForward:
+            displayCurrentPlaybackTime()
+            if Float(trackElapsed) >= seekGoal! { MPMusicPlayerController.applicationMusicPlayer.endSeeking() }
+        case .seekingBackward:
+            displayCurrentPlaybackTime()
+            if Float(trackElapsed) <= seekGoal! { MPMusicPlayerController.applicationMusicPlayer.endSeeking() }
+        }
+    }
+    
+    private func displayCurrentPlaybackTime() {
+        let trackElapsed = MPMusicPlayerController.applicationMusicPlayer.currentPlaybackTime
+        //NSLog("dur: \(trackDuration) elapsed: \(trackElapsed)")
         expendedTimeLabel.text = getTimeDisplayText(time: trackElapsed)
         if let duration = trackDuration {
             remainingTimeLabel.text = getTimeDisplayText(time: duration - trackElapsed)
         }
-        timeSlider.value = Float(trackElapsed)
+        timeSlider.setValue(Float(trackElapsed), animated: true)
     }
     
-    private func setToPlay() {
-        playPauseButton?.setTitle("\u{25B6} ", for: .normal)
+    private func setButtonToDisplayPlay() {
+        //playPauseButton?.setTitle("\u{25B6} ", for: .normal)
+        playPauseButton?.setImage(UIImage(named: "play"), for: .normal)
     }
     
-    private func setToPause() {
-        playPauseButton?.setTitle("\u{23F8} ", for: .normal)
+    private func setButtonToDisplayPause() {
+        //playPauseButton?.setTitle("\u{23F8} ", for: .normal)
+        playPauseButton?.setImage(UIImage(named: "pause"), for: .normal)
     }
     
     private func getTimeDisplayText(time: TimeInterval) -> String {
