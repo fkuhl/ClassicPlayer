@@ -272,12 +272,12 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
             if let retrieved = retrieveItem(forIndex: index) {
                 itemsToPlay.append(retrieved)
             }
-//            if let retrieved = retrieveItem(forIndex: index+1) {
-//                itemsToPlay.append(retrieved)
-//            }
-//            if let retrieved = retrieveItem(forIndex: index+3) {
-//                itemsToPlay.append(retrieved)
-//            }
+            if let retrieved = retrieveItem(forIndex: index+1) {
+                itemsToPlay.append(retrieved)
+            }
+            if let retrieved = retrieveItem(forIndex: index+2) {
+                itemsToPlay.append(retrieved)
+            }
             MPMusicPlayerController.applicationMusicPlayer.setQueue(with: MPMediaItemCollection(items: itemsToPlay))
             MPMusicPlayerController.applicationMusicPlayer.prepareToPlay()
             MPMusicPlayerController.applicationMusicPlayer.pause()
