@@ -36,23 +36,12 @@ class MusicViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(nowPlayingItemDidChange),
-                                               name: .MPMusicPlayerControllerNowPlayingItemDidChange,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(playbackStateDidChange),
-                                               name: .MPMusicPlayerControllerPlaybackStateDidChange,
-                                               object: nil)
-        MPMusicPlayerController.applicationMusicPlayer.beginGeneratingPlaybackNotifications()
         timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in self.timerDidFire() }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         timer?.invalidate()
-        MPMusicPlayerController.applicationMusicPlayer.endGeneratingPlaybackNotifications()
-        NotificationCenter.default.removeObserver(self)
     }
     
     func setInitialItem(item: MPMediaItem) {
@@ -76,13 +65,6 @@ class MusicViewController: UIViewController {
         MPMusicPlayerController.applicationMusicPlayer.currentPlaybackTime = TimeInterval(timeSlider.value)
     }
     
-    @objc
-    func nowPlayingItemDidChange() {
-        NSLog("now playing item index: \(MPMusicPlayerController.applicationMusicPlayer.indexOfNowPlayingItem)")
-        currentTrack = MPMusicPlayerController.applicationMusicPlayer.nowPlayingItem
-        resetForNewItem()
-    }
-    
     private func resetForNewItem() {
         trackDuration = currentTrack?.playbackDuration
         if let duration = trackDuration {
@@ -92,8 +74,11 @@ class MusicViewController: UIViewController {
         displayCurrentPlaybackTime()
     }
     
-    @objc
-    func playbackStateDidChange() {
+    func nowPlayingItemDidChange(to: MPMediaItem?) {
+        resetForNewItem()
+    }
+    
+    func playbackStateDidChange(to: MPMusicPlaybackState) {
         let state: String
         switch (MPMusicPlayerController.applicationMusicPlayer.playbackState) {
         case .stopped:

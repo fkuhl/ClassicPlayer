@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		27047D0522021B0A0064270B /* MusicPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27047D0422021B0A0064270B /* MusicPlayer.swift */; };
 		270B337920192365007D1E35 /* AlbumsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 270B337820192365007D1E35 /* AlbumsViewController.swift */; };
 		270CA5D2203B7D7100325862 /* PlaylistViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 270CA5D1203B7D7100325862 /* PlaylistViewController.swift */; };
 		2718224A204B4678003345C0 /* InfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27182249204B4678003345C0 /* InfoViewController.swift */; };
@@ -56,6 +57,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		27047D0422021B0A0064270B /* MusicPlayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MusicPlayer.swift; sourceTree = "<group>"; };
 		270B337820192365007D1E35 /* AlbumsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumsViewController.swift; sourceTree = "<group>"; };
 		270CA5D1203B7D7100325862 /* PlaylistViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlaylistViewController.swift; sourceTree = "<group>"; };
 		27182249204B4678003345C0 /* InfoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InfoViewController.swift; sourceTree = "<group>"; };
@@ -166,6 +168,7 @@
 				275A425021FA123C00212297 /* MusicViewController.swift */,
 				27FCDEDD1FF2D8D6001D81CE /* PieceViewController.swift */,
 				2728D4C121877C2B005DB467 /* Player.swift */,
+				27047D0422021B0A0064270B /* MusicPlayer.swift */,
 				27CFA1572034D35D00D6F613 /* PlaylistsViewController.swift */,
 				270CA5D1203B7D7100325862 /* PlaylistViewController.swift */,
 				277CD96721A72ABF00473897 /* RateObserver.swift */,
@@ -312,6 +315,7 @@
 				2728D4C221877C2B005DB467 /* Player.swift in Sources */,
 				2733A60C1FE5FDE000E1EE77 /* AppDelegate.swift in Sources */,
 				27CFA1582034D35D00D6F613 /* PlaylistsViewController.swift in Sources */,
+				27047D0522021B0A0064270B /* MusicPlayer.swift in Sources */,
 				277B21E1202258F20052DF42 /* AlbumSortViewController.swift in Sources */,
 				27188EAB201D238B00CB5427 /* AlbumTracksViewController.swift in Sources */,
 				2753F55D21ED3949009891B9 /* Anarthrous.swift in Sources */,

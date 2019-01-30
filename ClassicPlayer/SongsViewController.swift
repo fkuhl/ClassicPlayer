@@ -8,11 +8,10 @@
 
 import UIKit
 import CoreData
-import AVFoundation
-import AVKit
 import MediaPlayer
 
-class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchResultsUpdating {
+class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchResultsUpdating, MusicPlayerObserver {
+    
     @IBOutlet weak var sortButton: UIBarButtonItem!
     @IBOutlet weak var trackTable: UITableView!
     let searchController = UISearchController(searchResultsController: nil)
@@ -46,11 +45,10 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         loadSongsSortedBy(currentSort)
-        if appDelegate.player.isActive {
-            if appDelegate.player.setterID == mySetterID() {
-                rateObserver.start(on: self)
+        if MPMusicPlayerController.applicationMusicPlayer.playbackState == .playing {
+            if appDelegate.musicPlayer.setterID == mySetterID() {
+                rateObserver.startObserving(on: self)
             }
-            //playerLabel?.text = appDelegate.player.label
          } else {
             installPlayer(forIndex: 0, paused: true)
         }
@@ -171,10 +169,9 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Track", for: indexPath) as! SongTableViewCell
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        if appDelegate.player.setterID == mySetterID() &&
-            indexPath.section * sectionSize + indexPath.row == appDelegate.player.currentTableIndex {
-            if appDelegate.player.player.rate < 0.5 {
+        if appDelegate.musicPlayer.setterID == mySetterID() &&
+            indexPath.section * sectionSize + indexPath.row == appDelegate.musicPlayer.currentTableIndex {
+            if MPMusicPlayerController.applicationMusicPlayer.playbackState != .playing {
                 cell.indicator.stopAnimating()
                 cell.indicator.animationImages = nil
                 cell.indicator.image = appDelegate.audioPaused
@@ -254,7 +251,7 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
 
     // MARK: - Player management
     
-    //The embed segue that places the AVPlayerViewController in the ContainerVC
+    //The embed segue that places the MusicViewController in the ContainerVC
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "PlayTracks" {
             self.musicViewController = segue.destination as? MusicViewController
@@ -277,34 +274,30 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
 //            if let retrieved = retrieveItem(forIndex: index+2) {
 //                itemsToPlay.append(retrieved)
 //            }
-            MPMusicPlayerController.applicationMusicPlayer.pause()
-            MPMusicPlayerController.applicationMusicPlayer.setQueue(with: MPMediaItemCollection(items: itemsToPlay))
-            MPMusicPlayerController.applicationMusicPlayer.prepareToPlay() {
-                (inError: Error?) in
-                if let error = inError {
-                    NSLog("prepareToPlay completion error: \(error), \(error.localizedDescription)")
-                } else {
-                    if paused {
-                        MPMusicPlayerController.applicationMusicPlayer.pause()
-                    } else {
-                        MPMusicPlayerController.applicationMusicPlayer.play()
-                    }
-                }
-            }
-                
-            //MPMusicPlayerController.applicationMusicPlayer.pause()
+            rateObserver.stop(on: self)
+            appDelegate.musicPlayer.setPlayer(items: itemsToPlay,
+                                              tableIndex: index,
+                                              setterID: mySetterID(),
+                                              label: labelForPlayer(atIndex: index),
+                                              paused: true)
             musicViewController?.setInitialItem(item: itemsToPlay[0])
-//            rateObserver.stop(on: self)
-//            playerViewController?.player = appDelegate.player.setPlayer(url: (songs?[forIndex].trackURL)!,
-//                                                                        tableIndex: forIndex,
-//                                                                        setterID: mySetterID(),
-//                                                                        label: labelForPlayer(atIndex: forIndex))
-//            playerLabel?.text = labelForPlayer(atIndex: forIndex)
-//            playerViewController?.contentOverlayView?.setNeedsDisplay()
-//            rateObserver.start(on: self)
+            rateObserver.startObserving(on: self)
+        }
+    }
+    func nowPlayingItemDidChange(to item: MPMediaItem?) {
+        DispatchQueue.main.async {
+            self.trackTable.reloadData()
+            self.musicViewController?.nowPlayingItemDidChange(to: item)
         }
     }
     
+    func playbackStateDidChange(to state: MPMusicPlaybackState) {
+        DispatchQueue.main.async {
+            self.trackTable.reloadData()
+            self.musicViewController?.playbackStateDidChange(to: state)
+        }
+    }
+
     private func retrieveItem(forIndex index: Int) -> MPMediaItem? {
         var item: MPMediaItem?
         if songs != nil && songs!.count > 0 {
@@ -319,15 +312,15 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
         return item
     }
     
-    override func observeValue(forKeyPath keyPath: String?,
-                               of object: Any?,
-                               change: [NSKeyValueChangeKey : Any]?,
-                               context: UnsafeMutableRawPointer?) {
-        if keyPath == #keyPath(AVPlayer.rate) {
-            if let _ = change?[.newKey] as? NSNumber {
-                DispatchQueue.main.async { self.trackTable.reloadData() }
-            }
-        }
-    }
+//    override func observeValue(forKeyPath keyPath: String?,
+//                               of object: Any?,
+//                               change: [NSKeyValueChangeKey : Any]?,
+//                               context: UnsafeMutableRawPointer?) {
+//        if keyPath == #keyPath(MPMusicPlayerController.currentPlaybackRate) {
+//            if let _ = change?[.newKey] as? NSNumber {
+//                DispatchQueue.main.async { self.trackTable.reloadData() }
+//            }
+//        }
+//    }
 
 }
