@@ -36,7 +36,7 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
     weak var musicViewController: MusicViewController?
     weak var selectedPiece: Piece?
     weak var playerLabel: UILabel?
-    var movements: NSOrderedSet?
+    //var movements: NSOrderedSet?
     var hasMultipleMovements = true
  
     // MARK: - UIViewController
@@ -59,7 +59,6 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
         self.composer.text = selectedPiece?.composer
         self.pieceTitle.text = selectedPiece?.title
         self.artist.text = selectedPiece?.artist
-        self.movements = selectedPiece?.movements
         let id = selectedPiece?.albumID
         if let realID = id {
             self.artwork.image = AppDelegate.artworkFor(album: realID)
@@ -121,7 +120,7 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
     // MARK: - UITableViewDataSource
 
     func tableView(_: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return movements?.count ?? 0
+        return selectedPiece?.movements?.count ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -150,7 +149,7 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
             cell.indicator.animationImages = nil
             cell.indicator.image = appDelegate.audioNotCurrent
         }
-        let movementEntry = movements![indexPath.row]
+        let movementEntry = selectedPiece?.movements![indexPath.row]
         cell.movementTitle.text = (movementEntry as? Movement)?.title
         cell.duration.text = (movementEntry as? Movement)?.duration
         return cell
