@@ -485,7 +485,7 @@
                                     <constraint firstAttribute="height" constant="100" id="mWX-fu-Bs4"/>
                                 </constraints>
                                 <connections>
-                                    <segue destination="lUG-gc-0lH" kind="embed" identifier="PlayTracks" id="obt-4U-61W"/>
+                                    <segue destination="mPp-Cg-Agn" kind="embed" identifier="PlayTracks" id="Vzv-Ck-SI3"/>
                                 </connections>
                             </containerView>
                         </subviews>
@@ -1055,7 +1055,7 @@
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="252" verticalHuggingPriority="251" horizontalCompressionResistancePriority="751" text="00.00" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fi5-33-Ziw">
                                         <rect key="frame" x="37" y="14" width="44" height="18"/>
                                         <constraints>
-                                            <constraint firstAttribute="width" constant="44" id="yAj-cI-3TI"/>
+                                            <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="44" id="yAj-cI-3TI"/>
                                         </constraints>
                                         <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                         <color key="textColor" name="IconBeige"/>
@@ -1070,7 +1070,7 @@
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="252" verticalHuggingPriority="251" horizontalCompressionResistancePriority="751" text="00.00" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="b5o-sr-v1T">
                                         <rect key="frame" x="278" y="14" width="44" height="18"/>
                                         <constraints>
-                                            <constraint firstAttribute="width" constant="44" id="ydA-KJ-glB"/>
+                                            <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="44" id="ydA-KJ-glB"/>
                                         </constraints>
                                         <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                         <color key="textColor" name="IconBeige"/>
@@ -1670,6 +1670,7 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="akw-JB-HGr"/>
+        <segue reference="Vzv-Ck-SI3"/>
         <segue reference="nBS-bV-W5Y"/>
     </inferredMetricsTieBreakers>
     <color key="tintColor" name="TheBlue"/>

@@ -7,8 +7,7 @@
 //
 
 import UIKit
-import AVFoundation
-import AVKit
+import MediaPlayer
 
 class MovementTableViewCell: UITableViewCell {
     @IBOutlet weak var movementTitle: UILabel!
@@ -22,11 +21,10 @@ class MovementTableViewCell: UITableViewCell {
  constrained to ALL 4 EDGES. The StackView does the trick here.
  */
 
-class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, MusicObserverDelegate {
     static let enSpace = "\u{2002}"
     static let blackCircle = "\u{25CF}"
-    private var rateObserver = RateObserver()
-    private let indexObserver = IndexObserver()
+    private var musicObserver = MusicObserver()
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
     @IBOutlet weak var artAndLabelsStack: UIStackView!
@@ -35,7 +33,7 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
     @IBOutlet weak var pieceTitle: UILabel!
     @IBOutlet weak var artist: UILabel!
     @IBOutlet weak var movementTable: UITableView!
-    weak var playerViewController: AVPlayerViewController?
+    weak var musicViewController: MusicViewController?
     weak var selectedPiece: Piece?
     weak var playerLabel: UILabel?
     var movements: NSOrderedSet?
@@ -45,7 +43,6 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.rateObserver = RateObserver()
         self.movementTable.delegate = self
         self.movementTable.dataSource = self
         self.movementTable.rowHeight = UITableView.automaticDimension
@@ -58,7 +55,6 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        print("PieceVC.viewWillAppear: \(self) player: \(appDelegate.player)")
         self.title = selectedPiece?.title
         self.composer.text = selectedPiece?.composer
         self.pieceTitle.text = selectedPiece?.title
@@ -76,26 +72,23 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
         } else {
             movementTable?.isHidden = true
         }
-        print("player ID '\(appDelegate.player.setterID)' active: \(appDelegate.player.isActive) " +
-            "current table index: \(appDelegate.player.type == .queue ? String(appDelegate.player.currentTableIndex) : "single") " +
-            "label: '\(appDelegate.player.label)'")
-        playerViewController?.player = appDelegate.player.player
-        if appDelegate.player.isActive {
-            if appDelegate.player.setterID == mySetterID() {
-                indexObserver.start(on: self)
-                rateObserver.start(on: self)
+        NSLog("PieceVC.vWA player ID '\(appDelegate.musicPlayer.setterID)' "
+            + "player is playing: \(musicPlayerPlaybackState() == .playing) " +
+            "current table index: \(appDelegate.musicPlayer.type == .queue ? String(appDelegate.musicPlayer.currentTableIndex) : "single") ")
+        if musicPlayerPlaybackState() == .playing {
+            if appDelegate.player.setterID != mySetterID() {
+                 musicViewController?.nowPlayingItemDidChange(to: MPMusicPlayerController.applicationMusicPlayer.nowPlayingItem)
             }
-            playerLabel?.text = appDelegate.player.label
+            musicObserver.start(on: self)
         } else {
-            installPlayer()   //fresh player
+            installPlayerForAllMovements()   //fresh player
         }
         movementTable.reloadData()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        indexObserver.stop(on: self)
-        rateObserver.stop(on: self)
+        musicObserver.stop()
     }
     
     @objc private func fontSizeChanged() {
@@ -121,7 +114,7 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
     @IBAction func stackWasTapped(_ sender: Any) {
         print("stack was tapped")
         if hasMultipleMovements { return }
-        installPlayer()
+        installPlayerForAllMovements()
     }
     
     
@@ -133,18 +126,18 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Movement", for: indexPath) as! MovementTableViewCell
-        if appDelegate.player.setterID == mySetterID() {
-            if indexPath.row == appDelegate.player.currentTableIndex {
-                if appDelegate.player.player.rate < 0.5 {
-                    cell.indicator.stopAnimating()
-                    cell.indicator.animationImages = nil
-                    cell.indicator.image = appDelegate.audioPaused
-                } else {
+        if appDelegate.musicPlayer.setterID == mySetterID() {
+            if indexPath.row == appDelegate.musicPlayer.currentTableIndex {
+                if musicPlayerPlaybackState() == .playing {
                     cell.indicator.image = nil
                     cell.indicator.animationImages = appDelegate.audioBarSet
                     cell.indicator.animationRepeatCount = 0 //like, forever
                     cell.indicator.animationDuration = 0.6  //sec
                     cell.indicator.startAnimating()
+                } else {
+                    cell.indicator.stopAnimating()
+                    cell.indicator.animationImages = nil
+                    cell.indicator.image = appDelegate.audioPaused
                 }
             } else {
                 cell.indicator.stopAnimating()
@@ -166,28 +159,8 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
     // MARK: - UITableViewDelegate
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let partialList = (selectedPiece?.movements)!.array[indexPath.row...]
-        let playerItems = partialList.map {
-            (movementAny: Any) -> AVPlayerItem in
-            let item = AVPlayerItem(url: ((movementAny as? Movement)?.trackURL)!)
-            return item
-        }
-        indexObserver.stop(on: self)
-        rateObserver.stop(on: self)
-        setQueuePlayer(items: playerItems,
-                       tableIndex: indexPath.row)
+        setQueuePlayer(tableIndex: indexPath.row, paused: false)
         tableView.reloadData()
-        playerViewController?.player?.play() //Tap on the table, it starts to play
-    }
-    
-    private func labelForPlayer() -> String {
-        if let composer = selectedPiece?.composer {
-            return composer + ": " + (selectedPiece?.title ?? "")
-        } else if let artist = selectedPiece?.artist {
-            return artist + ": " + (selectedPiece?.title ?? "")
-        } else {
-            return selectedPiece?.title ?? ""
-        }
     }
     
     private func mySetterID() -> String {
@@ -198,81 +171,100 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
 
     // MARK: - Player management
 
-    private func setQueuePlayer(items: [AVPlayerItem], tableIndex: Int) {
-        let newLabel = labelForPlayer()
-        playerViewController?.player = appDelegate.player.setPlayer(items: items,
-                                                                    tableIndex: tableIndex,
-                                                                    setterID: mySetterID(),
-                                                                    label: newLabel)
-        playerLabel?.text = newLabel
-        playerViewController?.contentOverlayView?.setNeedsDisplay()
-        indexObserver.start(on: self)
-        rateObserver.start(on: self)
-        if items.count == 1 {
-            playerViewController?.player?.actionAtItemEnd = .pause
-        }
+    private func setQueuePlayer(tableIndex: Int, paused: Bool) {
+        musicObserver.stop()
+        let partialList = (selectedPiece?.movements)!.array[tableIndex...]
+        let playerItems = partialList.compactMap(retrieveItem) //strips nils returned by transform!
+        appDelegate.musicPlayer.setPlayer(items: playerItems,
+                                          tableIndex: tableIndex,
+                                          setterID: mySetterID(),
+                                          paused: paused)
+        musicViewController?.setInitialItem(item: playerItems[0])
+        musicObserver.start(on: self)
     }
-    
+
+    private func setSinglePlayer(paused: Bool) {
+        musicObserver.stop()
+        let item = retrieveItem(from: selectedPiece)!
+        appDelegate.musicPlayer.setPlayer(item: item,
+                                          setterID: mySetterID(),
+                                          paused: paused)
+        musicViewController?.setInitialItem(item: item)
+        musicObserver.start(on: self)
+    }
+
+    private func retrieveItem(forMovement movementAny: Any) -> MPMediaItem? {
+        var item: MPMediaItem?
+        if let movement = movementAny as? Movement {
+            let persistentID = AppDelegate.decodeIDFrom(coreDataRepresentation: movement.trackID!)
+            let songQuery = MPMediaQuery.songs()
+            let predicate = MPMediaPropertyPredicate(value: persistentID, forProperty: MPMediaItemPropertyPersistentID)
+            songQuery.addFilterPredicate(predicate)
+            if let returned = songQuery.items {
+                if returned.count > 0 { item = returned[0] }
+            }
+        }
+        return item
+    }
+
+    private func retrieveItem(from: Piece?) -> MPMediaItem? {
+        var item: MPMediaItem?
+        if let piece = from {
+            let persistentID = AppDelegate.decodeIDFrom(coreDataRepresentation: piece.trackID!)
+            let songQuery = MPMediaQuery.songs()
+            let predicate = MPMediaPropertyPredicate(value: persistentID, forProperty: MPMediaItemPropertyPersistentID)
+            songQuery.addFilterPredicate(predicate)
+            if let returned = songQuery.items {
+                if returned.count > 0 { item = returned[0] }
+            }
+        }
+        return item
+    }
+
     //The embed segue that places the AVPlayerViewController in the ContainerVC
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "PlayTracks" {
             //print("PieceVC.prepareForSegue. playerVC: \(segue.destination)")
-            playerViewController = segue.destination as? AVPlayerViewController
-            //This installs the UILabel. After this, we just change the text.
-            playerLabel = add(label: "not init", to: playerViewController!)
+            musicViewController = segue.destination as? MusicViewController
         }
     }
     
-    private func installPlayer() {
+    private func installPlayerForAllMovements() {
         if hasMultipleMovements {
-            let movements = (selectedPiece?.movements)!.array
-            let playerItems = movements.map {
-                movementAny in
-                return AVPlayerItem(url: ((movementAny as? Movement)?.trackURL)!)
-            }
-            setQueuePlayer(items: playerItems,
-                           tableIndex: 0) //start with all movements
+            setQueuePlayer(tableIndex: 0, paused: true) //start with all movements
          } else {
-            let newPlayerLabel = labelForPlayer()
-            indexObserver.stop(on: self)
-            rateObserver.stop(on: self)
-            playerViewController?.player = appDelegate.player.setPlayer(url: (selectedPiece?.trackURL)!,
-                                                                        setterID: mySetterID(),
-                                                                        label: newPlayerLabel)
-            playerLabel?.text = newPlayerLabel
-            playerViewController?.contentOverlayView?.setNeedsDisplay()
-            rateObserver.start(on: self)
-            playerViewController?.player?.rate = 1.0 //start 'er up
-        }
+            setSinglePlayer(paused: false)
+         }
 
     }
+
+    // MARK: - MusicObserverDelegate
     
-    override func observeValue(forKeyPath keyPath: String?,
-                               of object: Any?,
-                               change: [NSKeyValueChangeKey : Any]?,
-                               context: UnsafeMutableRawPointer?) {
-        if keyPath == #keyPath(Player.currentPlayerIndex) {
-            if let currentPlayerIndex = change?[.newKey] as? Int {
-                print("new currentPlayerIndex: \(currentPlayerIndex), table index: \(appDelegate.player.currentTableIndex)")
-                DispatchQueue.main.async { self.movementTable.reloadData() }
-                //As of iOS 11, the scroll seems to need a little delay.
-                let deadlineTime = DispatchTime.now() + .milliseconds(100)
-                DispatchQueue.main.asyncAfter(deadline: deadlineTime) {
-                    if let visibleIndexPaths = self.movementTable.indexPathsForVisibleRows {
-                        let currentPath = IndexPath(indexes: [0, self.appDelegate.player.currentTableIndex])
-                        if !visibleIndexPaths.contains(currentPath) {
-                            self.movementTable.scrollToRow(at: currentPath, at: .bottom, animated: true)
-                        }
+    
+    func nowPlayingItemDidChange(to item: MPMediaItem?) {
+        DispatchQueue.main.async {
+            NSLog("PieceVC now playing item is '\(item?.title ?? "<sine nomine>")'")
+            self.musicViewController?.nowPlayingItemDidChange(to: item)
+            if !self.hasMultipleMovements { return }
+            self.movementTable.reloadData()
+            //As of iOS 11, the scroll seems to need a little delay.
+            let deadlineTime = DispatchTime.now() + .milliseconds(100)
+            DispatchQueue.main.asyncAfter(deadline: deadlineTime) {
+                if let visibleIndexPaths = self.movementTable.indexPathsForVisibleRows {
+                    let currentPath = IndexPath(indexes: [0, self.appDelegate.player.currentTableIndex])
+                    if !visibleIndexPaths.contains(currentPath) {
+                        self.movementTable.scrollToRow(at: currentPath, at: .bottom, animated: true)
                     }
                 }
             }
         }
-        if keyPath == #keyPath(AVPlayer.rate) {
-            if let rate = change?[.newKey] as? NSNumber {
-                print("player rate: \(rate.floatValue)")
-                DispatchQueue.main.async { self.movementTable.reloadData() }
-            }
-        }
     }
     
+    func playbackStateDidChange(to state: MPMusicPlaybackState) {
+        DispatchQueue.main.async {
+            self.movementTable.reloadData()
+            self.musicViewController?.playbackStateDidChange(to: state)
+        }
+    }
+
 }

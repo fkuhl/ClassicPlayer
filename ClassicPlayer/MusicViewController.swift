@@ -51,36 +51,40 @@ class MusicViewController: UIViewController {
 
     
     @IBAction func playTouched(_ sender: Any) {
-        switch (MPMusicPlayerController.applicationMusicPlayer.playbackState) {
+        switch (musicPlayerPlaybackState()) {
         case .playing:
             MPMusicPlayerController.applicationMusicPlayer.pause()
         case .paused:
             MPMusicPlayerController.applicationMusicPlayer.play()
         default:
-            NSLog("funny state")
+            NSLog("MusicVC funny state")
         }
     }
     
     @IBAction func sliderValueChanged(_ sender: UISlider) {
+        NSLog("MusicVC sliding to \(timeSlider.value)")
         MPMusicPlayerController.applicationMusicPlayer.currentPlaybackTime = TimeInterval(timeSlider.value)
+    }
+    
+    func nowPlayingItemDidChange(to newItem: MPMediaItem?) {
+        NSLog("MusicVC now playing item is '\(newItem?.title ?? "<sine nomine>")'")
+        currentTrack = newItem
+        resetForNewItem()
     }
     
     private func resetForNewItem() {
         trackDuration = currentTrack?.playbackDuration
         if let duration = trackDuration {
+            NSLog("MusicVC setting slider max to \(Float(duration))")
             timeSlider.maximumValue = Float(duration)
         }
         trackLabel?.text = labelForPlayer()
         displayCurrentPlaybackTime()
     }
-    
-    func nowPlayingItemDidChange(to: MPMediaItem?) {
-        resetForNewItem()
-    }
-    
+
     func playbackStateDidChange(to: MPMusicPlaybackState) {
         let state: String
-        switch (MPMusicPlayerController.applicationMusicPlayer.playbackState) {
+        switch (musicPlayerPlaybackState()) {
         case .stopped:
             state = "stopped"
         case .playing:
@@ -96,13 +100,13 @@ class MusicViewController: UIViewController {
         case .seekingBackward:
             state = "seeking backward"
         }
-        NSLog("playback state: \(state)")
+        NSLog("MusicVC playback state changed to: \(state)")
     }
     
     @objc
     func timerDidFire() {
         let trackElapsed = MPMusicPlayerController.applicationMusicPlayer.currentPlaybackTime
-        switch (MPMusicPlayerController.applicationMusicPlayer.playbackState) {
+        switch (musicPlayerPlaybackState()) {
         case .stopped:
             break
         case .playing:
@@ -110,7 +114,7 @@ class MusicViewController: UIViewController {
         case .paused:
             break
         case .interrupted:
-            NSLog("player interrupted at \(trackElapsed)")
+            NSLog("MusicVC player interrupted at \(trackElapsed)")
         case .seekingForward:
             displayCurrentPlaybackTime()
             if Float(trackElapsed) >= seekGoal! { MPMusicPlayerController.applicationMusicPlayer.endSeeking() }
