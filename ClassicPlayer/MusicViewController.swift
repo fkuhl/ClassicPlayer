@@ -66,6 +66,15 @@ class MusicViewController: UIViewController {
         MPMusicPlayerController.applicationMusicPlayer.currentPlaybackTime = TimeInterval(timeSlider.value)
     }
     
+    @IBAction func airplayTouched(_ sender: UIButton) {
+        let title = "Coming Soon!"
+        let message = "Airplay coming soon! (I hope)"
+            let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
+            }))
+            self.present(alert, animated: true)
+    }
+    
     func nowPlayingItemDidChange(to newItem: MPMediaItem?) {
         NSLog("MusicVC now playing item is '\(newItem?.title ?? "<sine nomine>")'")
         currentTrack = newItem

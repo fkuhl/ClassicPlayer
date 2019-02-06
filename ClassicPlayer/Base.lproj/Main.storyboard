@@ -1091,7 +1091,7 @@
                                         </constraints>
                                         <state key="normal" image="1533-airplay"/>
                                         <connections>
-                                            <action selector="playTouched:" destination="mPp-Cg-Agn" eventType="touchUpInside" id="PgC-Lx-mhS"/>
+                                            <action selector="airplayTouched:" destination="mPp-Cg-Agn" eventType="touchUpInside" id="FcE-DZ-mya"/>
                                         </connections>
                                     </button>
                                 </subviews>
