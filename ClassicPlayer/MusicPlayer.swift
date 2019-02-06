@@ -24,41 +24,33 @@ enum MusicPlayerType {
 
     private var _queueSize = 0
 
-    //The case where one track is to be played, not from a table
+    /**
+     The case where one track is to be played, not from a table.
+     */
     func setPlayer(item: MPMediaItem, setterID: String, paused: Bool) {
         NSLog("MusicPlayer.setPlayer from \(setterID), item: '\(item.title ?? "<sine nomine>")', paused: \(paused)")
         _type = .single
         _setterID = setterID
         _tableIndex = -1 //nonsensical
         _queueSize = 1
-        _player.pause()
-        _player.shuffleMode = .off
         var items = [MPMediaItem]()
         items.append(item)
-        let dGroup = DispatchGroup()
-        dGroup.enter()
-        _player.setQueue(with: MPMediaItemCollection(items: items))
-        _player.prepareToPlay() {
-            (inError: Error?) in
-            if let error = inError {
-                NSLog("MusicPlayer prepareToPlay completion error: \(error), \(error.localizedDescription)")
-            } else {
-                if paused {
-                    self._player.pause()
-                } else {
-                    self._player.play()
-                }
-            }
-            dGroup.leave()
-        }
+        setQueueAndPrepareToPlay(items: items, paused: paused)
     }
 
+    /**
+    The case where several tracks are to be played from a table.
+     */
     func setPlayer(items: [MPMediaItem], tableIndex: Int, setterID: String, paused: Bool) {
         NSLog("MusicPlayer.setPlayer from \(setterID), \(items.count) items, tableIndex: \(tableIndex), paused: \(paused)")
         _type = .queue
         _setterID = setterID
         _tableIndex = tableIndex
         _queueSize = items.count
+        setQueueAndPrepareToPlay(items: items, paused: paused)
+    }
+    
+    private func setQueueAndPrepareToPlay(items: [MPMediaItem], paused: Bool) {
         _player.pause()
         _player.shuffleMode = .off
         let dGroup = DispatchGroup()
@@ -69,7 +61,6 @@ enum MusicPlayerType {
             if let error = inError {
                 NSLog("MusicPlayer prepareToPlay completion error: \(error), \(error.localizedDescription)")
             } else {
-                NSLog("MusicPlayer.setPlayer prepareToPlay complete")
                 if paused {
                     self._player.pause()
                 } else {
@@ -77,8 +68,8 @@ enum MusicPlayerType {
                 }
             }
             dGroup.leave()
-            NSLog("MusicPlayer.setPlayer left dispatch group")
         }
+
     }
     
     var type: MusicPlayerType {

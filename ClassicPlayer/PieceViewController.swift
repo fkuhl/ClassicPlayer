@@ -250,7 +250,7 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
             let deadlineTime = DispatchTime.now() + .milliseconds(100)
             DispatchQueue.main.asyncAfter(deadline: deadlineTime) {
                 if let visibleIndexPaths = self.movementTable.indexPathsForVisibleRows {
-                    let currentPath = IndexPath(indexes: [0, self.appDelegate.player.currentTableIndex])
+                    let currentPath = IndexPath(indexes: [0, self.appDelegate.musicPlayer.currentTableIndex])
                     if !visibleIndexPaths.contains(currentPath) {
                         self.movementTable.scrollToRow(at: currentPath, at: .bottom, animated: true)
                     }
