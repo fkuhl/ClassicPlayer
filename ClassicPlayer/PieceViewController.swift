@@ -75,10 +75,11 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
             + "player is playing: \(musicPlayerPlaybackState() == .playing) " +
             "current table index: \(appDelegate.musicPlayer.type == .queue ? String(appDelegate.musicPlayer.currentTableIndex) : "single") ")
         if musicPlayerPlaybackState() == .playing {
-            if appDelegate.player.setterID != mySetterID() {
-                 musicViewController?.nowPlayingItemDidChange(to: MPMusicPlayerController.applicationMusicPlayer.nowPlayingItem)
-            }
+            musicViewController?.nowPlayingItemDidChange(to: MPMusicPlayerController.applicationMusicPlayer.nowPlayingItem)
             musicObserver.start(on: self)
+            if appDelegate.player.setterID == mySetterID() {
+                scrollToCurrent()
+            }
         } else {
             installPlayerForAllMovements()   //fresh player
         }
@@ -239,21 +240,24 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
 
     // MARK: - MusicObserverDelegate
     
-    
     func nowPlayingItemDidChange(to item: MPMediaItem?) {
         DispatchQueue.main.async {
             NSLog("PieceVC now playing item is '\(item?.title ?? "<sine nomine>")'")
             self.musicViewController?.nowPlayingItemDidChange(to: item)
             if !self.hasMultipleMovements { return }
             self.movementTable.reloadData()
-            //As of iOS 11, the scroll seems to need a little delay.
-            let deadlineTime = DispatchTime.now() + .milliseconds(100)
-            DispatchQueue.main.asyncAfter(deadline: deadlineTime) {
-                if let visibleIndexPaths = self.movementTable.indexPathsForVisibleRows {
-                    let currentPath = IndexPath(indexes: [0, self.appDelegate.musicPlayer.currentTableIndex])
-                    if !visibleIndexPaths.contains(currentPath) {
-                        self.movementTable.scrollToRow(at: currentPath, at: .bottom, animated: true)
-                    }
+            self.scrollToCurrent()
+       }
+    }
+    
+    private func scrollToCurrent() {
+        //As of iOS 11, the scroll seems to need a little delay.
+        let deadlineTime = DispatchTime.now() + .milliseconds(100)
+        DispatchQueue.main.asyncAfter(deadline: deadlineTime) {
+            if let visibleIndexPaths = self.movementTable.indexPathsForVisibleRows {
+                let currentPath = IndexPath(indexes: [0, self.appDelegate.musicPlayer.currentTableIndex])
+                if !visibleIndexPaths.contains(currentPath) {
+                    self.movementTable.scrollToRow(at: currentPath, at: .bottom, animated: true)
                 }
             }
         }

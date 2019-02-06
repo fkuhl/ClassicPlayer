@@ -1275,7 +1275,7 @@
                                     <constraint firstAttribute="height" constant="100" id="Inp-Qy-TUG"/>
                                 </constraints>
                                 <connections>
-                                    <segue destination="lUG-gc-0lH" kind="embed" identifier="PlayTracks" id="aXb-RL-15L"/>
+                                    <segue destination="mPp-Cg-Agn" kind="embed" identifier="PlayTracks" id="Cbn-v4-RXk"/>
                                 </connections>
                             </containerView>
                         </subviews>
@@ -1670,7 +1670,7 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="akw-JB-HGr"/>
-        <segue reference="Vzv-Ck-SI3"/>
+        <segue reference="Cbn-v4-RXk"/>
         <segue reference="nBS-bV-W5Y"/>
     </inferredMetricsTieBreakers>
     <color key="tintColor" name="TheBlue"/>

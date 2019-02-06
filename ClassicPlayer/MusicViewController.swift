@@ -80,6 +80,11 @@ class MusicViewController: UIViewController {
         }
         trackLabel?.text = labelForPlayer()
         displayCurrentPlaybackTime()
+        if musicPlayerPlaybackState() == .playing {
+            setButtonToDisplayPause()
+        } else {
+            setButtonToDisplayPlay()
+        }
     }
 
     func playbackStateDidChange(to: MPMusicPlaybackState) {

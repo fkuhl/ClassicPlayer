@@ -46,11 +46,12 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
         super.viewWillAppear(animated)
         loadSongsSortedBy(currentSort)
         if musicPlayerPlaybackState() == .playing {
-            if appDelegate.musicPlayer.setterID != mySetterID() {
-                musicViewController?.nowPlayingItemDidChange(to: MPMusicPlayerController.applicationMusicPlayer.nowPlayingItem)
-            }
+            musicViewController?.nowPlayingItemDidChange(to: MPMusicPlayerController.applicationMusicPlayer.nowPlayingItem)
             musicObserver.start(on: self)
-        } else {
+            if appDelegate.musicPlayer.setterID == mySetterID() {
+                scrollToCurrent()
+            }
+       } else {
             installPlayer(forIndex: 0, paused: true)
         }
         trackTable.reloadData()
@@ -292,9 +293,23 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
         DispatchQueue.main.async {
             self.trackTable.reloadData()
             self.musicViewController?.nowPlayingItemDidChange(to: item)
+            self.scrollToCurrent()
         }
     }
     
+    private func scrollToCurrent() {
+        //As of iOS 11, the scroll seems to need a little delay.
+        let deadlineTime = DispatchTime.now() + .milliseconds(100)
+        DispatchQueue.main.asyncAfter(deadline: deadlineTime) {
+            if let visibleIndexPaths = self.trackTable.indexPathsForVisibleRows {
+                let currentPath = IndexPath(indexes: [0, self.appDelegate.musicPlayer.currentTableIndex])
+                if !visibleIndexPaths.contains(currentPath) {
+                    self.trackTable.scrollToRow(at: currentPath, at: .bottom, animated: true)
+                }
+            }
+        }
+    }
+
     func playbackStateDidChange(to state: MPMusicPlaybackState) {
         DispatchQueue.main.async {
             self.trackTable.reloadData()
