@@ -7,8 +7,6 @@
 //
 
 import UIKit
-import AVFoundation
-import AVKit
 import MediaPlayer
 
 class PlaylistTableViewCell: UITableViewCell {
@@ -17,7 +15,7 @@ class PlaylistTableViewCell: UITableViewCell {
     @IBOutlet weak var playlistName: UILabel!
 }
 
-class PlaylistsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class PlaylistsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, MusicObserverDelegate {
     
     private static let uninterestingPlaylists = [
         //"Recently Added",
@@ -28,13 +26,15 @@ class PlaylistsViewController: UIViewController, UITableViewDelegate, UITableVie
     ]
 
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var playerViewHeight: NSLayoutConstraint!
     var selectionValue: String?
     var selectionField: String?
     var displayTitle:   String?
     private var playlists: [MPMediaPlaylist]?
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    weak var playerViewController: AVPlayerViewController?
-    weak var playerLabel: UILabel?
+    weak var musicViewController: MusicViewController?
+    private var musicObserver = MusicObserver()
+
 
     // MARK: - UIViewController
 
@@ -67,10 +67,20 @@ class PlaylistsViewController: UIViewController, UITableViewDelegate, UITableVie
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        playerViewController?.player = appDelegate.player.player
-        playerLabel?.text = appDelegate.player.label
+        if musicPlayerPlaybackState() == .playing {
+            playerViewHeight.constant = MusicPlayer.height
+            musicViewController?.nowPlayingItemDidChange(to: MPMusicPlayerController.applicationMusicPlayer.nowPlayingItem)
+            musicObserver.start(on: self)
+        } else {
+            playerViewHeight.constant = 0.0
+        }
         loadLists()
         tableView.reloadData()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        musicObserver.stop()
     }
 
     override func didReceiveMemoryWarning() {
@@ -107,10 +117,7 @@ class PlaylistsViewController: UIViewController, UITableViewDelegate, UITableVie
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "PlayTracks" {
-            print("ComposersVC.prepareForSegue. playerVC: \(segue.destination)")
-            playerViewController = segue.destination as? AVPlayerViewController
-            //This installs the UILabel. After this, we just change the text.
-            playerLabel = add(label: "not init", to: playerViewController!)
+            musicViewController = segue.destination as? MusicViewController
         }
         if segue.identifier == "PlaylistSelected" {
             let secondViewController = segue.destination as! PlaylistViewController
@@ -120,4 +127,18 @@ class PlaylistsViewController: UIViewController, UITableViewDelegate, UITableVie
         }
     }
 
+    // MARK: - MusicObserverDelegate
+    
+    func nowPlayingItemDidChange(to item: MPMediaItem?) {
+        DispatchQueue.main.async {
+            NSLog("PlaylistsVC now playing item is '\(item?.title ?? "<sine nomine>")'")
+            self.musicViewController?.nowPlayingItemDidChange(to: item)
+        }
+    }
+    
+    func playbackStateDidChange(to state: MPMusicPlaybackState) {
+        DispatchQueue.main.async {
+            self.musicViewController?.playbackStateDidChange(to: state)
+        }
+    }
 }

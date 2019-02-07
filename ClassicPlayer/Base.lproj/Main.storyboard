@@ -768,7 +768,7 @@
                                     <constraint firstAttribute="height" constant="100" id="VDt-K2-EAJ"/>
                                 </constraints>
                                 <connections>
-                                    <segue destination="lUG-gc-0lH" kind="embed" identifier="PlayTracks" id="U57-sp-EDp"/>
+                                    <segue destination="mPp-Cg-Agn" kind="embed" identifier="PlayTracks" id="elA-LQ-juc"/>
                                 </connections>
                             </containerView>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="iiN-OG-mzG">
@@ -832,6 +832,7 @@
                     </view>
                     <navigationItem key="navigationItem" title="Playlists" id="AAU-hd-X0N"/>
                     <connections>
+                        <outlet property="playerViewHeight" destination="VDt-K2-EAJ" id="8WV-yy-ll1"/>
                         <outlet property="tableView" destination="iiN-OG-mzG" id="CkO-pi-12d"/>
                     </connections>
                 </viewController>
@@ -1673,8 +1674,7 @@
         </namedColor>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="akw-JB-HGr"/>
-        <segue reference="kJn-OS-qTp"/>
+        <segue reference="elA-LQ-juc"/>
         <segue reference="ZtY-Y8-VAT"/>
     </inferredMetricsTieBreakers>
     <color key="tintColor" name="TheBlue"/>
