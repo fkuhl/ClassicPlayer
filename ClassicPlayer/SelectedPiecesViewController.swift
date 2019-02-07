@@ -19,10 +19,11 @@ class PieceTableViewCell: UITableViewCell {
     @IBOutlet weak var pieceArtist: UILabel!
 }
 
-class SelectedPiecesViewController: UIViewController, NSFetchedResultsControllerDelegate, UITableViewDelegate, UITableViewDataSource {
+class SelectedPiecesViewController: UIViewController, NSFetchedResultsControllerDelegate, UITableViewDelegate, UITableViewDataSource, MusicObserverDelegate {
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private static let indexedSectionCount = 27  //A magic number; that's how many sections any UITableView index can have.
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var playerViewHeight: NSLayoutConstraint!
     var selectionValue: String?
     var selectionField: String?
     var displayTitle:   String?
@@ -31,8 +32,8 @@ class SelectedPiecesViewController: UIViewController, NSFetchedResultsController
     private var sectionCount = 1
     private var sectionSize = 0
     private var sectionTitles: [String]?
-    weak var playerViewController: AVPlayerViewController?
-    weak var playerLabel: UILabel?
+    weak var musicViewController: MusicViewController?
+    private var musicObserver = MusicObserver()
     weak var playingPiece: Piece?
 
     // MARK: - UIViewController
@@ -51,18 +52,27 @@ class SelectedPiecesViewController: UIViewController, NSFetchedResultsController
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        playerViewController?.player = appDelegate.player.player
-        playerLabel?.text = appDelegate.player.label
+        if musicPlayerPlaybackState() == .playing {
+            playerViewHeight.constant = MusicPlayer.height
+            musicViewController?.nowPlayingItemDidChange(to: MPMusicPlayerController.applicationMusicPlayer.nowPlayingItem)
+            musicObserver.start(on: self)
+        } else {
+            playerViewHeight.constant = 0.0
+        }
         if !tableIsLoaded {
             updateUI()
             tableIsLoaded = true
         }
     }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        NotificationCenter.default.removeObserver(self)
+        musicObserver.stop()
+    }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        //I don't need to remove myself as notification observer
-        //because as of iOS 9, the NotificationCenter removes me if I disappear.
     }
     
     private func updateUI() {
@@ -79,10 +89,10 @@ class SelectedPiecesViewController: UIViewController, NSFetchedResultsController
             pieces?.sort(by: titlePredicate)
             computeSections()
             tableView.reloadData()
-            if pieces?.count == 1 && !appDelegate.player.isActive {
-                playerLabel?.text = "no piece selected"
-                playerViewController?.contentOverlayView?.setNeedsDisplay()
-           }
+//            if pieces?.count == 1 && !appDelegate.player.isActive {
+//                playerLabel?.text = "no piece selected"
+//                playerViewController?.contentOverlayView?.setNeedsDisplay()
+//           }
         }
         catch {
             let error = error as NSError
@@ -178,16 +188,28 @@ class SelectedPiecesViewController: UIViewController, NSFetchedResultsController
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "PlayTracks" {
-            //print("SelectedPiecesVC.prepareForSegue. playerVC: \(segue.destination)")
-            playerViewController = segue.destination as? AVPlayerViewController
-            //This installs the UILabel. After this, we just change the text.
-            playerLabel = add(label: "not init", to: playerViewController!)
+            musicViewController = segue.destination as? MusicViewController
         }
         if segue.identifier == "PieceSelected" {
             let secondViewController = segue.destination as! PieceViewController
             if let selected = tableView?.indexPathForSelectedRow {
                 secondViewController.selectedPiece = pieces![selected.section * sectionSize + selected.row]
             }
+        }
+    }
+
+    // MARK: - MusicObserverDelegate
+    
+    func nowPlayingItemDidChange(to item: MPMediaItem?) {
+        DispatchQueue.main.async {
+            NSLog("SelectedPiecesVC now playing item is '\(item?.title ?? "<sine nomine>")'")
+            self.musicViewController?.nowPlayingItemDidChange(to: item)
+        }
+    }
+    
+    func playbackStateDidChange(to state: MPMusicPlaybackState) {
+        DispatchQueue.main.async {
+            self.musicViewController?.playbackStateDidChange(to: state)
         }
     }
 }

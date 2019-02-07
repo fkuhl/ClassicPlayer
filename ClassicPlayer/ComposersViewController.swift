@@ -15,7 +15,6 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var activityBackground: UIView!
     @IBOutlet weak var progressBar: UIProgressView!
-    @IBOutlet weak var playerView: UIView!
     @IBOutlet weak var playerViewHeight: NSLayoutConstraint!
     let searchController = UISearchController(searchResultsController: nil)
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate

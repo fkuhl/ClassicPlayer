@@ -271,7 +271,6 @@
                     <navigationItem key="navigationItem" title="Composers" id="xI1-yn-nnW"/>
                     <connections>
                         <outlet property="activityBackground" destination="71T-e2-Jpl" id="2g2-Ln-qV0"/>
-                        <outlet property="playerView" destination="sza-gR-Bd6" id="AHW-nf-t1O"/>
                         <outlet property="playerViewHeight" destination="qkl-18-b3d" id="4fH-Pk-MpK"/>
                         <outlet property="progressBar" destination="ZeK-PM-TAV" id="wr6-bn-Wqw"/>
                         <outlet property="tableView" destination="fMZ-e6-Ilm" id="R3n-SR-4qF"/>
@@ -295,7 +294,7 @@
                                     <constraint firstAttribute="height" constant="100" id="E26-It-RgL"/>
                                 </constraints>
                                 <connections>
-                                    <segue destination="lUG-gc-0lH" kind="embed" identifier="PlayTracks" id="TCS-Ho-8nL"/>
+                                    <segue destination="mPp-Cg-Agn" kind="embed" identifier="PlayTracks" id="WIP-G8-2Wh"/>
                                 </connections>
                             </containerView>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="0cc-cs-IiJ">
@@ -370,6 +369,7 @@
                         <viewLayoutGuide key="safeArea" id="t14-87-L1G"/>
                     </view>
                     <connections>
+                        <outlet property="playerViewHeight" destination="E26-It-RgL" id="rfc-fi-1x4"/>
                         <outlet property="tableView" destination="0cc-cs-IiJ" id="zyK-De-E9J"/>
                     </connections>
                 </viewController>
@@ -1672,7 +1672,7 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="akw-JB-HGr"/>
-        <segue reference="qJI-5W-ut5"/>
+        <segue reference="WIP-G8-2Wh"/>
         <segue reference="nBS-bV-W5Y"/>
     </inferredMetricsTieBreakers>
     <color key="tintColor" name="TheBlue"/>
