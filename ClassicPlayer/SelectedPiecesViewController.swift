@@ -9,8 +9,6 @@
 import UIKit
 import CoreData
 import MediaPlayer
-import AVFoundation
-import AVKit
 
 class PieceTableViewCell: UITableViewCell {
     @IBOutlet weak var artAndLabelsStack: UIStackView!
