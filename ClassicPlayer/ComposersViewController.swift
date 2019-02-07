@@ -9,16 +9,17 @@
 import UIKit
 import CoreData
 import MediaPlayer
-import AVFoundation
-import AVKit
 
-class ComposersViewController: UIViewController, NSFetchedResultsControllerDelegate, UITableViewDelegate, UITableViewDataSource, UISearchResultsUpdating, ProgressDelegate {
+class ComposersViewController: UIViewController, NSFetchedResultsControllerDelegate, UITableViewDelegate, UITableViewDataSource, UISearchResultsUpdating, ProgressDelegate, MusicObserverDelegate {
     
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var activityBackground: UIView!
     @IBOutlet weak var progressBar: UIProgressView!
+    @IBOutlet weak var playerView: UIView!
+    @IBOutlet weak var playerViewHeight: NSLayoutConstraint!
     let searchController = UISearchController(searchResultsController: nil)
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    private var musicObserver = MusicObserver()
     private var tableIsLoaded = false
     private var libraryAccessChecked = false
     
@@ -27,8 +28,7 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
     private var sectionCount = 1
     private var sectionSize = 0
     private var sectionTitles: [String]?
-    weak var playerViewController: AVPlayerViewController?
-    weak var playerLabel: UILabel?
+    weak var musicViewController: MusicViewController?
 
     // MARK: - UIViewController
 
@@ -81,8 +81,13 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
                                                selector: #selector(handleDataMissing),
                                                name: .dataMissing,
                                                object: nil)
-        playerViewController?.player = appDelegate.player.player
-        playerLabel?.text = appDelegate.player.label
+        if musicPlayerPlaybackState() == .playing {
+            playerViewHeight.constant = MusicPlayer.height
+            musicViewController?.nowPlayingItemDidChange(to: MPMusicPlayerController.applicationMusicPlayer.nowPlayingItem)
+            musicObserver.start(on: self)
+        } else {
+            playerViewHeight.constant = 0.0
+        }
         if !tableIsLoaded {
             updateUI()
             tableIsLoaded = true
@@ -115,6 +120,7 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         NotificationCenter.default.removeObserver(self)
+        musicObserver.stop()
     }
     
     @objc
@@ -150,7 +156,6 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
         do {
             self.composerObjects = try context!.fetch(request)
             NSLog("ComposersVC: fetch returned \(self.composerObjects!.count) composer things")
-//            NSLog("ComposersVC: albums: \(self.appDelegate.mediaLibraryInfo?.albumCount), songs: \(self.appDelegate.mediaLibraryInfo?.songCount)")
             self.computeSections()
             self.tableView.reloadData()
             self.activityBackground.isHidden = true
@@ -294,14 +299,6 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
         return composerObjects!.count < ComposersViewController.indexedSectionCount * 2
     }
 
-//    override func viewWillAppear(_ animated: Bool) {
-//        super.viewWillAppear(animated)
-//        if !tableIsLoaded {
-//            updateUI()
-//            tableIsLoaded = true
-//        }
-//    }
-
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -339,10 +336,7 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "PlayTracks" {
-            //print("ComposersVC.prepareForSegue. playerVC: \(segue.destination)")
-            playerViewController = segue.destination as? AVPlayerViewController
-            //This installs the UILabel. After this, we just change the text.
-            playerLabel = add(label: "not init", to: playerViewController!)
+            musicViewController = segue.destination as? MusicViewController
         }
         if segue.identifier == "ComposerSelected" {
             let secondViewController = segue.destination as! SelectedPiecesViewController
@@ -378,6 +372,21 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
         DispatchQueue.main.async {
             self.progressBar.setProgress(progress, animated: true)
             self.view.setNeedsDisplay()
+        }
+    }
+
+    // MARK: - MusicObserverDelegate
+    
+    func nowPlayingItemDidChange(to item: MPMediaItem?) {
+        DispatchQueue.main.async {
+            NSLog("ComposersVC now playing item is '\(item?.title ?? "<sine nomine>")'")
+            self.musicViewController?.nowPlayingItemDidChange(to: item)
+        }
+    }
+    
+    func playbackStateDidChange(to state: MPMusicPlaybackState) {
+        DispatchQueue.main.async {
+            self.musicViewController?.playbackStateDidChange(to: state)
         }
     }
 }

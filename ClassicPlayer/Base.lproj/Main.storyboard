@@ -207,7 +207,7 @@
                                     <constraint firstAttribute="height" constant="100" id="qkl-18-b3d"/>
                                 </constraints>
                                 <connections>
-                                    <segue destination="lUG-gc-0lH" kind="embed" identifier="PlayTracks" id="LM2-eO-txZ"/>
+                                    <segue destination="mPp-Cg-Agn" kind="embed" identifier="PlayTracks" id="qJI-5W-ut5"/>
                                 </connections>
                             </containerView>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="fMZ-e6-Ilm">
@@ -271,6 +271,8 @@
                     <navigationItem key="navigationItem" title="Composers" id="xI1-yn-nnW"/>
                     <connections>
                         <outlet property="activityBackground" destination="71T-e2-Jpl" id="2g2-Ln-qV0"/>
+                        <outlet property="playerView" destination="sza-gR-Bd6" id="AHW-nf-t1O"/>
+                        <outlet property="playerViewHeight" destination="qkl-18-b3d" id="4fH-Pk-MpK"/>
                         <outlet property="progressBar" destination="ZeK-PM-TAV" id="wr6-bn-Wqw"/>
                         <outlet property="tableView" destination="fMZ-e6-Ilm" id="R3n-SR-4qF"/>
                     </connections>
@@ -1670,7 +1672,7 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="akw-JB-HGr"/>
-        <segue reference="Lpm-yj-VvR"/>
+        <segue reference="qJI-5W-ut5"/>
         <segue reference="nBS-bV-W5Y"/>
     </inferredMetricsTieBreakers>
     <color key="tintColor" name="TheBlue"/>

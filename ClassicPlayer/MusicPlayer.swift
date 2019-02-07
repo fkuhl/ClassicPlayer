@@ -15,6 +15,7 @@ enum MusicPlayerType {
 }
 
 @objc class MusicPlayer: NSObject {
+    static let height = CGFloat(100.0) //The "normal" height for MusicViewController
     private var _player = MPMusicPlayerController.applicationMusicPlayer //just so we don't have to write it out all the time
     private var _type = MusicPlayerType.single
     private var _setterID = ""
