@@ -196,38 +196,6 @@ class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableV
             musicViewController = segue.destination as? MusicViewController
         }
     }
-    
-//    override func observeValue(forKeyPath keyPath: String?,
-//                               of object: Any?,
-//                               change: [NSKeyValueChangeKey : Any]?,
-//                               context: UnsafeMutableRawPointer?) {
-//        if keyPath == #keyPath(Player.currentPlayerIndex) {
-//            if let currentItemIndex = change?[.newKey] as? Int {
-//                print("new currentItem, index \(currentItemIndex)")
-//                DispatchQueue.main.async {
-//                    self.playerLabel?.text = self.labelForPlayer(atIndex: self.appDelegate.player.currentTableIndex)
-//                    self.playerViewController?.contentOverlayView?.setNeedsDisplay()
-//                    self.trackTable.reloadData()
-//                }
-//                //As of iOS 11, the scroll seems to need a little delay.
-//                let deadlineTime = DispatchTime.now() + .milliseconds(100)
-//                DispatchQueue.main.asyncAfter(deadline: deadlineTime) {
-//                    if let visibleIndexPaths = self.trackTable.indexPathsForVisibleRows {
-//                        let currentPath = IndexPath(indexes: [0, self.appDelegate.player.currentTableIndex])
-//                        if !visibleIndexPaths.contains(currentPath) {
-//                            self.trackTable.scrollToRow(at: currentPath, at: .bottom, animated: true)
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//        if keyPath == #keyPath(AVPlayer.rate) {
-//            if let rate = change?[.newKey] as? NSNumber {
-//                print("player rate: \(rate.floatValue)")
-//                DispatchQueue.main.async { self.trackTable.reloadData() }
-//            }
-//        }
-//    }
 
     // MARK: - MusicObserverDelegate
     

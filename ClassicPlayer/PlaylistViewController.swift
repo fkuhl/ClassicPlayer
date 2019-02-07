@@ -7,13 +7,11 @@
 //
 
 import UIKit
-import AVFoundation
-import AVKit
 import MediaPlayer
 
 //This VC uses SongTableViewCell
 
-class PlaylistViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class PlaylistViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, MusicObserverDelegate {
     weak var playlist: MPMediaPlaylist? {
         didSet {
             //Copy the playlist items to avoid obscure memory problem
@@ -27,10 +25,8 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
     @IBOutlet weak var descriptionText: UILabel!
     @IBOutlet weak var trackTable: UITableView!
     var trackData: [MPMediaItem]?
-    var playerViewController: AVPlayerViewController?
-    weak var playerLabel: UILabel?
-    private let indexObserver = IndexObserver()
-    private var rateObserver = RateObserver()
+    var musicViewController: MusicViewController?
+    private var musicObserver = MusicObserver()
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
     // MARK: - UIViewController
@@ -57,23 +53,21 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
             artwork?.image = AppDelegate.artworkFor(album: realID)
         }
        adjustStack()
-        playerViewController?.player = appDelegate.player.player
-        if appDelegate.player.isActive {
-            if appDelegate.player.setterID == mySetterID() {
-                indexObserver.start(on: self)
-                rateObserver.start(on: self)
+        if musicPlayerPlaybackState() == .playing {
+            musicViewController?.nowPlayingItemDidChange(to: MPMusicPlayerController.applicationMusicPlayer.nowPlayingItem)
+            musicObserver.start(on: self)
+            if appDelegate.musicPlayer.setterID == mySetterID() {
+                scrollToCurrent()
             }
-            playerLabel?.text = appDelegate.player.label
         } else {
-            installPlayer(forIndex: 0)
+            setQueuePlayer(tableIndex: 0, paused: true)
         }
         trackTable.reloadData()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        indexObserver.stop(on: self)
-        rateObserver.stop(on: self)
+        musicObserver.stop()
     }
     
     @objc private func fontSizeChanged() {
@@ -108,18 +102,18 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Track", for: indexPath) as! SongTableViewCell
-        if appDelegate.player.setterID == mySetterID() {
-            if indexPath.row == appDelegate.player.currentTableIndex {
-                if appDelegate.player.player.rate < 0.5 {
-                    cell.indicator.stopAnimating()
-                    cell.indicator.animationImages = nil
-                    cell.indicator.image = appDelegate.audioPaused
-                } else {
+        if appDelegate.musicPlayer.setterID == mySetterID() {
+            if indexPath.row == appDelegate.musicPlayer.currentTableIndex {
+                if musicPlayerPlaybackState() == .playing {
                     cell.indicator.image = nil
                     cell.indicator.animationImages = appDelegate.audioBarSet
                     cell.indicator.animationRepeatCount = 0 //like, forever
                     cell.indicator.animationDuration = 0.6  //sec
                     cell.indicator.startAnimating()
+                } else {
+                    cell.indicator.stopAnimating()
+                    cell.indicator.animationImages = nil
+                    cell.indicator.image = appDelegate.audioPaused
                 }
                 cell.artwork.isOpaque = false
                 cell.artwork.alpha = 0.5
@@ -158,21 +152,8 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
     // MARK: - UITableViewDelegate
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let partialList = trackData![indexPath.row...]
-        let playerItems: [AVPlayerItem] = partialList.map {
-            item in
-            return AVPlayerItem(url: item.assetURL!)
-        }
-        indexObserver.stop(on: self)
-        rateObserver.stop(on: self)
-        setQueuePlayer(items: playerItems,
-                       tableIndex: indexPath.row)
-//        if appDelegate.player.currentPlayerIndex == trackData!.count - 1 {
-//            //Just pause after last item, rather than searching for stuff.
-//            playerViewController?.player?.actionAtItemEnd = .pause
-//        }
+        setQueuePlayer(tableIndex: indexPath.row, paused: false)
         tableView.reloadData()
-        playerViewController?.player?.play() //Tap on the table, it starts to play
     }
     
     private func labelForPlayer(atIndex: Int) -> String {
@@ -195,66 +176,52 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
 
     // MARK: - Player management
 
-    private func setQueuePlayer(items: [AVPlayerItem], tableIndex: Int) {
-        let newLabel = labelForPlayer(atIndex: tableIndex)
-        playerViewController?.player = appDelegate.player.setPlayer(items: items,
-                                                                    tableIndex: tableIndex,
-                                                                    setterID: mySetterID(),
-                                                                    label: newLabel)
-        playerLabel?.text = newLabel
-        playerViewController?.contentOverlayView?.setNeedsDisplay()
-        indexObserver.start(on: self)
-        rateObserver.start(on: self)
-        if items.count == 1 {
-            playerViewController?.player?.actionAtItemEnd = .pause
-        }
+    private func setQueuePlayer(tableIndex: Int, paused: Bool) {
+        musicObserver.stop()
+        let partialList = Array(trackData![tableIndex...])
+        appDelegate.musicPlayer.setPlayer(items: partialList,
+                                          tableIndex: tableIndex,
+                                          setterID: mySetterID(),
+                                          paused: paused)
+        musicViewController?.setInitialItem(item: partialList[0])
+        musicObserver.start(on: self)
     }
     
     //The embed segue that places the AVPlayerViewController in the ContainerVC
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "PlayTracks" {
-            self.playerViewController = segue.destination as? AVPlayerViewController
-            //This installs the UILabel. After this, we just change the text.
-            playerLabel = ClassicalPlayer.add(label: "not init", to: playerViewController!)
+            musicViewController = segue.destination as? MusicViewController
         }
     }
 
-    private func installPlayer(forIndex: Int) {
-        if trackData != nil && trackData!.count > 0 {
-            let playerItems: [AVPlayerItem] = trackData!.map {
-                item in
-                return AVPlayerItem(url: item.assetURL!)
-            }
-            setQueuePlayer(items: playerItems, tableIndex: 0)
+    // MARK: - MusicObserverDelegate
+    
+    func nowPlayingItemDidChange(to item: MPMediaItem?) {
+        DispatchQueue.main.async {
+            NSLog("AlbumTracksVC now playing item is '\(item?.title ?? "<sine nomine>")'")
+            self.musicViewController?.nowPlayingItemDidChange(to: item)
+            self.trackTable.reloadData()
+            self.scrollToCurrent()
         }
     }
     
-    override func observeValue(forKeyPath keyPath: String?,
-                               of object: Any?,
-                               change: [NSKeyValueChangeKey : Any]?,
-                               context: UnsafeMutableRawPointer?) {
-        if keyPath == #keyPath(Player.currentPlayerIndex) {
-            if let currentPlayerIndex = change?[.newKey] as? Int {
-                print("new currentPlayerIndex: \(currentPlayerIndex), table index: \(appDelegate.player.currentTableIndex)")
-                DispatchQueue.main.async { self.trackTable.reloadData() }
-                //As of iOS 11, the scroll seems to need a little delay.
-                let deadlineTime = DispatchTime.now() + .milliseconds(100)
-                DispatchQueue.main.asyncAfter(deadline: deadlineTime) {
-                    if let visibleIndexPaths = self.trackTable.indexPathsForVisibleRows {
-                        let currentPath = IndexPath(indexes: [0, self.appDelegate.player.currentTableIndex])
-                        //print("visIP: \(visibleIndexPaths) currP: \(currentPath)")
-                        if !visibleIndexPaths.contains(currentPath) {
-                            self.trackTable.scrollToRow(at: currentPath, at: .bottom, animated: true)
-                        }
-                    }
+    private func scrollToCurrent() {
+        //As of iOS 11, the scroll seems to need a little delay.
+        let deadlineTime = DispatchTime.now() + .milliseconds(100)
+        DispatchQueue.main.asyncAfter(deadline: deadlineTime) {
+            if let visibleIndexPaths = self.trackTable.indexPathsForVisibleRows {
+                let currentPath = IndexPath(indexes: [0, self.appDelegate.musicPlayer.currentTableIndex])
+                if !visibleIndexPaths.contains(currentPath) {
+                    self.trackTable.scrollToRow(at: currentPath, at: .bottom, animated: true)
                 }
             }
         }
-        if keyPath == #keyPath(AVPlayer.rate) {
-            if let rate = change?[.newKey] as? NSNumber {
-                print("player rate: \(rate.floatValue)")
-                DispatchQueue.main.async { self.trackTable.reloadData() }
-            }
+    }
+    
+    func playbackStateDidChange(to state: MPMusicPlaybackState) {
+        DispatchQueue.main.async {
+            self.trackTable.reloadData()
+            self.musicViewController?.playbackStateDidChange(to: state)
         }
     }
 
