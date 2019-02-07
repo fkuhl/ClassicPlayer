@@ -8,11 +8,10 @@
 
 import UIKit
 import MediaPlayer
-import AVFoundation
-import AVKit
 
-class ArtistsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchResultsUpdating {
+class ArtistsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchResultsUpdating, MusicObserverDelegate {
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var playerViewHeight: NSLayoutConstraint!
     let searchController = UISearchController(searchResultsController: nil)
     private var tableIsLoaded = false
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -22,8 +21,8 @@ class ArtistsViewController: UIViewController, UITableViewDelegate, UITableViewD
     private var sectionCount = 1
     private var sectionSize = 0
     private var sectionTitles: [String]?
-    weak var playerViewController: AVPlayerViewController?
-    weak var playerLabel: UILabel?
+    weak var musicViewController: MusicViewController?
+    private var musicObserver = MusicObserver()
 
     // MARK: - UIViewController
 
@@ -42,11 +41,21 @@ class ArtistsViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        playerViewController?.player = appDelegate.player.player
-        playerLabel?.text = appDelegate.player.label
+        if musicPlayerPlaybackState() == .playing {
+            playerViewHeight.constant = MusicPlayer.height
+            musicViewController?.nowPlayingItemDidChange(to: MPMusicPlayerController.applicationMusicPlayer.nowPlayingItem)
+            musicObserver.start(on: self)
+        } else {
+            playerViewHeight.constant = 0.0
+        }
         updateUI()
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        musicObserver.stop()
+    }
+
     private func updateUI() {
         let query = MPMediaQuery.artists()
         artistObjects = []
@@ -142,10 +151,7 @@ class ArtistsViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "PlayTracks" {
-            print("ArtistsVC.prepareForSegue. playerVC: \(segue.destination)")
-            playerViewController = segue.destination as? AVPlayerViewController
-            //This installs the UILabel. After this, we just change the text.
-            playerLabel = add(label: "not init", to: playerViewController!)
+            musicViewController = segue.destination as? MusicViewController
         }
         if segue.identifier == "ArtistSelected" {
             let secondViewController = segue.destination as! SelectedPiecesViewController
@@ -173,6 +179,21 @@ class ArtistsViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     private func isFiltering() -> Bool {
         return searchController.isActive && !searchBarIsEmpty()
+    }
+
+    // MARK: - MusicObserverDelegate
+    
+    func nowPlayingItemDidChange(to item: MPMediaItem?) {
+        DispatchQueue.main.async {
+            NSLog("ArtistsVC now playing item is '\(item?.title ?? "<sine nomine>")'")
+            self.musicViewController?.nowPlayingItemDidChange(to: item)
+        }
+    }
+    
+    func playbackStateDidChange(to state: MPMusicPlaybackState) {
+        DispatchQueue.main.async {
+            self.musicViewController?.playbackStateDidChange(to: state)
+        }
     }
 }
 
