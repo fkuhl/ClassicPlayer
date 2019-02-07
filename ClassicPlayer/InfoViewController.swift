@@ -7,19 +7,18 @@
 //
 
 import UIKit
-import AVFoundation
-import AVKit
+import MediaPlayer
 import MessageUI
 
 protocol ProgressDelegate {
     func setProgress(progress: Float)
 }
 
-class InfoViewController: UIViewController, ProgressDelegate, MFMailComposeViewControllerDelegate {
+class InfoViewController: UIViewController, ProgressDelegate, MFMailComposeViewControllerDelegate, MusicObserverDelegate {
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    weak var playerViewController: AVPlayerViewController?
-    weak var playerLabel: UILabel?
+    weak var musicViewController: MusicViewController?
+    private var musicObserver = MusicObserver()
 
     @IBOutlet weak var appName: UILabel!
     @IBOutlet weak var buildVersion: UILabel!
@@ -30,6 +29,7 @@ class InfoViewController: UIViewController, ProgressDelegate, MFMailComposeViewC
     @IBOutlet weak var movementCount: UILabel!
     @IBOutlet weak var activityBackground: UIView!
     @IBOutlet weak var progressBar: UIProgressView!
+    @IBOutlet weak var playerView: UIView!
     
     // MARK: - UIViewController
 
@@ -70,14 +70,20 @@ class InfoViewController: UIViewController, ProgressDelegate, MFMailComposeViewC
                                                selector: #selector(handleDataMissing),
                                                name: .dataMissing,
                                                object: nil)
-        playerViewController?.player = appDelegate.player.player
-        playerLabel?.text = appDelegate.player.label
+        if musicPlayerPlaybackState() == .playing {
+            playerView.isHidden = false
+            musicViewController?.nowPlayingItemDidChange(to: MPMusicPlayerController.applicationMusicPlayer.nowPlayingItem)
+            musicObserver.start(on: self)
+        } else {
+            playerView.isHidden = true
+        }
         updateUI()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         NotificationCenter.default.removeObserver(self)
+        musicObserver.stop()
     }
 
     /**
@@ -245,20 +251,31 @@ class InfoViewController: UIViewController, ProgressDelegate, MFMailComposeViewC
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "PlayTracks" {
-            //print("InfoVC.prepareForSegue. playerVC: \(segue.destination)")
-            playerViewController = segue.destination as? AVPlayerViewController
-            //This installs the UILabel. After this, we just change the text.
-            playerLabel = add(label: "not init", to: playerViewController!)
+            musicViewController = segue.destination as? MusicViewController
         }
     }
 
     // MARK: - ProgressDelegate
-    
 
     func setProgress(progress: Float) {
         DispatchQueue.main.async {
             self.progressBar.setProgress(progress, animated: true)
             self.view.setNeedsDisplay()
+        }
+    }
+
+    // MARK: - MusicObserverDelegate
+    
+    func nowPlayingItemDidChange(to item: MPMediaItem?) {
+        DispatchQueue.main.async {
+            NSLog("InfoVC now playing item is '\(item?.title ?? "<sine nomine>")'")
+            self.musicViewController?.nowPlayingItemDidChange(to: item)
+        }
+    }
+    
+    func playbackStateDidChange(to state: MPMusicPlaybackState) {
+        DispatchQueue.main.async {
+            self.musicViewController?.playbackStateDidChange(to: state)
         }
     }
 }
