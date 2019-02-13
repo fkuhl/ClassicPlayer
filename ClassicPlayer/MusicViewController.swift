@@ -61,9 +61,13 @@ class MusicViewController: UIViewController {
         }
     }
     
+    /**
+     Slider has "continuous events" checked in IB.
+     */
     @IBAction func sliderValueChanged(_ sender: UISlider) {
-        NSLog("MusicVC sliding to \(timeSlider.value)")
+        //NSLog("MusicVC sliding to \(timeSlider.value)")
         MPMusicPlayerController.applicationMusicPlayer.currentPlaybackTime = TimeInterval(timeSlider.value)
+        displayCurrentPlaybackTime()
     }
     
     @IBAction func airplayTouched(_ sender: UIButton) {
@@ -76,7 +80,7 @@ class MusicViewController: UIViewController {
     }
     
     func nowPlayingItemDidChange(to newItem: MPMediaItem?) {
-        NSLog("MusicVC now playing item is '\(newItem?.title ?? "<sine nomine>")'")
+        //NSLog("MusicVC now playing item is '\(newItem?.title ?? "<sine nomine>")'")
         currentTrack = newItem
         resetForNewItem()
     }
@@ -84,7 +88,7 @@ class MusicViewController: UIViewController {
     private func resetForNewItem() {
         trackDuration = currentTrack?.playbackDuration
         if let duration = trackDuration {
-            NSLog("MusicVC setting slider max to \(Float(duration))")
+            //NSLog("MusicVC setting slider max to \(Float(duration))")
             timeSlider.maximumValue = Float(duration)
         }
         trackLabel?.text = labelForPlayer()

@@ -198,7 +198,7 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
     
     func nowPlayingItemDidChange(to item: MPMediaItem?) {
         DispatchQueue.main.async {
-            NSLog("PlaylistVC now playing item is '\(item?.title ?? "<sine nomine>")'")
+            //NSLog("PlaylistVC now playing item is '\(item?.title ?? "<sine nomine>")'")
             self.musicViewController?.nowPlayingItemDidChange(to: item)
             self.trackTable.reloadData()
             self.scrollToCurrent()

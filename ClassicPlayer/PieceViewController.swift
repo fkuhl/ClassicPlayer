@@ -242,7 +242,7 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     func nowPlayingItemDidChange(to item: MPMediaItem?) {
         DispatchQueue.main.async {
-            NSLog("PieceVC now playing item is '\(item?.title ?? "<sine nomine>")'")
+            //NSLog("PieceVC now playing item is '\(item?.title ?? "<sine nomine>")'")
             self.musicViewController?.nowPlayingItemDidChange(to: item)
             if !self.hasMultipleMovements { return }
             self.movementTable.reloadData()

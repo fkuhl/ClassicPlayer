@@ -378,7 +378,7 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
     
     func nowPlayingItemDidChange(to item: MPMediaItem?) {
         DispatchQueue.main.async {
-            NSLog("ComposersVC now playing item is '\(item?.title ?? "<sine nomine>")'")
+            //NSLog("ComposersVC now playing item is '\(item?.title ?? "<sine nomine>")'")
             self.musicViewController?.nowPlayingItemDidChange(to: item)
         }
     }

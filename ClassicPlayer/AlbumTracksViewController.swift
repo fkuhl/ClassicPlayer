@@ -192,7 +192,6 @@ class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableV
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "PlayTracks" {
-            //print("AlbumTracksVC.prepareForSegue")
             musicViewController = segue.destination as? MusicViewController
         }
     }
@@ -201,7 +200,7 @@ class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableV
     
     func nowPlayingItemDidChange(to item: MPMediaItem?) {
         DispatchQueue.main.async {
-            NSLog("AlbumTracksVC now playing item is '\(item?.title ?? "<sine nomine>")'")
+            //NSLog("AlbumTracksVC now playing item is '\(item?.title ?? "<sine nomine>")'")
             self.musicViewController?.nowPlayingItemDidChange(to: item)
             self.trackTable.reloadData()
             self.scrollToCurrent()

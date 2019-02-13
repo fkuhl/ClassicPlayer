@@ -131,7 +131,7 @@ class PlaylistsViewController: UIViewController, UITableViewDelegate, UITableVie
     
     func nowPlayingItemDidChange(to item: MPMediaItem?) {
         DispatchQueue.main.async {
-            NSLog("PlaylistsVC now playing item is '\(item?.title ?? "<sine nomine>")'")
+            //NSLog("PlaylistsVC now playing item is '\(item?.title ?? "<sine nomine>")'")
             self.musicViewController?.nowPlayingItemDidChange(to: item)
         }
     }

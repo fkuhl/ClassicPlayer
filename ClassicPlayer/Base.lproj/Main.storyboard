@@ -1066,8 +1066,9 @@
                                         <color key="textColor" name="IconBeige"/>
                                         <color key="highlightedColor" name="IconBeige"/>
                                     </label>
-                                    <slider opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" continuous="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2Zi-5s-gVz">
+                                    <slider opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="2Zi-5s-gVz">
                                         <rect key="frame" x="81" y="8" width="197" height="31"/>
+                                        <color key="thumbTintColor" name="IconBeige"/>
                                         <connections>
                                             <action selector="sliderValueChanged:" destination="mPp-Cg-Agn" eventType="valueChanged" id="7jZ-Jn-eoQ"/>
                                         </connections>

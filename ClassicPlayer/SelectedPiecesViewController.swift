@@ -200,7 +200,7 @@ class SelectedPiecesViewController: UIViewController, NSFetchedResultsController
     
     func nowPlayingItemDidChange(to item: MPMediaItem?) {
         DispatchQueue.main.async {
-            NSLog("SelectedPiecesVC now playing item is '\(item?.title ?? "<sine nomine>")'")
+            //NSLog("SelectedPiecesVC now playing item is '\(item?.title ?? "<sine nomine>")'")
             self.musicViewController?.nowPlayingItemDidChange(to: item)
         }
     }
