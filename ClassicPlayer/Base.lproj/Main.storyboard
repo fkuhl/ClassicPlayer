@@ -1022,6 +1022,37 @@
             </objects>
             <point key="canvasLocation" x="-3835.1999999999998" y="-2537.6311844077964"/>
         </scene>
+        <!--Route Picker View Controller-->
+        <scene sceneID="PPg-De-yOO">
+            <objects>
+                <viewController storyboardIdentifier="RoutePickerVC" id="aqD-qg-0qX" customClass="RoutePickerViewController" customModule="ClassicalPlayer" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="nTW-yh-51U">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="500"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="OLK-4i-rju" customClass="AVRoutePickerView">
+                                <rect key="frame" x="0.0" y="12" width="375" height="480"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="g3z-jb-rkv" firstAttribute="top" secondItem="OLK-4i-rju" secondAttribute="top" constant="8" id="71l-qp-ZRu"/>
+                            <constraint firstItem="g3z-jb-rkv" firstAttribute="bottom" secondItem="OLK-4i-rju" secondAttribute="bottom" constant="8" id="Gcq-BH-b20"/>
+                            <constraint firstItem="g3z-jb-rkv" firstAttribute="trailing" secondItem="OLK-4i-rju" secondAttribute="trailing" id="aWp-VD-4W1"/>
+                            <constraint firstItem="g3z-jb-rkv" firstAttribute="leading" secondItem="OLK-4i-rju" secondAttribute="leading" id="oG7-ob-jPa"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="g3z-jb-rkv"/>
+                    </view>
+                    <size key="freeformSize" width="375" height="500"/>
+                    <connections>
+                        <outlet property="pickerView" destination="OLK-4i-rju" id="ceh-4A-X04"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="454-bg-lUI" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-666" y="-1929"/>
+        </scene>
         <!--Music View Controller-->
         <scene sceneID="eWr-kn-X2S">
             <objects>
@@ -1097,7 +1128,9 @@
                                         </constraints>
                                         <state key="normal" image="1533-airplay"/>
                                         <connections>
-                                            <action selector="airplayTouched:" destination="mPp-Cg-Agn" eventType="touchUpInside" id="FcE-DZ-mya"/>
+                                            <segue destination="aqD-qg-0qX" kind="popoverPresentation" identifier="RoutePicker" popoverAnchorView="Rkf-Eu-s3F" id="iTd-9c-fsH">
+                                                <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
+                                            </segue>
                                         </connections>
                                     </button>
                                 </subviews>
@@ -1661,7 +1694,7 @@
         </namedColor>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="fgM-jw-pph"/>
+        <segue reference="kJn-OS-qTp"/>
         <segue reference="ZtY-Y8-VAT"/>
     </inferredMetricsTieBreakers>
     <color key="tintColor" name="TheBlue"/>

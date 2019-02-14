@@ -102,7 +102,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         do {
             //In addition to setting this audio mode, info.plist contains a "Required background modes" key,
             //with an "audio" ("app plays audio ... AirPlay") entry.
-            try audioSession.setCategory(AVAudioSession.Category.playback, mode: AVAudioSession.Mode.default)
+            try audioSession.setCategory(AVAudioSession.Category.playback,
+                                         mode: AVAudioSession.Mode.default,
+                                         policy: .longForm) //enable AirPlay
         } catch {
             let error = error as NSError
             NotificationCenter.default.post(Notification(name: .initializingError,

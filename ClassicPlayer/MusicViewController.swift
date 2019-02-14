@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import AVKit
 import MediaPlayer
 
 fileprivate enum PlayerState {
@@ -181,6 +182,14 @@ class MusicViewController: UIViewController {
             return artist + ": " + (currentTrack?.title ?? "")
         } else {
             return currentTrack?.title ?? ""
+        }
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        NSLog("MusicVC segue \(segue.identifier ?? "unidentified")")
+        if segue.identifier == "RoutePicker" {
+//            if let controller = segue.destination as? RoutePickerViewController {
+//            }
         }
     }
 }

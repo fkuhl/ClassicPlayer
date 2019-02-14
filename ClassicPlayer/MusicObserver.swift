@@ -33,12 +33,12 @@ class MusicObserver {
                                                object: nil)
         MPMusicPlayerController.applicationMusicPlayer.beginGeneratingPlaybackNotifications()
         observing = true
-        NSLog("MusicObserver start observing")
+        //NSLog("MusicObserver start observing")
     }
 
     func stop() {
         if observing {
-            NSLog("MusicObserver stop observing")
+            //NSLog("MusicObserver stop observing")
             MPMusicPlayerController.applicationMusicPlayer.endGeneratingPlaybackNotifications()
             NotificationCenter.default.removeObserver(self)
             delegate = nil
@@ -48,7 +48,7 @@ class MusicObserver {
     
     @objc
     func nowPlayingItemDidChange() {
-        NSLog("MusicObserver now playing item index: \(MPMusicPlayerController.applicationMusicPlayer.indexOfNowPlayingItem)")
+        //NSLog("MusicObserver now playing item index: \(MPMusicPlayerController.applicationMusicPlayer.indexOfNowPlayingItem)")
         delegate?.nowPlayingItemDidChange(to: MPMusicPlayerController.applicationMusicPlayer.nowPlayingItem)
     }
     
