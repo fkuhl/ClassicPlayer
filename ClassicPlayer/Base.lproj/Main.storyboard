@@ -1094,8 +1094,8 @@
                                         <rect key="frame" x="336" y="11.5" width="23" height="23"/>
                                         <color key="backgroundColor" name="DarkBlue"/>
                                         <constraints>
+                                            <constraint firstAttribute="height" constant="23" id="5B3-dd-UuX"/>
                                             <constraint firstAttribute="width" constant="23" id="Icb-8I-9yo"/>
-                                            <constraint firstAttribute="height" constant="23" id="QkQ-9e-DVm"/>
                                         </constraints>
                                     </view>
                                 </subviews>
