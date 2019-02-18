@@ -17,6 +17,7 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     let searchController = UISearchController(searchResultsController: nil)
     weak var musicViewController: MusicViewController?
     var songs: [Song]?
+    var swipedSong: Song?
     private var musicObserver = MusicObserver()
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
@@ -65,9 +66,8 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     private func loadSongsSortedBy(_ sort: SongSorts) {
         do {
-            let context:NSManagedObjectContext! = (UIApplication.shared.delegate as! AppDelegate).mainThreadContext
             let request = NSFetchRequest<Song>()
-            request.entity = NSEntityDescription.entity(forEntityName: "Song", in:context)
+            request.entity = NSEntityDescription.entity(forEntityName: "Song", in: appDelegate.mainThreadContext)
             request.resultType = .managedObjectResultType
             request.returnsDistinctResults = true
             if isFiltering() {
@@ -78,7 +78,7 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
            request.sortDescriptors = [ NSSortDescriptor(key: sort.sortDescriptor,
                                                          ascending: true,
                                                          selector: #selector(NSString.localizedCaseInsensitiveCompare)) ]
-            songs = try context.fetch(request)
+            songs = try appDelegate.mainThreadContext.fetch(request)
             computeSections(forSort: sort)
             title = "Songs by \(sort.dropDownDisplayName)"
             trackTable.reloadData()
@@ -132,6 +132,40 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "PlayTracks" {
             self.musicViewController = segue.destination as? MusicViewController
+        }
+        if segue.identifier == "ShowAlbum" {
+            let secondViewController = segue.destination as! AlbumTracksViewController
+            NSLog("swiped song is \((swipedSong != nil) ? (swipedSong!.title ?? "[s.n.]") : "nil")")
+            if let encodedID = swipedSong?.albumID,
+                let album = retrieveAlbum(forEncodedID: encodedID) {
+                NSLog("retrived album is \(album.title ?? "[s.n.]")")
+                NSLog("segue destination is \(secondViewController)")
+                secondViewController.albumID = AppDelegate.decodeIDFrom(coreDataRepresentation: album.albumID!)
+                secondViewController.title = album.title
+            }
+        }
+    }
+    
+    private func retrieveAlbum(forEncodedID id: String) -> Album? {
+        let request = NSFetchRequest<Album>()
+        request.entity = NSEntityDescription.entity(forEntityName: "Album", in: appDelegate.mainThreadContext)
+        request.predicate = NSPredicate(format: "%K == %@", "albumID", id)
+        request.resultType = .managedObjectResultType
+        request.returnsDistinctResults = true
+        do {
+            let albums = try appDelegate.mainThreadContext.fetch(request)
+            if albums.count == 0 {
+                NSLog("No albums for song '\(swipedSong?.title ?? "<sine nomine>")'")
+                return nil
+            } else if albums.count > 1 {
+                NSLog("Multiple albums for song '\(swipedSong?.title ?? "<sine nomine>")'")
+            }
+            return albums[0]
+        }
+        catch {
+            let error = error as NSError
+            NSLog("error retrieving album corresp to song '\(swipedSong?.title ?? "<sine nomine>")': \(error), \(error.userInfo)")
+            return nil
         }
     }
 
@@ -228,6 +262,28 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
         tableView.reloadData()
     }
     
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath)
+        ->   UISwipeActionsConfiguration? {
+            let albumAction = UIContextualAction(style: .normal, title: "Album") {
+                (action, view, completionHandler) in
+                self.showAlbum(forSongAt: indexPath)
+                completionHandler(true)
+            }
+            albumAction.backgroundColor = UIColor(named: "DarkBlue", in: Bundle.main, compatibleWith: nil)
+            let configuration = UISwipeActionsConfiguration(actions: [albumAction])
+            configuration.performsFirstActionWithFullSwipe = true
+            return configuration
+    }
+    
+    private func showAlbum(forSongAt indexPath: IndexPath) {
+        DispatchQueue.main.async {
+            NSLog("swiped \(indexPath)")
+            self.swipedSong = self.songs?[indexPath.section * self.sectionSize + indexPath.row]
+            NSLog("selected \(self.swipedSong?.title ?? "<s.n.>")")
+            self.performSegue(withIdentifier: "ShowAlbum", sender: nil)
+        }
+    }
+    
     // MARK: - UISearchResultsUpdating Delegate
     
     func updateSearchResults(for searchController: UISearchController) {
@@ -252,12 +308,6 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
             if let retrieved = retrieveItem(forIndex: index) {
                 itemsToPlay.append(retrieved)
             }
-//            if let retrieved = retrieveItem(forIndex: index+1) {
-//                itemsToPlay.append(retrieved)
-//            }
-//            if let retrieved = retrieveItem(forIndex: index+2) {
-//                itemsToPlay.append(retrieved)
-//            }
             musicObserver.stop()
             appDelegate.musicPlayer.setPlayer(items: itemsToPlay,
                                               tableIndex: index,
@@ -283,7 +333,8 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }
     
     private func mySetterID() -> String {
-        return Bundle.main.bundleIdentifier! + ".SongsViewController"
+        return Bundle.main.bundleIdentifier! + ".SongsViewController."
+            + (swipedSong?.persistentID ?? "")
     }
 
     // MARK: - MusicObserverDelegate

@@ -117,6 +117,9 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
         installPlayerForAllMovements()
     }
     
+    @IBAction func artworkWasTapped(_ sender: Any) {
+        NSLog("artwork was tapped")
+    }
     
     // MARK: - UITableViewDataSource
 
@@ -226,6 +229,13 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
         if segue.identifier == "PlayTracks" {
             //print("PieceVC.prepareForSegue. playerVC: \(segue.destination)")
             musicViewController = segue.destination as? MusicViewController
+        }
+        if segue.identifier == "ShowAlbum" {
+            let secondViewController = segue.destination as! AlbumTracksViewController
+            if let album = selectedPiece?.album {
+                secondViewController.albumID = AppDelegate.decodeIDFrom(coreDataRepresentation: album.albumID!)
+                secondViewController.title = album.title
+            }
         }
     }
     

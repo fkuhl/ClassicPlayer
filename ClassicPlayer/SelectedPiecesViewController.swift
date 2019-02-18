@@ -75,15 +75,14 @@ class SelectedPiecesViewController: UIViewController, NSFetchedResultsController
     
     private func updateUI() {
         self.title = displayTitle
-        let context:NSManagedObjectContext! = (UIApplication.shared.delegate as! AppDelegate).mainThreadContext
         let request = NSFetchRequest<Piece>()
-        request.entity = NSEntityDescription.entity(forEntityName: "Piece", in: context)
+        request.entity = NSEntityDescription.entity(forEntityName: "Piece", in: appDelegate.mainThreadContext)
         request.predicate = NSPredicate(format: "%K == %@", selectionField!, selectionValue!)
         request.resultType = .managedObjectResultType
         request.returnsDistinctResults = true
         //request.sortDescriptors = [ NSSortDescriptor(key: "title", ascending: true) ]
         do {
-            pieces = try context.fetch(request)
+            pieces = try appDelegate.mainThreadContext.fetch(request)
             pieces?.sort(by: titlePredicate)
             computeSections()
             tableView.reloadData()

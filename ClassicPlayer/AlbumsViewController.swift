@@ -232,9 +232,9 @@ class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         if segue.identifier == "AlbumSelected" {
             let secondViewController = segue.destination as! AlbumTracksViewController
             if let selected = tableView?.indexPathForSelectedRow {
-                secondViewController.album =
-                    albums![selected.section * sectionSize + selected.row]
-                secondViewController.title = secondViewController.album?.title
+                let album = albums![selected.section * sectionSize + selected.row]
+                secondViewController.albumID = AppDelegate.decodeIDFrom(coreDataRepresentation: album.albumID!)
+                secondViewController.title = album.title
             }
         }
     }

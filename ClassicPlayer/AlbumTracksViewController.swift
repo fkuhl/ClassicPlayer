@@ -18,7 +18,7 @@ class TrackTableViewCell: UITableViewCell {
 class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, MusicObserverDelegate {
     private var musicObserver = MusicObserver()
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    weak var album: Album? {
+    var albumID: MPMediaEntityPersistentID = 0 {
         didSet {
             loadTracks() //Must be performed before segue to install player!
         }
@@ -50,8 +50,7 @@ class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableV
     
     private func loadTracks() {
         let query = MPMediaQuery.songs()
-        let idVal = AppDelegate.decodeIDFrom(coreDataRepresentation: (album?.albumID!)!)
-        let predicate = MPMediaPropertyPredicate(value: idVal, forProperty: MPMediaItemPropertyAlbumPersistentID)
+        let predicate = MPMediaPropertyPredicate(value: albumID, forProperty: MPMediaItemPropertyAlbumPersistentID)
         query.filterPredicates = Set([ predicate ])
         trackData = []
         for collection in query.collections! {
@@ -63,24 +62,37 @@ class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableV
         print("AlbumTracksVC loaded \(trackData?.count ?? -1) tracks")
     }
     
+    private func retrieveAlbum() -> MPMediaItem? {
+        let query = MPMediaQuery.albums()
+        let predicate = MPMediaPropertyPredicate(value: albumID, forProperty: MPMediaItemPropertyAlbumPersistentID)
+        query.filterPredicates = Set([ predicate ])
+        if let collections = query.collections {
+            if collections.count < 1 { return nil }
+            let items = collections[0].items
+            if items.count < 1 { return nil }
+            return items[0]
+        }
+        return nil
+    }
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        print("AlbumTracksVC will appear")
-        let id = album?.albumID
-        if let realID = id {
-            self.artwork.image = AppDelegate.artworkFor(album: realID)
-         }
-        composer.text = album?.composer ?? "[]"
-        albumTitle.text = album?.title
-        artist.text = album?.artist
-        let yearText: String
-        if let year = album?.year {
-            yearText = year > 0 ? "\(year)" : "[n.d.]"
-        } else {
-            yearText = "[n.d.]"
+        if let album = retrieveAlbum() {
+            let descrip = album.albumTitle ?? "<sine nomine>"
+            NSLog("AlbumTracksVC \(self) will appear for album '\(descrip)'")
+            self.artwork.image = AppDelegate.artworkFor(album: albumID)
+            composer.text = album.composer ?? "[]"
+            albumTitle.text = album.albumTitle
+            artist.text = album.albumArtist
+            let yearText: String
+            if let yearDatum = album.value(forProperty: "year") as? Int32 {
+                yearText = yearDatum > 0 ? "\(yearDatum)" : "[n.d.]"
+            } else {
+                yearText = "[n.d.]"
+            }
+            year?.text = "\(yearText) • \(album.genre ?? "")"
+            tracks?.text = "tracks: \(trackData!.count)"
         }
-        year?.text = "\(yearText) • \(album?.genre ?? "")"
-        tracks?.text = "tracks: \(/*album?.trackCount ?? 0*/ trackData!.count)"
         //Priority lowered on artwork height to prevent unsatisfiable constraint.
         adjustStack()
         print("AlbumTracksVC.vWA '\(appDelegate.musicPlayer.setterID)' "
@@ -174,7 +186,7 @@ class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableV
     
     private func mySetterID() -> String {
         return Bundle.main.bundleIdentifier! + ".AlbumTracksViewController"
-            + "." + (album?.albumID ?? "")
+            + ".\(albumID)"
     }
 
     // MARK: - Player management
