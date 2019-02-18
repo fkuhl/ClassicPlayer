@@ -105,7 +105,7 @@ class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDa
 //            }
             albums?.sort(by: sort.predicate)
             computeSectionsSortedBy(sort)
-            title = "Albums by \(sort.dropDownDisplayName)"
+            title = "Albums|\(sort.dropDownDisplayName)"
             tableView.reloadData()
         }
         catch {

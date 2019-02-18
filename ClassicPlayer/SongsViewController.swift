@@ -80,7 +80,7 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
                                                          selector: #selector(NSString.localizedCaseInsensitiveCompare)) ]
             songs = try appDelegate.mainThreadContext.fetch(request)
             computeSections(forSort: sort)
-            title = "Songs by \(sort.dropDownDisplayName)"
+            title = "Songs|\(sort.dropDownDisplayName)"
             trackTable.reloadData()
         }
         catch {
