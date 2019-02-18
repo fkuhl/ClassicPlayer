@@ -157,19 +157,6 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
         tableView.reloadData()
     }
     
-//    private func labelForPlayer(atIndex: Int) -> String {
-//        let composer = trackData![atIndex].composer
-//        let artist = trackData![atIndex].artist
-//        let title = trackData![atIndex].title
-//        if let uComposer = composer {
-//            return uComposer + ": " + (title ?? "")
-//        } else if let uArtist = artist {
-//            return uArtist + ": " + (title ?? "")
-//        } else {
-//            return title ?? ""
-//        }
-//    }
-    
     private func mySetterID() -> String {
         return Bundle.main.bundleIdentifier! + ".PlaylistViewController" +
             ">" + AppDelegate.encodeForCoreData(id: playlist!.persistentID) 
