@@ -315,9 +315,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if mediaAlbums.collections == nil { return .normal }
         for mediaAlbum in mediaAlbums.collections! {
             var mediaAlbumItems = mediaAlbum.items
-            //Remove items with nil assetURLs, which may mess up parsing, but oh well
-            mediaAlbumItems.removeAll(where: { $0.assetURL == nil && !$0.isCloudItem })
-            if scanForItemsLackingMedia(from: mediaAlbumItems) { allMediaDataPresent = false }
+            mediaAlbumItems.removeAll(where: { $0.isPlayable() != .playable })
+            if someItemsMissingMedia(from: mediaAlbumItems) { allMediaDataPresent = false }
             self.libraryAlbumCount += 1
             if self.libraryAlbumCount % progressIncrement == 0 {
                 self.progressDelegate?.setProgress(progress: Float(self.libraryAlbumCount) / totalAlbumCount)
@@ -348,19 +347,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return allMediaDataPresent ? .normal : .missingData
     }
     
-    private func scanForItemsLackingMedia(from items: [MPMediaItem]) -> Bool {
-        var mediaUnaccountablyMissing = false
-        for item in items {
-            if item.assetURL == nil {
-                if item.hasProtectedAsset { NSLog("item '\(item.title ?? "")' has protected asset") }
-                if item.isCloudItem { NSLog("item '\(item.title ?? "")' is cloud item") }
-                if !item.hasProtectedAsset && !item.isCloudItem {
-                    NSLog("item '\(item.title ?? "")' is missing media")
-                    mediaUnaccountablyMissing = true
-                }
-            }
-        }
-        return mediaUnaccountablyMissing
+    private func someItemsMissingMedia(from items: [MPMediaItem]) -> Bool {
+        return items.reduce(false, { wereMissing, item in
+            wereMissing || (item.isPlayable() == .missingTrack)
+        })
     }
     
     private func makeAndFillAlbum(from mediaAlbumItems: [MPMediaItem], into context: NSManagedObjectContext) -> Album {
@@ -683,9 +673,33 @@ func composersContains(candidate: String) -> Bool {
     return false
 }
 
+fileprivate enum PlayabilityCategory {
+    case playable
+    case protected
+    case cloudItem
+    case missingTrack
+}
+
+
+// MARK: - Playability
+
+fileprivate extension MPMediaItem {
+    func isPlayable() -> PlayabilityCategory {
+        if assetURL != nil {
+            //If it has a URL, we can play it regardless (we think)
+            return .playable
+        } else {
+            //If no URL and it's protected, we can't
+            if hasProtectedAsset { return .protected }
+            //If no URL and unprotected but it's in the cloud, we can (iTunes Match)
+            if isCloudItem { return .cloudItem }
+            //If no URL, unprotected, and not cloud item, it's just missing
+            return .missingTrack
+        }
+    }
+}
+
 // MARK: - Helper function
-
-
 
 // Helper function inserted by Swift 4.2 migrator.
 fileprivate func convertFromAVAudioSessionCategory(_ input: AVAudioSession.Category) -> String {
