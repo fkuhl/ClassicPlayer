@@ -315,7 +315,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if mediaAlbums.collections == nil { return .normal }
         for mediaAlbum in mediaAlbums.collections! {
             var mediaAlbumItems = mediaAlbum.items
-            mediaAlbumItems.removeAll(where: { $0.isPlayable() != .playable })
+            mediaAlbumItems.removeAll(where: { !$0.isPlayable() })
             if someItemsMissingMedia(from: mediaAlbumItems) { allMediaDataPresent = false }
             self.libraryAlbumCount += 1
             if self.libraryAlbumCount % progressIncrement == 0 {
@@ -349,7 +349,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     private func someItemsMissingMedia(from items: [MPMediaItem]) -> Bool {
         return items.reduce(false, { wereMissing, item in
-            wereMissing || (item.isPlayable() == .missingTrack)
+            wereMissing || (item.playabilityCategory() == .missingMedia)
         })
     }
     
@@ -673,28 +673,44 @@ func composersContains(candidate: String) -> Bool {
     return false
 }
 
+// MARK: - Playability
+
 fileprivate enum PlayabilityCategory {
     case playable
     case protected
     case cloudItem
-    case missingTrack
+    case missingMedia
 }
 
-
-// MARK: - Playability
-
 fileprivate extension MPMediaItem {
-    func isPlayable() -> PlayabilityCategory {
-        if assetURL != nil {
-            //If it has a URL, we can play it regardless (we think)
-            return .playable
-        } else {
-            //If no URL and it's protected, we can't
-            if hasProtectedAsset { return .protected }
-            //If no URL and unprotected but it's in the cloud, we can (iTunes Match)
-            if isCloudItem { return .cloudItem }
-            //If no URL, unprotected, and not cloud item, it's just missing
-            return .missingTrack
+
+    /**
+     Determine playability of a track.
+     We can play only .cloudItem or .playable.
+     
+     - Returns: playability category
+     */
+    func playabilityCategory() -> PlayabilityCategory {
+        //If it's protected, we can't play it. Period.
+        if hasProtectedAsset { return .protected }
+        //If  unprotected but it's in the cloud, we can play (iTunes Match)
+        if isCloudItem { return .cloudItem }
+        //If it has a URL, we can play it regardless (we think)
+        if assetURL != nil { return .playable }
+        //If no URL, unprotected, and not cloud item, it's just missing
+        return .missingMedia
+    }
+    
+    func isPlayable() -> Bool {
+        switch self.playabilityCategory() {
+        case .playable:
+            return true
+        case .protected:
+            return false
+        case .cloudItem:
+            return true
+        case .missingMedia:
+            return false
         }
     }
 }
