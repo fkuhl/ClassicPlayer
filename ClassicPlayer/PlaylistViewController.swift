@@ -25,6 +25,7 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
     @IBOutlet weak var descriptionText: UILabel!
     @IBOutlet weak var trackTable: UITableView!
     var trackData: [MPMediaItem]?
+    var swipedTrack: MPMediaItem?
     var musicViewController: MusicViewController?
     private var musicObserver = MusicObserver()
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -156,24 +157,44 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
         tableView.reloadData()
     }
     
-    private func labelForPlayer(atIndex: Int) -> String {
-        let composer = trackData![atIndex].composer
-        let artist = trackData![atIndex].artist
-        let title = trackData![atIndex].title
-        if let uComposer = composer {
-            return uComposer + ": " + (title ?? "")
-        } else if let uArtist = artist {
-            return uArtist + ": " + (title ?? "")
-        } else {
-            return title ?? ""
-        }
-    }
+//    private func labelForPlayer(atIndex: Int) -> String {
+//        let composer = trackData![atIndex].composer
+//        let artist = trackData![atIndex].artist
+//        let title = trackData![atIndex].title
+//        if let uComposer = composer {
+//            return uComposer + ": " + (title ?? "")
+//        } else if let uArtist = artist {
+//            return uArtist + ": " + (title ?? "")
+//        } else {
+//            return title ?? ""
+//        }
+//    }
     
     private func mySetterID() -> String {
         return Bundle.main.bundleIdentifier! + ".PlaylistViewController" +
             ">" + AppDelegate.encodeForCoreData(id: playlist!.persistentID) 
     }
-
+    
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath)
+        ->   UISwipeActionsConfiguration? {
+            let albumAction = UIContextualAction(style: .normal, title: "Album") {
+                (action, view, completionHandler) in
+                self.showAlbum(forSongAt: indexPath)
+                completionHandler(true)
+            }
+            albumAction.backgroundColor = UIColor(named: "DarkBlue", in: Bundle.main, compatibleWith: nil)
+            let configuration = UISwipeActionsConfiguration(actions: [albumAction])
+            configuration.performsFirstActionWithFullSwipe = true
+            return configuration
+    }
+    
+    private func showAlbum(forSongAt indexPath: IndexPath) {
+        NSLog("swiped \(indexPath)")
+        swipedTrack = trackData?[indexPath.row]
+        NSLog("selected \(swipedTrack?.title ?? "<s.n.>")")
+        performSegue(withIdentifier: "ShowAlbum", sender: nil)
+    }
+    
     // MARK: - Player management
 
     private func setQueuePlayer(tableIndex: Int, paused: Bool) {
@@ -187,10 +208,18 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
         musicObserver.start(on: self)
     }
     
-    //The embed segue that places the AVPlayerViewController in the ContainerVC
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        //The embed segue that places the AVPlayerViewController in the ContainerVC
         if segue.identifier == "PlayTracks" {
             musicViewController = segue.destination as? MusicViewController
+        }
+        if segue.identifier == "ShowAlbum" {
+            let secondViewController = segue.destination as! AlbumTracksViewController
+            NSLog("swiped track is \((swipedTrack != nil) ? (swipedTrack!.title ?? "[s.n.]") : "nil")")
+            if let albumID = swipedTrack?.albumPersistentID {
+                secondViewController.albumID = albumID
+                secondViewController.title = swipedTrack?.albumTitle
+            }
         }
     }
 

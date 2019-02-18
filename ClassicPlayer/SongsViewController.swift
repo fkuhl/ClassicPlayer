@@ -128,8 +128,8 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
         return songs!.count < SongsViewController.indexedSectionCount * 2
     }
     
-    //The embed segue that places the MusicViewController in the ContainerVC
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        //The embed segue that places the MusicViewController in the ContainerVC
         if segue.identifier == "PlayTracks" {
             self.musicViewController = segue.destination as? MusicViewController
         }
@@ -276,12 +276,10 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }
     
     private func showAlbum(forSongAt indexPath: IndexPath) {
-        DispatchQueue.main.async {
-            NSLog("swiped \(indexPath)")
-            self.swipedSong = self.songs?[indexPath.section * self.sectionSize + indexPath.row]
-            NSLog("selected \(self.swipedSong?.title ?? "<s.n.>")")
-            self.performSegue(withIdentifier: "ShowAlbum", sender: nil)
-        }
+        NSLog("swiped \(indexPath)")
+        swipedSong = songs?[indexPath.section * self.sectionSize + indexPath.row]
+        NSLog("selected \(swipedSong?.title ?? "<s.n.>")")
+        performSegue(withIdentifier: "ShowAlbum", sender: nil)
     }
     
     // MARK: - UISearchResultsUpdating Delegate
