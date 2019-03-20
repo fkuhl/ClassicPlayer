@@ -38,6 +38,9 @@ class MusicViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in self.timerDidFire() }
+        playPauseButton?.isEnabled = currentTrack != nil
+        timeSlider?.isEnabled = currentTrack != nil
+        airplayButton?.isEnabled = currentTrack != nil
     }
     
     override func viewWillDisappear(_ animated: Bool) {

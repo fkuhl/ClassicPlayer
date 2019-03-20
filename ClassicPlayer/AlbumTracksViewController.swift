@@ -49,6 +49,11 @@ class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableV
     }
     
     private func loadTracks() {
+//        let album = retrieveAlbum()
+//        if album?.albumTitle == "Abbey Road" {
+//           trackData = []
+//            return
+//        }
         let query = MPMediaQuery.songs()
         let predicate = MPMediaPropertyPredicate(value: albumID, forProperty: MPMediaItemPropertyAlbumPersistentID)
         query.filterPredicates = Set([ predicate ])
@@ -104,7 +109,8 @@ class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableV
             if appDelegate.musicPlayer.setterID == mySetterID() {
                 scrollToCurrent()
             }
-        } else {
+        } else if trackData!.count > 0 {
+            //Excluding unplayable tracks may mean the album has no associated tracks. Bug 30
             setQueuePlayer(tableIndex: 0, paused: true)
         }
         trackTable.reloadData()
