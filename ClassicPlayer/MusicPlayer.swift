@@ -52,6 +52,10 @@ enum MusicPlayerType {
     }
     
     private func setQueueAndPrepareToPlay(items: [MPMediaItem], paused: Bool) {
+        guard items.count > 0 else {
+            NSLog("setQueueAndPrepareToPlay called with empty item list")
+            return
+        }
         _player.pause()
         _player.shuffleMode = .off
         let dGroup = DispatchGroup()

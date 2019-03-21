@@ -258,7 +258,6 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let currentIndex = indexPath.section * sectionSize + indexPath.row
         installPlayer(forIndex: currentIndex, paused: false)
-        //playerViewController?.play() //start 'er up
         tableView.reloadData()
     }
     
@@ -306,6 +305,10 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
             if let retrieved = retrieveItem(forIndex: index) {
                 itemsToPlay.append(retrieved)
             }
+            guard itemsToPlay.count > 0 else {
+                NSLog("SongsVC.installPlayer called with no items")
+                return
+            }
             musicObserver.stop()
             appDelegate.musicPlayer.setPlayer(items: itemsToPlay,
                                               tableIndex: index,
@@ -318,7 +321,7 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
 
     private func retrieveItem(forIndex index: Int) -> MPMediaItem? {
         var item: MPMediaItem?
-        if songs != nil && songs!.count > 0 {
+        if songs != nil && songs!.count > index {
             let persistentID = AppDelegate.decodeIDFrom(coreDataRepresentation: songs![index].persistentID!)
             let songQuery = MPMediaQuery.songs()
             let predicate = MPMediaPropertyPredicate(value: persistentID, forProperty: MPMediaItemPropertyPersistentID)
@@ -351,7 +354,8 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
         let deadlineTime = DispatchTime.now() + .milliseconds(100)
         DispatchQueue.main.asyncAfter(deadline: deadlineTime) {
             if let visibleIndexPaths = self.trackTable.indexPathsForVisibleRows {
-                let currentPath = IndexPath(indexes: [0, self.appDelegate.musicPlayer.currentTableIndex])
+                let current = self.appDelegate.musicPlayer.currentTableIndex
+                let currentPath = IndexPath(indexes: [current / self.sectionSize, current % self.sectionSize])
                 if !visibleIndexPaths.contains(currentPath) {
                     self.trackTable.scrollToRow(at: currentPath, at: .bottom, animated: true)
                 }

@@ -83,10 +83,10 @@ class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableV
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         if let album = retrieveAlbum() {
-            let descrip = album.albumTitle ?? "<sine nomine>"
-            NSLog("AlbumTracksVC \(self) will appear for album '\(descrip)'")
+            //let descrip = album.albumTitle ?? "<sine nomine>"
+            //NSLog("AlbumTracksVC \(self) will appear for album '\(descrip)'")
             self.artwork.image = AppDelegate.artworkFor(album: albumID)
-            composer.text = album.composer ?? "[]"
+            composer.text = album.composer ?? " "
             albumTitle.text = album.albumTitle
             artist.text = album.albumArtist
             let yearText: String
@@ -198,8 +198,12 @@ class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableV
     // MARK: - Player management
 
     private func setQueuePlayer(tableIndex: Int, paused: Bool) {
-        musicObserver.stop()
         let partialList = Array(trackData![tableIndex...])
+        guard partialList.count > 0 else {
+            NSLog("AlbumTracksVC.setQueuePlayer called with empty list")
+            return
+        }
+        musicObserver.stop()
         appDelegate.musicPlayer.setPlayer(items: partialList,
                                           tableIndex: tableIndex,
                                           setterID: mySetterID(),

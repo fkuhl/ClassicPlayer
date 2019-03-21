@@ -175,9 +175,13 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
     // MARK: - Player management
 
     private func setQueuePlayer(tableIndex: Int, paused: Bool) {
-        musicObserver.stop()
         let partialList = (selectedPiece?.movements)!.array[tableIndex...]
         let playerItems = partialList.compactMap(retrieveItem) //strips nils returned by transform!
+        guard playerItems.count > 0 else {
+            NSLog("PieceVC.setQueuePlayer had no items")
+            return
+        }
+        musicObserver.stop()
         appDelegate.musicPlayer.setPlayer(items: playerItems,
                                           tableIndex: tableIndex,
                                           setterID: mySetterID(),
@@ -187,13 +191,16 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }
 
     private func setSinglePlayer(paused: Bool) {
-        musicObserver.stop()
-        let item = retrieveItem(from: selectedPiece)!
-        appDelegate.musicPlayer.setPlayer(item: item,
-                                          setterID: mySetterID(),
-                                          paused: paused)
-        musicViewController?.setInitialItem(item: item)
-        musicObserver.start(on: self)
+        if let item = retrieveItem(from: selectedPiece) {
+            musicObserver.stop()
+            appDelegate.musicPlayer.setPlayer(item: item,
+                                              setterID: mySetterID(),
+                                              paused: paused)
+            musicViewController?.setInitialItem(item: item)
+            musicObserver.start(on: self)
+        } else {
+            NSLog("PieceVC.setSinglePlayer could not retrieve media item")
+        }
     }
 
     private func retrieveItem(forMovement movementAny: Any) -> MPMediaItem? {
