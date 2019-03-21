@@ -61,7 +61,8 @@ class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableV
         for collection in query.collections! {
             let possibleItem = collection.items.first
             if let item = possibleItem {
-                if item.assetURL != nil { trackData?.append(item) } //iTunes LPs have nil URLs!!
+                //if item.assetURL != nil { trackData?.append(item) } //iTunes LPs have nil URLs!!
+                if item.isPlayable() { trackData?.append(item) } //iTunes LPs have nil URLs!!
             }
         }
         print("AlbumTracksVC loaded \(trackData?.count ?? -1) tracks")

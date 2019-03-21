@@ -394,6 +394,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         mediaInfoObject.songCount = librarySongCount
     }
     
+    /**
+     Load songs from an album into app DB.
+     
+     - Precondition: collection has had unplayable items removed
+     */
     private func loadSongs(for album: Album, from collection: [MPMediaItem], into context: NSManagedObjectContext) {
         librarySongCount += Int32(collection.count)
         for item in collection {
@@ -675,14 +680,14 @@ func composersContains(candidate: String) -> Bool {
 
 // MARK: - Playability
 
-fileprivate enum PlayabilityCategory {
+enum PlayabilityCategory {
     case playable
     case protected
     case cloudItem
     case missingMedia
 }
 
-fileprivate extension MPMediaItem {
+extension MPMediaItem {
 
     /**
      Determine playability of a track.

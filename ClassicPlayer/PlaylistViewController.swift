@@ -16,6 +16,7 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
         didSet {
             //Copy the playlist items to avoid obscure memory problem
             trackData = Array(playlist!.items)
+            trackData!.removeAll(where: { !$0.isPlayable() })
         }
     }
     @IBOutlet weak var artAndLabelsStack: UIStackView!
