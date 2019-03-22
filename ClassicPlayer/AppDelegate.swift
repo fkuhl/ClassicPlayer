@@ -311,6 +311,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         libraryPieceCount = 0
         librarySongCount = 0
         libraryMovementCount = 0
+        loadAllSongs(into: context)
         let mediaAlbums = MPMediaQuery.albums()
         if mediaAlbums.collections == nil { return .normal }
         for mediaAlbum in mediaAlbums.collections! {
@@ -333,7 +334,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 continue
             }
             let appAlbum = self.makeAndFillAlbum(from: mediaAlbumItems, into: context)
-            self.loadSongs(for: appAlbum, from: mediaAlbumItems, into: context)
+//            self.loadSongs(for: appAlbum, from: mediaAlbumItems, into: context)
 //            if self.isGenreToParse(appAlbum.genre) {
 //                self.loadParsedPieces(for: appAlbum, from: mediaAlbumItems, into: context)
 //            } else {
@@ -399,23 +400,46 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
      
      - Precondition: collection has had unplayable items removed
      */
-    private func loadSongs(for album: Album, from collection: [MPMediaItem], into context: NSManagedObjectContext) {
-        librarySongCount += Int32(collection.count)
-        for item in collection {
-            //Only record song if media data present
-            let song = NSEntityDescription.insertNewObject(forEntityName: "Song", into: context) as! Song
-            song.persistentID = AppDelegate.encodeForCoreData(id: item.persistentID)
-            song.albumID = AppDelegate.encodeForCoreData(id: item.albumPersistentID)
-            song.artist = item.artist
-            song.duration = AppDelegate.durationAsString(item.playbackDuration)
-            song.title = item.title
-            song.trackURL = item.assetURL
+//    private func loadSongs(for album: Album, from collection: [MPMediaItem], into context: NSManagedObjectContext) {
+//        librarySongCount += Int32(collection.count)
+//        for item in collection {
+//            //Only record song if media data present
+//            let song = NSEntityDescription.insertNewObject(forEntityName: "Song", into: context) as! Song
+//            song.persistentID = AppDelegate.encodeForCoreData(id: item.persistentID)
+//            song.albumID = AppDelegate.encodeForCoreData(id: item.albumPersistentID)
+//            song.artist = item.artist
+//            song.duration = AppDelegate.durationAsString(item.playbackDuration)
+//            song.title = item.title
+//            song.trackURL = item.assetURL
+//        }
+//    }
+    
+    /**
+     Load all songs from the library.
+     This collects all songs, whether they are part of an album or not.
+     As the code has developed it's not clear that we still need a CoreData Song object.
+     */
+    private func loadAllSongs(into context: NSManagedObjectContext) {
+        if let items = MPMediaQuery.songs().items {
+            librarySongCount = Int32(0)
+            for item in items {
+                if !item.isPlayable() { continue }
+                librarySongCount += 1
+                let song = NSEntityDescription.insertNewObject(forEntityName: "Song", into: context) as! Song
+                song.persistentID = AppDelegate.encodeForCoreData(id: item.persistentID)
+                song.albumID = AppDelegate.encodeForCoreData(id: item.albumPersistentID)
+                song.artist = item.artist
+                song.duration = AppDelegate.durationAsString(item.playbackDuration)
+                song.title = item.title
+                song.trackURL = item.assetURL
+            }
         }
     }
-    
+
     /**
      Load the songs (tracks) of an album as individual pieces.
      Used when an album is a genre that we don't bother to parse.
+     (At present this is irrelevant because we parse everything.)
      
      - Parameters:
      - for: Album CoreData object

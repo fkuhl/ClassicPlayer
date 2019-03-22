@@ -98,6 +98,14 @@ class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableV
             }
             year?.text = "\(yearText) • \(album.genre ?? "")"
             tracks?.text = "tracks: \(trackData!.count)"
+        } else {
+            //there was no corresponding album
+            self.artwork.image = AppDelegate.artworkFor(album: albumID)
+            composer.text = "  "
+            albumTitle.text = "No album!"
+            artist.text = "  "
+            year?.text = "  "
+            tracks?.text = "  "
         }
         //Priority lowered on artwork height to prevent unsatisfiable constraint.
         adjustStack()
@@ -110,7 +118,7 @@ class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableV
             if appDelegate.musicPlayer.setterID == mySetterID() {
                 scrollToCurrent()
             }
-        } else if trackData!.count > 0 {
+        } else if trackData != nil && trackData!.count > 0 {
             //Excluding unplayable tracks may mean the album has no associated tracks. Bug 30
             setQueuePlayer(tableIndex: 0, paused: true)
         }
