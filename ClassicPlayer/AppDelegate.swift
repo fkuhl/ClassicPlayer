@@ -334,7 +334,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 continue
             }
             let appAlbum = self.makeAndFillAlbum(from: mediaAlbumItems, into: context)
-//            self.loadSongs(for: appAlbum, from: mediaAlbumItems, into: context)
 //            if self.isGenreToParse(appAlbum.genre) {
 //                self.loadParsedPieces(for: appAlbum, from: mediaAlbumItems, into: context)
 //            } else {
@@ -394,25 +393,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         mediaInfoObject.pieceCount = libraryPieceCount
         mediaInfoObject.songCount = librarySongCount
     }
-    
-    /**
-     Load songs from an album into app DB.
-     
-     - Precondition: collection has had unplayable items removed
-     */
-//    private func loadSongs(for album: Album, from collection: [MPMediaItem], into context: NSManagedObjectContext) {
-//        librarySongCount += Int32(collection.count)
-//        for item in collection {
-//            //Only record song if media data present
-//            let song = NSEntityDescription.insertNewObject(forEntityName: "Song", into: context) as! Song
-//            song.persistentID = AppDelegate.encodeForCoreData(id: item.persistentID)
-//            song.albumID = AppDelegate.encodeForCoreData(id: item.albumPersistentID)
-//            song.artist = item.artist
-//            song.duration = AppDelegate.durationAsString(item.playbackDuration)
-//            song.title = item.title
-//            song.trackURL = item.assetURL
-//        }
-//    }
     
     /**
      Load all songs from the library.
