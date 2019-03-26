@@ -121,6 +121,8 @@ class MusicViewController: UIViewController {
             state = "seeking forward"
         case .seekingBackward:
             state = "seeking backward"
+        @unknown default:
+            fatalError("MusicVC.playbackStateDidChange MPMusicPlaybackState unknown enum value")
         }
         NSLog("MusicVC playback state changed to: \(state)")
     }
@@ -143,6 +145,8 @@ class MusicViewController: UIViewController {
         case .seekingBackward:
             displayCurrentPlaybackTime()
             if Float(trackElapsed) <= seekGoal! { MPMusicPlayerController.applicationMusicPlayer.endSeeking() }
+        @unknown default:
+            fatalError("MusicVC.timerDidFire MPMusicPlaybackState unknown enum value")
         }
     }
     

@@ -111,6 +111,8 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
             case .denied:
                 self.alertAndGoToSettings(message:
                     "Please give ClassicalPlayer access to your Media Library and restart it.")
+            @unknown default:  //added on migration to Swift 5
+                fatalError("ComposersVC.vDidA unknown library access enum")
             }
             self.libraryAccessChecked = true
        }
