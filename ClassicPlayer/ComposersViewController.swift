@@ -47,7 +47,7 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        print("ComposersVC.viewWillAppear: \(self) player: \(appDelegate.player)")
+        //print("ComposersVC.viewWillAppear: \(self) player: \(appDelegate.player)")
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(handleDataIsAvailable),
                                                name: .dataAvailable,
@@ -95,12 +95,38 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        checkArtworkEnabled()
+        checkMediaLibraryAccess()
+    }
+    
+    private func checkArtworkEnabled() {
+        if UserDefaults.standard.bool(forKey: AppDelegate.displayArtworkKey) { return }
+        DispatchQueue.main.async {
+            //The action is dispatched async to avoid the dread "_BSMachError"
+            let alert = UIAlertController(title: "Enable Artwork?",
+                                          message: "Would you like to enable the display of artwork?",
+                                          preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "Enable in Settings", style: .default, handler: { _ in
+                DispatchQueue.main.async {
+                    UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
+                }
+            }))
+            alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { _ in
+                DispatchQueue.main.async {
+                    self.updateUI()
+                }
+            }))
+            self.present(alert, animated: true)
+        }
+    }
+    
+    private func checkMediaLibraryAccess() {
         if libraryAccessChecked { return }
         //Check authorization to access media library
         MPMediaLibrary.requestAuthorization { status in
             switch status {
             case .notDetermined:
-                break //not clear how you'd ever get here, as the request will determine authorization
+            break //not clear how you'd ever get here, as the request will determine authorization
             case .authorized:
                 //Avoid the assumption that we know what thread requestAuthorization returns on
                 DispatchQueue.main.async {
@@ -115,7 +141,7 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
                 fatalError("ComposersVC.vDidA unknown library access enum")
             }
             self.libraryAccessChecked = true
-       }
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {

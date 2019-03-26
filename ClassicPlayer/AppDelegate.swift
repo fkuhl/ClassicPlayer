@@ -24,7 +24,7 @@ extension Notification.Name {
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
-    private static let displayArtworkKey = "display_artwork_preference"
+    static let displayArtworkKey = "display_artwork_preference"
     /**
      Those genres which will be parsed for pieces and movements.
      For now we parse everything, so this is unused.
