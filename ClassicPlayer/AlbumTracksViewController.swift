@@ -111,7 +111,7 @@ class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableV
         adjustStack()
         print("AlbumTracksVC.vWA '\(appDelegate.musicPlayer.setterID)' "
             + "player is playing: \(musicPlayerPlaybackState() == .playing) " +
-            "current table index: \(appDelegate.musicPlayer.type == .queue ? String(appDelegate.musicPlayer.currentTableIndex) : "single") ")
+            "current table index: \(appDelegate.musicPlayer.currentTableIndexAsString) ")
         if musicPlayerPlaybackState() == .playing {
             musicViewController?.nowPlayingItemDidChange(to: MPMusicPlayerController.applicationMusicPlayer.nowPlayingItem)
             musicObserver.start(on: self)
@@ -242,8 +242,9 @@ class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableV
         //As of iOS 11, the scroll seems to need a little delay.
         let deadlineTime = DispatchTime.now() + .milliseconds(100)
         DispatchQueue.main.asyncAfter(deadline: deadlineTime) {
-            if let visibleIndexPaths = self.trackTable.indexPathsForVisibleRows {
-                let currentPath = IndexPath(indexes: [0, self.appDelegate.musicPlayer.currentTableIndex])
+            if let visibleIndexPaths = self.trackTable.indexPathsForVisibleRows,
+                let index = self.appDelegate.musicPlayer.currentTableIndex {
+                let currentPath = IndexPath(indexes: [0, index])
                 if !visibleIndexPaths.contains(currentPath) {
                     self.trackTable.scrollToRow(at: currentPath, at: .bottom, animated: true)
                 }

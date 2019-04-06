@@ -21,7 +21,8 @@ enum MusicPlayerType {
     private var _setterID = ""
     //Note that the predecessor maintained the current player index. But MPMusicPlayerController does that.
     //controller's table index when player was set. Doesn't change as player runs
-    private var _tableIndex = 0
+    //nil value means it's undefined w.r.t. current table
+    private var _tableIndex: Int? = nil
 
     private var _queueSize = 0
 
@@ -32,7 +33,7 @@ enum MusicPlayerType {
         NSLog("MusicPlayer.setPlayer from \(setterID), item: '\(item.title ?? "<sine nomine>")', paused: \(paused)")
         _type = .single
         _setterID = setterID
-        _tableIndex = -1 //nonsensical
+        _tableIndex = nil
         _queueSize = 1
         var items = [MPMediaItem]()
         items.append(item)
@@ -40,7 +41,7 @@ enum MusicPlayerType {
     }
 
     /**
-    The case where several tracks are to be played from a table.
+    The case where one or more tracks are to be played from a table.
      */
     func setPlayer(items: [MPMediaItem], tableIndex: Int, setterID: String, paused: Bool) {
         NSLog("MusicPlayer.setPlayer from \(setterID), \(items.count) items, tableIndex: \(tableIndex), paused: \(paused)")
@@ -49,6 +50,15 @@ enum MusicPlayerType {
         _tableIndex = tableIndex
         _queueSize = items.count
         setQueueAndPrepareToPlay(items: items, paused: paused)
+    }
+    
+    /**
+     Reset the index in the originating table to new value.
+     This arises when in, e.g. SongsVC, a search is canceled.
+     This probably doesn't work except in the case where there was only one item to play.
+     */
+    func resetTableIndex(to: Int) {
+        _tableIndex = to
     }
     
     private func setQueueAndPrepareToPlay(items: [MPMediaItem], paused: Bool) {
@@ -85,10 +95,21 @@ enum MusicPlayerType {
         get { return _setterID }
     }
     
-    var currentTableIndex: Int {
+    var currentTableIndex: Int? {
         get {
-            assert(_type == .queue, "MusicPlayer.currentTableIndex should not be accessed for single player")
-            return _tableIndex + musicPlayerIndexOfNowPlayingItem()
+            if let index = _tableIndex {
+                return index + musicPlayerIndexOfNowPlayingItem()
+            }
+            return nil
+        }
+    }
+    
+    var currentTableIndexAsString: String {
+        get {
+            if let index = currentTableIndex {
+                return String(index)
+            }
+            return "none"
         }
     }
 

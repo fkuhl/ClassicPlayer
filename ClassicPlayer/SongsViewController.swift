@@ -52,7 +52,7 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
             if appDelegate.musicPlayer.setterID == mySetterID() {
                 scrollToCurrent()
             }
-       } else {
+        } else {
             installPlayer(forIndex: 0, paused: true)
         }
         trackTable.reloadData()
@@ -284,8 +284,32 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     // MARK: - UISearchResultsUpdating Delegate
     
     func updateSearchResults(for searchController: UISearchController) {
+        //NSLog("updSearchResults, filtering: \(isFiltering())")
         loadSongsSortedBy(currentSort)
-        installPlayer(forIndex: 0, paused: true)
+        if musicPlayerPlaybackState() == .playing && appDelegate.musicPlayer.setterID == mySetterID() {
+            if let playingItem = MPMusicPlayerController.applicationMusicPlayer.nowPlayingItem,
+                let playingIndex = indexOf(item: playingItem) {
+                appDelegate.musicPlayer.resetTableIndex(to: playingIndex)
+                trackTable.reloadData()
+                scrollToCurrent()
+            }
+        } else {
+            installPlayer(forIndex: 0, paused: true)
+        }
+    }
+    
+    private func indexOf(item: MPMediaItem) -> Int? {
+        var indexOfPlayingItem: Int?
+        if let songs = songs {
+            indexOfPlayingItem = songs.firstIndex(where: {
+                var match = false
+                if let idString = $0.persistentID {
+                    match = AppDelegate.decodeIDFrom(coreDataRepresentation: idString) == item.persistentID
+                }
+                return match
+            })
+        }
+        return indexOfPlayingItem
     }
     
     private func searchBarIsEmpty() -> Bool {
@@ -353,8 +377,8 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
         //As of iOS 11, the scroll seems to need a little delay.
         let deadlineTime = DispatchTime.now() + .milliseconds(100)
         DispatchQueue.main.asyncAfter(deadline: deadlineTime) {
-            if let visibleIndexPaths = self.trackTable.indexPathsForVisibleRows {
-                let current = self.appDelegate.musicPlayer.currentTableIndex
+            if let visibleIndexPaths = self.trackTable.indexPathsForVisibleRows,
+                let current = self.appDelegate.musicPlayer.currentTableIndex {
                 let currentPath = IndexPath(indexes: [current / self.sectionSize, current % self.sectionSize])
                 if !visibleIndexPaths.contains(currentPath) {
                     self.trackTable.scrollToRow(at: currentPath, at: .bottom, animated: true)
