@@ -304,43 +304,44 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let composerResults = findComposers()
         let totalAlbumCount = Float(composerResults.0)
         composersFound = composerResults.1
-        let progressIncrement = Int32(totalAlbumCount / 20) //update progress bar 20 times
-        NSLog("finished finding composers")
+        NSLog("finished finding \(composersFound.count) composers")
         libraryDate = MPMediaLibrary.default().lastModifiedDate
         libraryAlbumCount = 0
         libraryPieceCount = 0
         librarySongCount = 0
         libraryMovementCount = 0
         loadAllSongs(into: context)
+        let progressIncrement = Int32(max(1, composerResults.0 / 20)) //update progress bar 20 times
         let mediaAlbums = MPMediaQuery.albums()
-        if mediaAlbums.collections == nil { return .normal }
-        for mediaAlbum in mediaAlbums.collections! {
-            var mediaAlbumItems = mediaAlbum.items
-            mediaAlbumItems.removeAll(where: { !$0.isPlayable() })
-            if someItemsMissingMedia(from: mediaAlbumItems) { allMediaDataPresent = false }
-            self.libraryAlbumCount += 1
-            if self.libraryAlbumCount % progressIncrement == 0 {
-                self.progressDelegate?.setProgress(progress: Float(self.libraryAlbumCount) / totalAlbumCount)
+        if let collections = mediaAlbums.collections {
+            for mediaAlbum in collections {
+                var mediaAlbumItems = mediaAlbum.items
+                mediaAlbumItems.removeAll(where: { !$0.isPlayable() })
+                if someItemsMissingMedia(from: mediaAlbumItems) { allMediaDataPresent = false }
+                self.libraryAlbumCount += 1
+                if self.libraryAlbumCount % progressIncrement == 0 {
+                    self.progressDelegate?.setProgress(progress: Float(self.libraryAlbumCount) / totalAlbumCount)
+                }
+                if AppDelegate.showPieces && self.isGenreToParse(mediaAlbumItems[0].genre ) {
+                    print("Album: \(mediaAlbumItems[0].composer ?? "<anon>"): "
+                        + "\(mediaAlbumItems[0].albumTrackCount) "
+                        + "\(mediaAlbumItems[0].albumTitle ?? "<no title>")"
+                        + " | \(mediaAlbumItems[0].albumArtist ?? "<no artist>")"
+                        + " | \((mediaAlbumItems[0].value(forProperty: "year") as? Int) ?? -1) ")
+                }
+                if mediaAlbumItems.isEmpty {
+                    NSLog("empty album, title: '\(mediaAlbum.representativeItem?.albumTitle ?? "")'")
+                    continue
+                }
+                let appAlbum = self.makeAndFillAlbum(from: mediaAlbumItems, into: context)
+                //            if self.isGenreToParse(appAlbum.genre) {
+                //                self.loadParsedPieces(for: appAlbum, from: mediaAlbumItems, into: context)
+                //            } else {
+                //                self.loadSongsAsPieces(for: appAlbum, from: mediaAlbumItems, into: context)
+                //            }
+                //For now, just parse everything irrespective of genre. One less thing to explain.
+                self.loadParsedPieces(for: appAlbum, from: mediaAlbumItems, into: context)
             }
-            if AppDelegate.showPieces && self.isGenreToParse(mediaAlbumItems[0].genre ) {
-                print("Album: \(mediaAlbumItems[0].composer ?? "<anon>"): "
-                    + "\(mediaAlbumItems[0].albumTrackCount) "
-                    + "\(mediaAlbumItems[0].albumTitle ?? "<no title>")"
-                    + " | \(mediaAlbumItems[0].albumArtist ?? "<no artist>")"
-                    + " | \((mediaAlbumItems[0].value(forProperty: "year") as? Int) ?? -1) ")
-            }
-            if mediaAlbumItems.isEmpty {
-                NSLog("empty album, title: '\(mediaAlbum.representativeItem?.albumTitle ?? "")'")
-                continue
-            }
-            let appAlbum = self.makeAndFillAlbum(from: mediaAlbumItems, into: context)
-//            if self.isGenreToParse(appAlbum.genre) {
-//                self.loadParsedPieces(for: appAlbum, from: mediaAlbumItems, into: context)
-//            } else {
-//                self.loadSongsAsPieces(for: appAlbum, from: mediaAlbumItems, into: context)
-//            }
-            //For now, just parse everything irrespective of genre. One less thing to explain.
-            self.loadParsedPieces(for: appAlbum, from: mediaAlbumItems, into: context)
         }
         NSLog("found \(composersFound.count) composers, \(libraryAlbumCount) albums, \(libraryPieceCount) pieces, \(libraryMovementCount) movements, \(librarySongCount) tracks")
         storeMediaLibraryInfo(into: context)
@@ -655,15 +656,16 @@ func findComposers() -> (Int, Set<String>) {
     var albumCount = 0
     var found = Set<String>()
     let mediaAlbums = MPMediaQuery.albums()
-    if mediaAlbums.collections == nil { return (0, found) }
-    for mediaAlbum in mediaAlbums.collections! {
-        let mediaAlbumItems = mediaAlbum.items
-        for item in mediaAlbumItems {
-            if let composer = item.composer {
-                found.insert(composer)
+    if let collections = mediaAlbums.collections {
+        for mediaAlbum in collections {
+            let mediaAlbumItems = mediaAlbum.items
+            for item in mediaAlbumItems {
+                if let composer = item.composer {
+                    found.insert(composer)
+                }
             }
+            albumCount += 1
         }
-        albumCount += 1
     }
     return (albumCount, found)
 }
