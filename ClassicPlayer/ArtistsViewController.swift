@@ -59,15 +59,17 @@ class ArtistsViewController: UIViewController, UITableViewDelegate, UITableViewD
     private func updateUI() {
         let query = MPMediaQuery.artists()
         artistObjects = []
-        for collection in query.collections! {
-            let possibleItem = collection.items.first
-            if let item = possibleItem {
-                if isFiltering(), let artist = item.artist {
-                    if artist.localizedCaseInsensitiveContains(searchController.searchBar.text!) {
+        if let collections = query.collections {
+            for collection in collections {
+                let possibleItem = collection.items.first
+                if let item = possibleItem {
+                    if isFiltering(), let artist = item.artist {
+                        if artist.localizedCaseInsensitiveContains(searchController.searchBar.text!) {
+                            artistObjects!.append(item)
+                        }
+                    } else {
                         artistObjects!.append(item)
                     }
-                } else {
-                    artistObjects!.append(item)
                 }
             }
         }

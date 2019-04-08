@@ -54,7 +54,7 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
             //Someday we might elaborate the displayed artwork
             artwork?.image = AppDelegate.artworkFor(album: realID)
         }
-       adjustStack()
+        adjustStack()
         if musicPlayerPlaybackState() == .playing {
             musicViewController?.nowPlayingItemDidChange(to: MPMusicPlayerController.applicationMusicPlayer.nowPlayingItem)
             musicObserver.start(on: self)

@@ -49,17 +49,19 @@ class PlaylistsViewController: UIViewController, UITableViewDelegate, UITableVie
     private func loadLists() {
         playlists = []
         let query = MPMediaQuery.playlists()
-        for collection in query.collections! {
-            if let playlist = collection as? MPMediaPlaylist {
-                if !PlaylistsViewController.uninterestingPlaylists.contains(playlist.name!) && playlist.items.count > 0 {
-                    playlists?.append(playlist)
-                }
-                let lists = playlists!
-                playlists = lists.sorted {
-                    list1, list2 in
-                    let name1 = list1.name ?? ""
-                    let name2 = list2.name ?? ""
-                    return name1.localizedCaseInsensitiveCompare(name2) == .orderedAscending
+        if let collections = query.collections {
+            for collection in collections {
+                if let playlist = collection as? MPMediaPlaylist {
+                    if !PlaylistsViewController.uninterestingPlaylists.contains(playlist.name ?? "") && playlist.items.count > 0 {
+                        playlists?.append(playlist)
+                    }
+                    let lists = playlists!
+                    playlists = lists.sorted {
+                        list1, list2 in
+                        let name1 = list1.name ?? ""
+                        let name2 = list2.name ?? ""
+                        return name1.localizedCaseInsensitiveCompare(name2) == .orderedAscending
+                    }
                 }
             }
         }
