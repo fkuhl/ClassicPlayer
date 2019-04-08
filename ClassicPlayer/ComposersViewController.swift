@@ -21,6 +21,7 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
     private var musicObserver = MusicObserver()
     private var tableIsLoaded = false
     private var libraryAccessChecked = false
+    private var artworkEnabledChecked = false
     
     private static let indexedSectionCount = 27  //A magic number; that's how many sections any UITableView index can have.
     private var composerObjects: [NSDictionary]?
@@ -100,6 +101,8 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
     }
     
     private func checkArtworkEnabled() {
+        if artworkEnabledChecked { return }
+        artworkEnabledChecked = true
         if UserDefaults.standard.bool(forKey: AppDelegate.displayArtworkKey) { return }
         DispatchQueue.main.async {
             //The action is dispatched async to avoid the dread "_BSMachError"
