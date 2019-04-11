@@ -124,8 +124,12 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }
     
     private func presentAsOneSection() -> Bool {
-        if songs == nil { return true }
-        return songs!.count < SongsViewController.indexedSectionCount * 2
+        if let unwrappedSongs = songs {
+            return unwrappedSongs.count < SongsViewController.indexedSectionCount * 2
+        } else {
+            return true
+        }
+        
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -135,9 +139,10 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
         }
         if segue.identifier == "ShowAlbum" {
             let secondViewController = segue.destination as! AlbumTracksViewController
-            NSLog("swiped song is \((swipedSong != nil) ? (swipedSong!.title ?? "[s.n.]") : "nil")")
-            if let encodedID = swipedSong?.albumID,
+            
+            if let unwrappedSwipedSong = swipedSong, let encodedID = unwrappedSwipedSong.albumID,
                 let album = retrieveAlbum(forEncodedID: encodedID) {
+                NSLog("swiped song is \(unwrappedSwipedSong.title ?? "[s.n.]")")
                 NSLog("retrived album is \(album.title ?? "[s.n.]")")
                 NSLog("segue destination is \(secondViewController)")
                 secondViewController.albumID = AppDelegate.decodeIDFrom(coreDataRepresentation: album.albumID!)
@@ -147,24 +152,28 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }
     
     private func retrieveAlbum(forEncodedID id: String) -> Album? {
+        guard let unwrappedSwipedSong = swipedSong else {
+            return nil
+        }
         let request = NSFetchRequest<Album>()
         request.entity = NSEntityDescription.entity(forEntityName: "Album", in: appDelegate.mainThreadContext)
         request.predicate = NSPredicate(format: "%K == %@", "albumID", id)
         request.resultType = .managedObjectResultType
         request.returnsDistinctResults = true
+        let title = unwrappedSwipedSong.title ?? "<sine nomine>"
         do {
             let albums = try appDelegate.mainThreadContext.fetch(request)
             if albums.count == 0 {
-                NSLog("No albums for song '\(swipedSong?.title ?? "<sine nomine>")'")
+                NSLog("No albums for song '\(title)'")
                 return nil
             } else if albums.count > 1 {
-                NSLog("Multiple albums for song '\(swipedSong?.title ?? "<sine nomine>")'")
+                NSLog("Multiple albums for song '\(title)'")
             }
             return albums[0]
         }
         catch {
             let error = error as NSError
-            NSLog("error retrieving album corresp to song '\(swipedSong?.title ?? "<sine nomine>")': \(error), \(error.userInfo)")
+            NSLog("error retrieving album corresp to song '\(title)': \(error), \(error.userInfo)")
             return nil
         }
     }
@@ -195,14 +204,17 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }
     
     func tableView(_: UITableView, numberOfRowsInSection section: Int) -> Int {
+        guard let unwrappedSongs = songs else {
+            return 0
+        }
         if sectionCount == 1 {
-            return songs?.count ?? 0
+            return unwrappedSongs.count
         }
         if section < SongsViewController.indexedSectionCount - 1 {
             return sectionSize
         } else {
             //that pesky last section
-            return songs!.count - SongsViewController.indexedSectionCount * sectionSize
+            return unwrappedSongs.count - SongsViewController.indexedSectionCount * sectionSize
         }
     }
     
@@ -212,8 +224,9 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Track", for: indexPath) as! SongTableViewCell
+        let cellIndex = indexPath.section * sectionSize + indexPath.row
         if appDelegate.musicPlayer.setterID == mySetterID() &&
-            indexPath.section * sectionSize + indexPath.row == appDelegate.musicPlayer.currentTableIndex {
+            cellIndex == appDelegate.musicPlayer.currentTableIndex {
             if musicPlayerPlaybackState() == .playing {
                 cell.indicator.image = nil
                 cell.indicator.animationImages = appDelegate.audioBarSet
@@ -234,12 +247,14 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
             cell.artwork.isOpaque = true
             cell.artwork.alpha = 1.0
         }
-        let song = songs![indexPath.section * sectionSize + indexPath.row]
-        let id = song.albumID
-        cell.artwork.image = AppDelegate.artworkFor(album: id!)
-        cell.title.text = song.title
-        cell.artist.text = song.artist
-        cell.duration.text = song.duration
+        if let unwrappedSongs = songs, unwrappedSongs.count > cellIndex {
+            let song = unwrappedSongs[cellIndex]
+            let id = song.albumID
+            cell.artwork.image = AppDelegate.artworkFor(album: id!)
+            cell.title.text = song.title
+            cell.artist.text = song.artist
+            cell.duration.text = song.duration
+        }
         //Priority lowered on artwork height to prevent unsatisfiable constraint.
         if UIApplication.shared.preferredContentSizeCategory > .extraExtraLarge {
             cell.artAndLabelsStack.axis = .vertical
@@ -276,9 +291,12 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     private func showAlbum(forSongAt indexPath: IndexPath) {
         NSLog("swiped \(indexPath)")
-        swipedSong = songs?[indexPath.section * self.sectionSize + indexPath.row]
-        NSLog("selected \(swipedSong?.title ?? "<s.n.>")")
-        performSegue(withIdentifier: "ShowAlbum", sender: nil)
+        let cellIndex = indexPath.section * sectionSize + indexPath.row
+        if let unwrappedSongs = songs, unwrappedSongs.count > cellIndex {
+            swipedSong = unwrappedSongs[cellIndex]
+            NSLog("selected \(swipedSong?.title ?? "<s.n.>")")
+            performSegue(withIdentifier: "ShowAlbum", sender: nil)
+        }
     }
     
     // MARK: - UISearchResultsUpdating Delegate
@@ -345,13 +363,13 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
 
     private func retrieveItem(forIndex index: Int) -> MPMediaItem? {
         var item: MPMediaItem?
-        if songs != nil && songs!.count > index {
-            let persistentID = AppDelegate.decodeIDFrom(coreDataRepresentation: songs![index].persistentID!)
+        if let unwrappedSongs = songs, unwrappedSongs.count > index {
+            let persistentID = AppDelegate.decodeIDFrom(coreDataRepresentation: unwrappedSongs[index].persistentID!)
             let songQuery = MPMediaQuery.songs()
             let predicate = MPMediaPropertyPredicate(value: persistentID, forProperty: MPMediaItemPropertyPersistentID)
             songQuery.addFilterPredicate(predicate)
-            if let returned = songQuery.items {
-                if returned.count > 0 { item = returned[0] }
+            if let returned = songQuery.items, returned.count > 0 {
+                item = returned[0]
             }
         }
         return item

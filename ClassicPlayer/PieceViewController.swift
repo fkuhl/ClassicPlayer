@@ -118,7 +118,7 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }
     
     @IBAction func artworkWasTapped(_ sender: Any) {
-        NSLog("artwork was tapped")
+        NSLog("artwork was tapped")  //see prepareFor(segue:)
     }
     
     // MARK: - UITableViewDataSource
@@ -153,9 +153,11 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
             cell.indicator.animationImages = nil
             cell.indicator.image = appDelegate.audioNotCurrent
         }
-        let movementEntry = selectedPiece?.movements![indexPath.row]
-        cell.movementTitle.text = (movementEntry as? Movement)?.title
-        cell.duration.text = (movementEntry as? Movement)?.duration
+        if let movements = selectedPiece?.movements, movements.count > indexPath.row {
+            let movementEntry = movements[indexPath.row]
+            cell.movementTitle.text = (movementEntry as? Movement)?.title
+            cell.duration.text = (movementEntry as? Movement)?.duration
+        }
         return cell
     }
  

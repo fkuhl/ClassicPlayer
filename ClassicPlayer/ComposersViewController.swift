@@ -169,9 +169,8 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
      - Precondition: Called on main thread!
      */
     private func updateUI() {
-        let context:NSManagedObjectContext! = self.appDelegate.mainThreadContext
         let request = NSFetchRequest<NSDictionary>()
-        request.entity = NSEntityDescription.entity(forEntityName: "Piece", in:context!)
+        request.entity = NSEntityDescription.entity(forEntityName: "Piece", in: appDelegate.mainThreadContext)
         request.resultType = .dictionaryResultType
         request.returnsDistinctResults = true
         request.propertiesToFetch = [ "composer" ]
@@ -184,7 +183,7 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
                                                      ascending: true,
                                                      selector: #selector(NSString.localizedCaseInsensitiveCompare)) ]
         do {
-            self.composerObjects = try context!.fetch(request)
+            self.composerObjects = try appDelegate.mainThreadContext.fetch(request)
             NSLog("ComposersVC: fetch returned \(self.composerObjects!.count) composer things")
             self.computeSections()
             self.tableView.reloadData()
@@ -301,7 +300,7 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
     }
 
     private func computeSections() {
-        guard composerObjects != nil else {
+        guard let unwrappedComposerObjects = composerObjects else {
             sectionCount = 1
             sectionSize = 0
             return
@@ -316,7 +315,7 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
         sectionSize = composerObjects!.count / ComposersViewController.indexedSectionCount
         sectionTitles = []
         for i in 0 ..< ComposersViewController.indexedSectionCount {
-            let dict = composerObjects![i * sectionSize]
+            let dict = unwrappedComposerObjects[i * sectionSize]
             let composer = dict["composer"] as? String
             let title = composer?.prefix(2)
             //print("title \(i) is \(title ?? "nada")")
@@ -341,22 +340,29 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
     }
     
     func tableView(_: UITableView, numberOfRowsInSection section: Int) -> Int {
+        guard let unwrappedComposerObjects = composerObjects else {
+            return 1
+        }
         if sectionCount == 1 {
-            return composerObjects?.count ?? 0
+            return unwrappedComposerObjects.count
         }
         if section < ComposersViewController.indexedSectionCount - 1 {
             return sectionSize
         } else {
             //that pesky last section
-            return composerObjects!.count - ComposersViewController.indexedSectionCount * sectionSize
+            return unwrappedComposerObjects.count - ComposersViewController.indexedSectionCount * sectionSize
         }
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Composer", for: indexPath)
-        let composerEntry = composerObjects![indexPath.section * sectionSize + indexPath.row]  //works even if 1 section
-        let reportedComposer = composerEntry["composer"] as? String
-        cell.textLabel?.text = (reportedComposer == "") ? "[no composer listed]" : reportedComposer
+        if let unwrappedComposerObjects = composerObjects {
+            let composerEntry = unwrappedComposerObjects[indexPath.section * sectionSize + indexPath.row]  //works even if 1 section
+            let reportedComposer = composerEntry["composer"] as? String
+            cell.textLabel?.text = (reportedComposer == "") ? "[no composer listed]" : reportedComposer
+        } else {
+            cell.textLabel?.text = "[no composers]"
+        }
         return cell
     }
     
@@ -370,9 +376,9 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
         }
         if segue.identifier == "ComposerSelected" {
             let secondViewController = segue.destination as! SelectedPiecesViewController
-            if let selected = tableView?.indexPathForSelectedRow {
+            if let selected = tableView?.indexPathForSelectedRow, let composerObjs = composerObjects {
                 secondViewController.selectionField = "composer"
-                let composerName = composerObjects![selected.section * sectionSize + selected.row]["composer"] as? String
+                let composerName = composerObjs[selected.section * sectionSize + selected.row]["composer"] as? String
                 secondViewController.selectionValue = composerName
                 secondViewController.displayTitle = composerName
             }
@@ -424,5 +430,7 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
 
 // Helper function inserted by Swift 4.2 migrator.
 fileprivate func convertToUIApplicationOpenExternalURLOptionsKeyDictionary(_ input: [String: Any]) -> [UIApplication.OpenExternalURLOptionsKey: Any] {
-	return Dictionary(uniqueKeysWithValues: input.map { key, value in (UIApplication.OpenExternalURLOptionsKey(rawValue: key), value)})
+	return Dictionary(uniqueKeysWithValues: input.map { key, value in
+        (UIApplication.OpenExternalURLOptionsKey(rawValue: key), value)
+    })
 }

@@ -104,7 +104,7 @@ class SelectedPiecesViewController: UIViewController, NSFetchedResultsController
     }
 
     private func computeSections() {
-        guard pieces != nil else {
+        guard let unwrappedPieces = pieces else {
             sectionCount = 1
             sectionSize = 0
             return
@@ -119,7 +119,7 @@ class SelectedPiecesViewController: UIViewController, NSFetchedResultsController
         sectionSize = pieces!.count / SelectedPiecesViewController.indexedSectionCount
         sectionTitles = []
         for i in 0 ..< SelectedPiecesViewController.indexedSectionCount {
-            let piece = pieces![i * sectionSize]
+            let piece = unwrappedPieces[i * sectionSize]
             let entry = removeArticle(from: piece.title ?? "") //section titles reflect anarthrous ordering
             let title = entry.prefix(2)
             //print("title \(i) is \(title ?? "nada")")
@@ -145,26 +145,35 @@ class SelectedPiecesViewController: UIViewController, NSFetchedResultsController
     }
 
     func tableView(_: UITableView, numberOfRowsInSection section: Int) -> Int {
+        guard let unwrappedPieces = pieces else {
+            return 1
+        }
         if sectionCount == 1 {
-            return pieces?.count ?? 0
+            return unwrappedPieces.count
         }
         if section < SelectedPiecesViewController.indexedSectionCount - 1 {
             return sectionSize
         } else {
             //that pesky last section
-            return pieces!.count - SelectedPiecesViewController.indexedSectionCount * sectionSize
+            return unwrappedPieces.count - SelectedPiecesViewController.indexedSectionCount * sectionSize
         }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Piece", for: indexPath) as! PieceTableViewCell
         let pieceIndex = indexPath.section * sectionSize + indexPath.row //works even if 1 section
-        let pieceEntry = pieces![pieceIndex]
-        cell.pieceTitle?.text = pieceEntry.title
-        cell.pieceArtist?.text = pieceEntry.artist
-        let id = pieceEntry.albumID
-        if let realID = id {
-            cell.artwork.image = AppDelegate.artworkFor(album: realID)
+        if let unwrappedPieces = pieces, unwrappedPieces.count > pieceIndex {
+            let pieceEntry = unwrappedPieces[pieceIndex]
+            cell.pieceTitle?.text = pieceEntry.title
+            cell.pieceArtist?.text = pieceEntry.artist
+            let id = pieceEntry.albumID
+            if let realID = id {
+                cell.artwork.image = AppDelegate.artworkFor(album: realID)
+            }
+        } else {
+            cell.pieceTitle?.text = "[no pieces]"
+            cell.pieceArtist?.text = "[no pieces]"
+            cell.artwork.image = AppDelegate.defaultImage
         }
         //Priority lowered on artwork height to prevent unsatisfiable constraint.
         if UIApplication.shared.preferredContentSizeCategory > .extraExtraLarge {

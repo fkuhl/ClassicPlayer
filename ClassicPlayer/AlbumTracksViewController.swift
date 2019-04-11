@@ -58,11 +58,13 @@ class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableV
         let predicate = MPMediaPropertyPredicate(value: albumID, forProperty: MPMediaItemPropertyAlbumPersistentID)
         query.filterPredicates = Set([ predicate ])
         trackData = []
-        for collection in query.collections! {
-            let possibleItem = collection.items.first
-            if let item = possibleItem {
-                //if item.assetURL != nil { trackData?.append(item) } //iTunes LPs have nil URLs!!
-                if item.isPlayable() { trackData?.append(item) } //iTunes LPs have nil URLs!!
+        if let unwrappedCollections = query.collections {
+            for collection in unwrappedCollections {
+                let possibleItem = collection.items.first
+                if let item = possibleItem {
+                    //if item.assetURL != nil { trackData?.append(item) } //iTunes LPs have nil URLs!!
+                    if item.isPlayable() { trackData?.append(item) } //iTunes LPs have nil URLs!!
+                }
             }
         }
         print("AlbumTracksVC loaded \(trackData?.count ?? -1) tracks")

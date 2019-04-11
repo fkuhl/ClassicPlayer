@@ -587,6 +587,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     /**
      Decode Media persistentID (UInt64) from hex string representation in CoreData.
+     
+     - Parameters:
+        - coreDataRepresentation: persistentID in CoreData form, i.e., as hex string
+     
+     - Returns:
+     UInt64, or 0 if decoding failure
     */
     class func decodeIDFrom(coreDataRepresentation: String) -> MPMediaEntityPersistentID {
         return UInt64(coreDataRepresentation, radix: 16) ?? 0

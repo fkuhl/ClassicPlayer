@@ -200,17 +200,20 @@ class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDa
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Album", for: indexPath) as! AlbumCell
-        let albumEntry = albums![indexPath.section * sectionSize + indexPath.row]
-        cell.albumTitle?.text = albumEntry.title
-        cell.composer?.text = albumEntry.composer ?? ""
-        cell.albumArtist?.text = albumEntry.artist
-        let yearText = albumEntry.year > 0 ? "\(albumEntry.year)" : "[n.d.]"
-        cell.year?.text = "\(yearText) • \(albumEntry.genre ?? "")"
-        //There may not have been an entry for track counts in the iTunes data
-        cell.trackCount?.text = (albumEntry.trackCount > 0) ? "tracks: \(albumEntry.trackCount)" : ""
-        let id = albumEntry.albumID
-        if let realID = id {
-            cell.artwork.image = AppDelegate.artworkFor(album: realID)
+        let cellIndex = indexPath.section * sectionSize + indexPath.row
+        if let unwrappedAlbums = albums, unwrappedAlbums.count > cellIndex {
+            let albumEntry = unwrappedAlbums[cellIndex]
+            cell.albumTitle?.text = albumEntry.title
+            cell.composer?.text = albumEntry.composer ?? ""
+            cell.albumArtist?.text = albumEntry.artist
+            let yearText = albumEntry.year > 0 ? "\(albumEntry.year)" : "[n.d.]"
+            cell.year?.text = "\(yearText) • \(albumEntry.genre ?? "")"
+            //There may not have been an entry for track counts in the iTunes data
+            cell.trackCount?.text = (albumEntry.trackCount > 0) ? "tracks: \(albumEntry.trackCount)" : ""
+            let id = albumEntry.albumID
+            if let realID = id {
+                cell.artwork.image = AppDelegate.artworkFor(album: realID)
+            }
         }
         //Priority lowered on artwork height to prevent unsatisfiable constraint.
         if UIApplication.shared.preferredContentSizeCategory > .extraExtraLarge {

@@ -61,14 +61,13 @@ class ArtistsViewController: UIViewController, UITableViewDelegate, UITableViewD
         artistObjects = []
         if let collections = query.collections {
             for collection in collections {
-                let possibleItem = collection.items.first
-                if let item = possibleItem {
-                    if isFiltering(), let artist = item.artist {
-                        if artist.localizedCaseInsensitiveContains(searchController.searchBar.text!) {
-                            artistObjects!.append(item)
+                if let firstItem = collection.items.first  {
+                    if isFiltering(), let artist = firstItem.artist, let searchText = searchController.searchBar.text {
+                        if artist.localizedCaseInsensitiveContains(searchText) {
+                            artistObjects!.append(firstItem)
                         }
                     } else {
-                        artistObjects!.append(item)
+                        artistObjects!.append(firstItem)
                     }
                 }
             }
@@ -85,27 +84,27 @@ class ArtistsViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     private func computeSections() {
-        guard artistObjects != nil else {
+        guard let unwrappedArtistObjects = artistObjects else {
             sectionCount = 1
             sectionSize = 0
             return
         }
         if presentAsOneSection() {
             sectionCount = 1
-            sectionSize = artistObjects!.count
+            sectionSize = unwrappedArtistObjects.count
             sectionTitles = []
             return
         }
-        if artistObjects!.count < ArtistsViewController.indexedSectionCount {
+        if unwrappedArtistObjects.count < ArtistsViewController.indexedSectionCount {
             sectionCount = 1
-            sectionSize = artistObjects!.count
+            sectionSize = unwrappedArtistObjects.count
             sectionTitles = []
         } else {
             sectionCount = ArtistsViewController.indexedSectionCount
-            sectionSize = artistObjects!.count / ArtistsViewController.indexedSectionCount
+            sectionSize = unwrappedArtistObjects.count / ArtistsViewController.indexedSectionCount
             sectionTitles = []
             for i in 0 ..< ArtistsViewController.indexedSectionCount {
-                let item = artistObjects![i * sectionSize]
+                let item = unwrappedArtistObjects[i * sectionSize]
                 //media lib returns artists anarthrously; make section titles correspond
                 let artist = removeArticle(from: (item.artist ?? ""))
                 let title = artist.prefix(2)
@@ -136,14 +135,22 @@ class ArtistsViewController: UIViewController, UITableViewDelegate, UITableViewD
             return sectionSize
         } else {
             //that pesky last section
-            return artistObjects!.count - ArtistsViewController.indexedSectionCount * sectionSize
+            if let unwrappedArtistObjects = artistObjects {
+                return unwrappedArtistObjects.count - ArtistsViewController.indexedSectionCount * sectionSize
+            } else {
+                return 0
+            }
+            
         }
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Artist", for: indexPath)
-        let artistEntry = artistObjects![indexPath.section * sectionSize + indexPath.row]
-        cell.textLabel?.text = artistEntry.artist
+        let cellIndex = indexPath.section * sectionSize + indexPath.row
+        if let unwrappedArtistObjects = artistObjects, unwrappedArtistObjects.count > cellIndex {
+            let artistEntry = artistObjects![cellIndex]
+            cell.textLabel?.text = artistEntry.artist
+        }
         return cell
     }
     
@@ -159,10 +166,13 @@ class ArtistsViewController: UIViewController, UITableViewDelegate, UITableViewD
             let secondViewController = segue.destination as! SelectedPiecesViewController
             if let selected = tableView?.indexPathForSelectedRow {
                 secondViewController.selectionField = "artistID"
-                let selectedArtist = artistObjects![selected.section * sectionSize + selected.row]
-                let artistID = selectedArtist.artistPersistentID
-                secondViewController.selectionValue = AppDelegate.encodeForCoreData(id: artistID)
-                secondViewController.displayTitle = selectedArtist.artist
+                let cellIndex = selected.section * sectionSize + selected.row
+                if let unwrappedArtistObjects = artistObjects, unwrappedArtistObjects.count > cellIndex {
+                    let selectedArtist = unwrappedArtistObjects[cellIndex]
+                    let artistID = selectedArtist.artistPersistentID
+                    secondViewController.selectionValue = AppDelegate.encodeForCoreData(id: artistID)
+                    secondViewController.displayTitle = selectedArtist.artist
+                }
             }
         }
     }
