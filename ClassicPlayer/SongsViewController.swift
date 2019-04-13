@@ -377,7 +377,7 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     private func mySetterID() -> String {
         return Bundle.main.bundleIdentifier! + ".SongsViewController."
-            + (swipedSong?.persistentID ?? "")
+            /*+ (swipedSong?.persistentID ?? "")*/
     }
 
     // MARK: - MusicObserverDelegate
