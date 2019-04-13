@@ -47,8 +47,11 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        playlistName?.text = playlist!.name
-        descriptionText?.text = playlist!.descriptionText
+        guard let unwrappedPlaylist = playlist else {
+            return
+        }
+        playlistName?.text = unwrappedPlaylist.name
+        descriptionText?.text = unwrappedPlaylist.descriptionText
         let id = playlist!.representativeItem?.albumPersistentID
         if let realID = id {
             //Someday we might elaborate the displayed artwork
@@ -132,12 +135,14 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
             cell.indicator.animationImages = nil
             cell.indicator.image = appDelegate.audioNotCurrent
         }
-        let trackEntry = trackData![indexPath.row]
-        let id = trackEntry.albumPersistentID
-        cell.artwork.image = AppDelegate.artworkFor(album: id)
-        cell.title.text = trackEntry.title
-        cell.artist.text = trackEntry.artist
-        cell.duration.text = AppDelegate.durationAsString(trackEntry.playbackDuration)
+        if let unwrappedTrackData = trackData, unwrappedTrackData.count > indexPath.row {
+            let trackEntry = unwrappedTrackData[indexPath.row]
+            let id = trackEntry.albumPersistentID
+            cell.artwork.image = AppDelegate.artworkFor(album: id)
+            cell.title.text = trackEntry.title
+            cell.artist.text = trackEntry.artist
+            cell.duration.text = AppDelegate.durationAsString(trackEntry.playbackDuration)
+        }
         //Priority lowered on artwork height to prevent unsatisfiable constraint.
         if UIApplication.shared.preferredContentSizeCategory > .extraExtraLarge {
             cell.artAndLabelsStack.axis = .vertical

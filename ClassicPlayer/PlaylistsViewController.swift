@@ -97,12 +97,14 @@ class PlaylistsViewController: UIViewController, UITableViewDelegate, UITableVie
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Playlist", for: indexPath) as! PlaylistTableViewCell
-        let playlistEntry = playlists![indexPath.row]
-        cell.playlistName.text = playlistEntry.name
-        let id = playlistEntry.representativeItem?.albumPersistentID
-        if let realID = id {
-            //Someday we might elaborate the displayed artwork
-            cell.artwork.image = AppDelegate.artworkFor(album: realID)
+        if let unwrappedPlaylists = playlists, unwrappedPlaylists.count > indexPath.row {
+            let playlistEntry = unwrappedPlaylists[indexPath.row]
+            cell.playlistName.text = playlistEntry.name
+            let id = playlistEntry.representativeItem?.albumPersistentID
+            if let realID = id {
+                //Someday we might elaborate the displayed artwork
+                cell.artwork.image = AppDelegate.artworkFor(album: realID)
+            }
         }
         //Priority lowered on artwork height to prevent unsatisfiable constraint.
         if UIApplication.shared.preferredContentSizeCategory > .extraExtraLarge {
@@ -123,8 +125,9 @@ class PlaylistsViewController: UIViewController, UITableViewDelegate, UITableVie
         }
         if segue.identifier == "PlaylistSelected" {
             let secondViewController = segue.destination as! PlaylistViewController
-            if let selected = tableView?.indexPathForSelectedRow {
-                secondViewController.playlist = playlists![selected.row]
+            if let selected = tableView?.indexPathForSelectedRow, let unwrappedPlaylists = playlists,
+                unwrappedPlaylists.count > selected.row {
+                secondViewController.playlist = unwrappedPlaylists[selected.row]
             }
         }
     }

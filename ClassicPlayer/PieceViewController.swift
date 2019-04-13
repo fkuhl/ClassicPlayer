@@ -77,9 +77,9 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
         if musicPlayerPlaybackState() == .playing {
             musicViewController?.nowPlayingItemDidChange(to: MPMusicPlayerController.applicationMusicPlayer.nowPlayingItem)
             musicObserver.start(on: self)
-            if appDelegate.player.setterID == mySetterID() {
-                scrollToCurrent()
-            }
+//            if appDelegate.player.setterID == mySetterID() {
+//                scrollToCurrent()
+//            }
         } else {
             installPlayerForAllMovements()   //fresh player
         }

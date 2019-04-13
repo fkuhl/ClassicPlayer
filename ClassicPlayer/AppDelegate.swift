@@ -57,7 +57,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     // MARK: - AVPlayer
     
-    let player = Player()
+    //let player = Player()
     let musicPlayer = MusicPlayer()
 
     // MARK: - App delegate
