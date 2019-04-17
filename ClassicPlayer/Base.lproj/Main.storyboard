@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="PkH-rl-I0X">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="PkH-rl-I0X">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -1048,10 +1048,10 @@
                                 <color key="highlightedColor" name="IconBeige"/>
                             </label>
                             <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="2" translatesAutoresizingMaskIntoConstraints="NO" id="Kj3-P7-Kcr">
-                                <rect key="frame" x="8" y="46" width="359" height="46"/>
+                                <rect key="frame" x="8" y="62" width="359" height="30"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" horizontalCompressionResistancePriority="751" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nWv-Vd-Bx4">
-                                        <rect key="frame" x="0.0" y="0.0" width="23" height="46"/>
+                                        <rect key="frame" x="0.0" y="3.5" width="23" height="23"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="23" id="4nE-By-p8v"/>
                                         </constraints>
@@ -1061,7 +1061,7 @@
                                         </connections>
                                     </button>
                                     <view contentMode="scaleToFill" horizontalHuggingPriority="500" horizontalCompressionResistancePriority="800" translatesAutoresizingMaskIntoConstraints="NO" id="yrw-at-WiE" userLabel="spacer">
-                                        <rect key="frame" x="25" y="18" width="10" height="10"/>
+                                        <rect key="frame" x="25" y="10" width="10" height="10"/>
                                         <color key="backgroundColor" name="DarkBlue"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="10" id="Rc7-dJ-skn"/>
@@ -1069,7 +1069,7 @@
                                         </constraints>
                                     </view>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="252" verticalHuggingPriority="251" horizontalCompressionResistancePriority="751" text="00.00" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fi5-33-Ziw">
-                                        <rect key="frame" x="37" y="14" width="44" height="18"/>
+                                        <rect key="frame" x="37" y="6" width="44" height="18"/>
                                         <constraints>
                                             <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="44" id="yAj-cI-3TI"/>
                                         </constraints>
@@ -1078,14 +1078,14 @@
                                         <color key="highlightedColor" name="IconBeige"/>
                                     </label>
                                     <slider opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="2Zi-5s-gVz">
-                                        <rect key="frame" x="81" y="8" width="197" height="31"/>
+                                        <rect key="frame" x="81" y="0.0" width="197" height="31"/>
                                         <color key="thumbTintColor" name="IconBeige"/>
                                         <connections>
                                             <action selector="sliderValueChanged:" destination="mPp-Cg-Agn" eventType="valueChanged" id="7jZ-Jn-eoQ"/>
                                         </connections>
                                     </slider>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="252" verticalHuggingPriority="251" horizontalCompressionResistancePriority="751" text="00.00" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="b5o-sr-v1T">
-                                        <rect key="frame" x="278" y="14" width="44" height="18"/>
+                                        <rect key="frame" x="278" y="6" width="44" height="18"/>
                                         <constraints>
                                             <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="44" id="ydA-KJ-glB"/>
                                         </constraints>
@@ -1094,7 +1094,7 @@
                                         <color key="highlightedColor" name="IconBeige"/>
                                     </label>
                                     <view contentMode="scaleToFill" horizontalHuggingPriority="500" horizontalCompressionResistancePriority="800" translatesAutoresizingMaskIntoConstraints="NO" id="hOx-Yj-tdf" userLabel="spacer">
-                                        <rect key="frame" x="324" y="18" width="10" height="10"/>
+                                        <rect key="frame" x="324" y="10" width="10" height="10"/>
                                         <color key="backgroundColor" name="DarkBlue"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="10" id="88n-DS-aYD"/>
@@ -1102,7 +1102,7 @@
                                         </constraints>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lfh-v2-AYj" customClass="AVRoutePickerView">
-                                        <rect key="frame" x="336" y="11.5" width="23" height="23"/>
+                                        <rect key="frame" x="336" y="3.5" width="23" height="23"/>
                                         <color key="backgroundColor" name="DarkBlue"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="23" id="5B3-dd-UuX"/>
@@ -1426,7 +1426,7 @@
                                 </connections>
                             </containerView>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalSpacing" alignment="top" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="JHc-lx-1Ee">
-                                <rect key="frame" x="16" y="36" width="343" height="305.5"/>
+                                <rect key="frame" x="16" y="36" width="343" height="262.5"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" alignment="top" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="bur-QW-kq5" userLabel="Identity">
                                         <rect key="frame" x="0.0" y="0.0" width="270.5" height="122.5"/>
@@ -1582,8 +1582,8 @@
                                             </button>
                                         </subviews>
                                     </stackView>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="IhD-Rb-qXR">
-                                        <rect key="frame" x="0.0" y="278.5" width="85" height="27"/>
+                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="IhD-Rb-qXR">
+                                        <rect key="frame" x="0.0" y="262.5" width="85" height="0.0"/>
                                         <fontDescription key="fontDescription" style="UICTFontTextStyleCaption1"/>
                                         <state key="normal" title="Enable artwork"/>
                                         <connections>
@@ -1656,7 +1656,7 @@
         <image name="1656-piano" width="23" height="19"/>
         <image name="1706-music-note" width="19" height="23"/>
         <image name="info-icon" width="83.5" height="83.5"/>
-        <image name="play" width="46" height="46"/>
+        <image name="play" width="23" height="23"/>
         <namedColor name="DarkBlue">
             <color red="0.074509803921568626" green="0.14509803921568629" blue="0.4823529411764706" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
@@ -1669,7 +1669,7 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="ffS-0k-LzH"/>
-        <segue reference="Lpm-yj-VvR"/>
+        <segue reference="fgM-jw-pph"/>
         <segue reference="ZtY-Y8-VAT"/>
     </inferredMetricsTieBreakers>
     <color key="tintColor" name="TheBlue"/>
