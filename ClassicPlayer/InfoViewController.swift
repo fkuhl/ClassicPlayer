@@ -180,6 +180,7 @@ class InfoViewController: UIViewController, ProgressDelegate, MFMailComposeViewC
         self.dismiss(animated: true, completion: nil)
     }
 
+    //In build 21, this function's control is hidden, because artwork is always enabled.
     @IBAction func enableArtwork(_ sender: UIButton) {
         UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
     }

@@ -532,9 +532,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
      with iTunes LPs.
      */
     static func artworkFor(album: MPMediaEntityPersistentID) -> UIImage {
-        if !UserDefaults.standard.bool(forKey: displayArtworkKey) {
-            return AppDelegate.defaultImage
-        }
+        //In build 21, artwork is always enabled!
+//        if !UserDefaults.standard.bool(forKey: displayArtworkKey) {
+//            return AppDelegate.defaultImage
+//        }
         let query = MPMediaQuery.albums()
         let predicate = MPMediaPropertyPredicate(value: album, forProperty: MPMediaItemPropertyAlbumPersistentID)
         query.filterPredicates = Set([ predicate ])

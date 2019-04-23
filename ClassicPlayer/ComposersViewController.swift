@@ -96,7 +96,7 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        checkArtworkEnabled()
+        //checkArtworkEnabled()       In build 21, artwork is always enabled!
         checkMediaLibraryAccess()
     }
     
