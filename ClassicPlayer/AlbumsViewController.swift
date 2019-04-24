@@ -35,6 +35,7 @@ class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     private var currentSort: AlbumSorts = .title
     weak var musicViewController: MusicViewController?
     private var musicObserver = MusicObserver()
+    private var tableWasLoadedBySort = false
 
     // MARK: - UIViewController
 
@@ -64,7 +65,11 @@ class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         //NSLog("AlbumsVC.VWA")
         //This load is fast enough there's no reason not to do it every time,
         //thus dealing with changes to the library since last appearance
-        loadAlbumsSortedBy(currentSort)
+        if !tableWasLoadedBySort {
+            loadAlbumsSortedBy(currentSort)
+        } else {
+            tableWasLoadedBySort = false
+        }
      }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -172,8 +177,10 @@ class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     func userDidChoose(sort: AlbumSorts) {
         self.dismiss(animated: true) { }
-        //sorting and reload will be done in VWA
+        //sorting and reload will be done in VWA on iPhone (but not iPad)
         currentSort = sort
+        loadAlbumsSortedBy(currentSort)
+        tableWasLoadedBySort = true
     }
     
     // MARK: - UITableViewDataSource

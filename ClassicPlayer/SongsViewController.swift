@@ -26,6 +26,7 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     private var sectionSize = 0
     private var sectionTitles: [String]?
     private var currentSort: SongSorts = .title
+    private var tableWasLoadedBySort = false
 
     // MARK: - UIViewController
 
@@ -45,7 +46,6 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        loadSongsSortedBy(currentSort)
         if musicPlayerPlaybackState() == .playing {
             musicViewController?.nowPlayingItemDidChange(to: MPMusicPlayerController.applicationMusicPlayer.nowPlayingItem)
             musicObserver.start(on: self)
@@ -55,7 +55,12 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
         } else {
             installPlayer(forIndex: 0, paused: true)
         }
-        trackTable.reloadData()
+        if !tableWasLoadedBySort {
+            loadSongsSortedBy(currentSort)
+            trackTable.reloadData()
+        } else {
+            tableWasLoadedBySort = false
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -195,6 +200,9 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
         self.dismiss(animated: true) { }
         //sorting and reload will be done in VWA
         currentSort = sort
+        loadSongsSortedBy(currentSort)
+        trackTable.reloadData()
+        tableWasLoadedBySort = true
     }
 
     // MARK: - UITableViewDataSource
