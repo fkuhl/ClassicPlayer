@@ -40,6 +40,7 @@
 		27CC6FB720337DEB00614150 /* ArtistsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27CC6FB620337DEB00614150 /* ArtistsViewController.swift */; };
 		27CFA1582034D35D00D6F613 /* PlaylistsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27CFA1572034D35D00D6F613 /* PlaylistsViewController.swift */; };
 		27D1FBB422C101AA0017EA61 /* Composers.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 27D1FBB322C101AA0017EA61 /* Composers.storyboard */; };
+		27D1FBB722C1045E0017EA61 /* Albums.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 27D1FBB622C1045E0017EA61 /* Albums.storyboard */; };
 		27D61043203E1EF6001075BF /* SongTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27D61042203E1EF6001075BF /* SongTableViewCell.swift */; };
 		27DAEBA020264B3B00F8D5DA /* SongSortViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27DAEB9F20264B3B00F8D5DA /* SongSortViewController.swift */; };
 		27DAEBA220264BE700F8D5DA /* SongsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27DAEBA120264BE700F8D5DA /* SongsViewController.swift */; };
@@ -97,6 +98,7 @@
 		27CC6FB620337DEB00614150 /* ArtistsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArtistsViewController.swift; sourceTree = "<group>"; };
 		27CFA1572034D35D00D6F613 /* PlaylistsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlaylistsViewController.swift; sourceTree = "<group>"; };
 		27D1FBB322C101AA0017EA61 /* Composers.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Composers.storyboard; sourceTree = "<group>"; };
+		27D1FBB622C1045E0017EA61 /* Albums.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Albums.storyboard; sourceTree = "<group>"; };
 		27D61042203E1EF6001075BF /* SongTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongTableViewCell.swift; sourceTree = "<group>"; };
 		27DAEB9F20264B3B00F8D5DA /* SongSortViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SongSortViewController.swift; sourceTree = "<group>"; };
 		27DAEBA120264BE700F8D5DA /* SongsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SongsViewController.swift; sourceTree = "<group>"; };
@@ -153,9 +155,7 @@
 		2733A60A1FE5FDE000E1EE77 /* ClassicPlayer */ = {
 			isa = PBXGroup;
 			children = (
-				277B21E0202258F20052DF42 /* AlbumSortViewController.swift */,
-				270B337820192365007D1E35 /* AlbumsViewController.swift */,
-				27188EAA201D238B00CB5427 /* AlbumTracksViewController.swift */,
+				27D1FBB522C103E40017EA61 /* Albums */,
 				2753F55C21ED3949009891B9 /* Anarthrous.swift */,
 				2733A60B1FE5FDE000E1EE77 /* AppDelegate.swift */,
 				27CC6FB620337DEB00614150 /* ArtistsViewController.swift */,
@@ -213,6 +213,17 @@
 				27FCDED71FF2B0BB001D81CE /* SelectedPiecesViewController.swift */,
 			);
 			path = Composers;
+			sourceTree = "<group>";
+		};
+		27D1FBB522C103E40017EA61 /* Albums */ = {
+			isa = PBXGroup;
+			children = (
+				27D1FBB622C1045E0017EA61 /* Albums.storyboard */,
+				27188EAA201D238B00CB5427 /* AlbumTracksViewController.swift */,
+				277B21E0202258F20052DF42 /* AlbumSortViewController.swift */,
+				270B337820192365007D1E35 /* AlbumsViewController.swift */,
+			);
+			path = Albums;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -302,6 +313,7 @@
 			files = (
 				271D2E23202CD7E4005FE857 /* Settings.bundle in Resources */,
 				27D1FBB422C101AA0017EA61 /* Composers.storyboard in Resources */,
+				27D1FBB722C1045E0017EA61 /* Albums.storyboard in Resources */,
 				2733A61B1FE5FDE000E1EE77 /* LaunchScreen.storyboard in Resources */,
 				2733A6181FE5FDE000E1EE77 /* Assets.xcassets in Resources */,
 				2733A6161FE5FDE000E1EE77 /* Main.storyboard in Resources */,
