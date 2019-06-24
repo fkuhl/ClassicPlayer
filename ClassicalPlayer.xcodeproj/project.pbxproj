@@ -202,7 +202,6 @@
 				2733A6171FE5FDE000E1EE77 /* Assets.xcassets */,
 				2733A60D1FE5FDE000E1EE77 /* ClassicalPlayer.xcdatamodeld */,
 				27D1FBB222C101340017EA61 /* Composers */,
-				277CD96921A730DE00473897 /* IndexObserver.swift */,
 				2733A61C1FE5FDE000E1EE77 /* Info.plist */,
 				27AD732722C168DA00A9F83F /* Info */,
 				2733A6191FE5FDE000E1EE77 /* LaunchScreen.storyboard */,
@@ -210,11 +209,7 @@
 				2733A6141FE5FDE000E1EE77 /* Main.storyboard */,
 				274404A02103ABF1004E0152 /* MovementParsing.swift */,
 				27AD732A22C16D8000A9F83F /* Music */,
-				271A3F872205F1ED0079D1C9 /* MusicObserver.swift */,
-				27047D0422021B0A0064270B /* MusicPlayer.swift */,
-				2728D4C121877C2B005DB467 /* Player.swift */,
 				27278C7E22C10A14005BC47F /* Playlists */,
-				277CD96721A72ABF00473897 /* RateObserver.swift */,
 				2733A6301FE5FE8600E1EE77 /* README.md */,
 				27BC456221C2BAA900928490 /* ReportingStructures.swift */,
 				271D2E22202CD7E4005FE857 /* Settings.bundle */,
@@ -253,8 +248,13 @@
 		27AD732A22C16D8000A9F83F /* Music */ = {
 			isa = PBXGroup;
 			children = (
+				277CD96921A730DE00473897 /* IndexObserver.swift */,
+				2728D4C121877C2B005DB467 /* Player.swift */,
+				27047D0422021B0A0064270B /* MusicPlayer.swift */,
 				27AD732E22C16E8200A9F83F /* Music.storyboard */,
 				275A425021FA123C00212297 /* MusicViewController.swift */,
+				271A3F872205F1ED0079D1C9 /* MusicObserver.swift */,
+				277CD96721A72ABF00473897 /* RateObserver.swift */,
 			);
 			path = Music;
 			sourceTree = "<group>";
