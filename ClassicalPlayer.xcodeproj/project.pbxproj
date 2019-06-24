@@ -16,6 +16,7 @@
 		271D2E23202CD7E4005FE857 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 271D2E22202CD7E4005FE857 /* Settings.bundle */; };
 		2721823C21B8927B0099B808 /* LibraryReporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2721823B21B8927B0099B808 /* LibraryReporter.swift */; };
 		27278C7622C10648005BC47F /* Artists.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 27278C7522C10648005BC47F /* Artists.storyboard */; };
+		27278C7A22C10875005BC47F /* Songs.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 27278C7922C10875005BC47F /* Songs.storyboard */; };
 		2728D4C221877C2B005DB467 /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2728D4C121877C2B005DB467 /* Player.swift */; };
 		2733A60C1FE5FDE000E1EE77 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2733A60B1FE5FDE000E1EE77 /* AppDelegate.swift */; };
 		2733A60F1FE5FDE000E1EE77 /* ClassicalPlayer.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2733A60D1FE5FDE000E1EE77 /* ClassicalPlayer.xcdatamodeld */; };
@@ -70,6 +71,7 @@
 		271D2E22202CD7E4005FE857 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		2721823B21B8927B0099B808 /* LibraryReporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryReporter.swift; sourceTree = "<group>"; };
 		27278C7522C10648005BC47F /* Artists.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Artists.storyboard; sourceTree = "<group>"; };
+		27278C7922C10875005BC47F /* Songs.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Songs.storyboard; sourceTree = "<group>"; };
 		2728D4C121877C2B005DB467 /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
 		2733A6081FE5FDE000E1EE77 /* ClassicalPlayer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClassicalPlayer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2733A60B1FE5FDE000E1EE77 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -138,6 +140,17 @@
 			path = Artists;
 			sourceTree = "<group>";
 		};
+		27278C7822C107A8005BC47F /* Songs */ = {
+			isa = PBXGroup;
+			children = (
+				27278C7922C10875005BC47F /* Songs.storyboard */,
+				27D61042203E1EF6001075BF /* SongTableViewCell.swift */,
+				27DAEBA120264BE700F8D5DA /* SongsViewController.swift */,
+				27DAEB9F20264B3B00F8D5DA /* SongSortViewController.swift */,
+			);
+			path = Songs;
+			sourceTree = "<group>";
+		};
 		2733A5FF1FE5FDE000E1EE77 = {
 			isa = PBXGroup;
 			children = (
@@ -190,9 +203,7 @@
 				2733A6301FE5FE8600E1EE77 /* README.md */,
 				27BC456221C2BAA900928490 /* ReportingStructures.swift */,
 				271D2E22202CD7E4005FE857 /* Settings.bundle */,
-				27DAEB9F20264B3B00F8D5DA /* SongSortViewController.swift */,
-				27DAEBA120264BE700F8D5DA /* SongsViewController.swift */,
-				27D61042203E1EF6001075BF /* SongTableViewCell.swift */,
+				27278C7822C107A8005BC47F /* Songs */,
 			);
 			path = ClassicPlayer;
 			sourceTree = "<group>";
@@ -323,6 +334,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				271D2E23202CD7E4005FE857 /* Settings.bundle in Resources */,
+				27278C7A22C10875005BC47F /* Songs.storyboard in Resources */,
 				27D1FBB422C101AA0017EA61 /* Composers.storyboard in Resources */,
 				27D1FBB722C1045E0017EA61 /* Albums.storyboard in Resources */,
 				27278C7622C10648005BC47F /* Artists.storyboard in Resources */,
