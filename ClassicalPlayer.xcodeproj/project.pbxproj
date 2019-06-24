@@ -205,13 +205,12 @@
 				2733A61C1FE5FDE000E1EE77 /* Info.plist */,
 				27AD732722C168DA00A9F83F /* Info */,
 				2733A6191FE5FDE000E1EE77 /* LaunchScreen.storyboard */,
-				2721823B21B8927B0099B808 /* LibraryReporter.swift */,
 				2733A6141FE5FDE000E1EE77 /* Main.storyboard */,
 				274404A02103ABF1004E0152 /* MovementParsing.swift */,
 				27AD732A22C16D8000A9F83F /* Music */,
 				27278C7E22C10A14005BC47F /* Playlists */,
 				2733A6301FE5FE8600E1EE77 /* README.md */,
-				27BC456221C2BAA900928490 /* ReportingStructures.swift */,
+				27AD733022C1726000A9F83F /* Reporting */,
 				271D2E22202CD7E4005FE857 /* Settings.bundle */,
 				27278C7822C107A8005BC47F /* Songs */,
 			);
@@ -257,6 +256,15 @@
 				277CD96721A72ABF00473897 /* RateObserver.swift */,
 			);
 			path = Music;
+			sourceTree = "<group>";
+		};
+		27AD733022C1726000A9F83F /* Reporting */ = {
+			isa = PBXGroup;
+			children = (
+				2721823B21B8927B0099B808 /* LibraryReporter.swift */,
+				27BC456221C2BAA900928490 /* ReportingStructures.swift */,
+			);
+			path = Reporting;
 			sourceTree = "<group>";
 		};
 		27D1FBB222C101340017EA61 /* Composers */ = {
