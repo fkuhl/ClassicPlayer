@@ -15,6 +15,7 @@
 		271A3F882205F1ED0079D1C9 /* MusicObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 271A3F872205F1ED0079D1C9 /* MusicObserver.swift */; };
 		271D2E23202CD7E4005FE857 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 271D2E22202CD7E4005FE857 /* Settings.bundle */; };
 		2721823C21B8927B0099B808 /* LibraryReporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2721823B21B8927B0099B808 /* LibraryReporter.swift */; };
+		27278C7622C10648005BC47F /* Artists.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 27278C7522C10648005BC47F /* Artists.storyboard */; };
 		2728D4C221877C2B005DB467 /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2728D4C121877C2B005DB467 /* Player.swift */; };
 		2733A60C1FE5FDE000E1EE77 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2733A60B1FE5FDE000E1EE77 /* AppDelegate.swift */; };
 		2733A60F1FE5FDE000E1EE77 /* ClassicalPlayer.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2733A60D1FE5FDE000E1EE77 /* ClassicalPlayer.xcdatamodeld */; };
@@ -68,6 +69,7 @@
 		271A3F872205F1ED0079D1C9 /* MusicObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicObserver.swift; sourceTree = "<group>"; };
 		271D2E22202CD7E4005FE857 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		2721823B21B8927B0099B808 /* LibraryReporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryReporter.swift; sourceTree = "<group>"; };
+		27278C7522C10648005BC47F /* Artists.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Artists.storyboard; sourceTree = "<group>"; };
 		2728D4C121877C2B005DB467 /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
 		2733A6081FE5FDE000E1EE77 /* ClassicalPlayer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClassicalPlayer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2733A60B1FE5FDE000E1EE77 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -127,6 +129,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		27278C7422C105F8005BC47F /* Artists */ = {
+			isa = PBXGroup;
+			children = (
+				27278C7522C10648005BC47F /* Artists.storyboard */,
+				27CC6FB620337DEB00614150 /* ArtistsViewController.swift */,
+			);
+			path = Artists;
+			sourceTree = "<group>";
+		};
 		2733A5FF1FE5FDE000E1EE77 = {
 			isa = PBXGroup;
 			children = (
@@ -156,9 +167,9 @@
 			isa = PBXGroup;
 			children = (
 				27D1FBB522C103E40017EA61 /* Albums */,
+				27278C7422C105F8005BC47F /* Artists */,
 				2753F55C21ED3949009891B9 /* Anarthrous.swift */,
 				2733A60B1FE5FDE000E1EE77 /* AppDelegate.swift */,
-				27CC6FB620337DEB00614150 /* ArtistsViewController.swift */,
 				2733A6171FE5FDE000E1EE77 /* Assets.xcassets */,
 				2733A60D1FE5FDE000E1EE77 /* ClassicalPlayer.xcdatamodeld */,
 				27D1FBB222C101340017EA61 /* Composers */,
@@ -314,6 +325,7 @@
 				271D2E23202CD7E4005FE857 /* Settings.bundle in Resources */,
 				27D1FBB422C101AA0017EA61 /* Composers.storyboard in Resources */,
 				27D1FBB722C1045E0017EA61 /* Albums.storyboard in Resources */,
+				27278C7622C10648005BC47F /* Artists.storyboard in Resources */,
 				2733A61B1FE5FDE000E1EE77 /* LaunchScreen.storyboard in Resources */,
 				2733A6181FE5FDE000E1EE77 /* Assets.xcassets in Resources */,
 				2733A6161FE5FDE000E1EE77 /* Main.storyboard in Resources */,

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14810.12" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="nfY-Pk-VTT">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14766.15"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Artists-->
+        <scene sceneID="pdJ-Ij-9En">
+            <objects>
+                <viewController id="nHo-oZ-P6U" customClass="ArtistsViewController" customModule="ClassicalPlayer" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="yi9-4V-12a">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="PUS-4I-22a" userLabel="PlayerContainer View">
+                                <rect key="frame" x="0.0" y="762" width="414" height="100"/>
+                                <color key="backgroundColor" xcode11CocoaTouchSystemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="100" id="3e9-X5-EzJ"/>
+                                </constraints>
+                                <connections>
+                                    <segue destination="pnl-13-AxX" kind="embed" identifier="PlayTracks" id="kJn-OS-qTp"/>
+                                </connections>
+                            </containerView>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="nVm-Np-mEQ">
+                                <rect key="frame" x="0.0" y="140" width="414" height="614"/>
+                                <color key="backgroundColor" xcode11CocoaTouchSystemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                                <color key="sectionIndexBackgroundColor" xcode11CocoaTouchSystemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                                <prototypes>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="Artist" textLabel="LyJ-lu-CN8" style="IBUITableViewCellStyleDefault" id="iLv-mL-lCG">
+                                        <rect key="frame" x="0.0" y="28" width="414" height="43.5"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="iLv-mL-lCG" id="hJO-SF-KCs">
+                                            <rect key="frame" x="0.0" y="0.0" width="414" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="LyJ-lu-CN8">
+                                                    <rect key="frame" x="20" y="0.0" width="374" height="43.5"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <fontDescription key="fontDescription" style="UICTFontTextStyleCallout"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                        <connections>
+                                            <segue destination="McI-BR-dlN" kind="show" identifier="ArtistSelected" id="ZtY-Y8-VAT"/>
+                                        </connections>
+                                    </tableViewCell>
+                                </prototypes>
+                            </tableView>
+                        </subviews>
+                        <color key="backgroundColor" xcode11CocoaTouchSystemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <constraints>
+                            <constraint firstItem="PUS-4I-22a" firstAttribute="top" secondItem="nVm-Np-mEQ" secondAttribute="bottom" constant="8" id="68r-yt-FUC"/>
+                            <constraint firstItem="nVm-Np-mEQ" firstAttribute="top" secondItem="i1X-vV-JiZ" secondAttribute="top" id="OuZ-by-238"/>
+                            <constraint firstItem="i1X-vV-JiZ" firstAttribute="trailing" secondItem="nVm-Np-mEQ" secondAttribute="trailing" id="WSc-Mc-Ef2"/>
+                            <constraint firstItem="PUS-4I-22a" firstAttribute="trailing" secondItem="i1X-vV-JiZ" secondAttribute="trailing" id="ckn-Yu-fSa"/>
+                            <constraint firstItem="PUS-4I-22a" firstAttribute="bottom" secondItem="i1X-vV-JiZ" secondAttribute="bottom" id="ix7-Z6-JFR"/>
+                            <constraint firstItem="nVm-Np-mEQ" firstAttribute="leading" secondItem="i1X-vV-JiZ" secondAttribute="leading" id="lqd-9y-6NA"/>
+                            <constraint firstItem="PUS-4I-22a" firstAttribute="leading" secondItem="i1X-vV-JiZ" secondAttribute="leading" id="veY-hB-xbw"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="i1X-vV-JiZ"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="Artists" id="EGl-JO-29J"/>
+                    <connections>
+                        <outlet property="playerViewHeight" destination="3e9-X5-EzJ" id="q2G-X1-WKo"/>
+                        <outlet property="tableView" destination="nVm-Np-mEQ" id="f4j-Vi-2Yv"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="8Qn-jl-Pz7" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-3117" y="-339"/>
+        </scene>
+        <!--Artists-->
+        <scene sceneID="N3G-q0-ILd">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="nfY-Pk-VTT" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Artists" image="1656-piano" landscapeImage="1656-piano" selectedImage="1656-piano" id="TOT-2A-Rrh"/>
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" largeTitles="YES" id="9Aa-Hy-W3F">
+                        <rect key="frame" x="0.0" y="44" width="414" height="96"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="nHo-oZ-P6U" kind="relationship" relationship="rootViewController" id="h0d-5d-X1K"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="RQA-pk-g8l" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-3834.7826086956525" y="-339.13043478260875"/>
+        </scene>
+        <!--Pieces from Composer-->
+        <scene sceneID="PLG-OI-ZSz">
+            <objects>
+                <viewControllerPlaceholder storyboardIdentifier="Pieces from Composer" storyboardName="Composers" referencedIdentifier="Pieces from Composer" id="McI-BR-dlN" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Y7t-Sq-WhK" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-2343" y="-2538"/>
+        </scene>
+        <!--UIViewController-mPp-Cg-Agn-->
+        <scene sceneID="Ea0-7A-lVI">
+            <objects>
+                <viewControllerPlaceholder storyboardIdentifier="UIViewController-mPp-Cg-Agn" storyboardName="Main" referencedIdentifier="UIViewController-mPp-Cg-Agn" id="pnl-13-AxX" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="aA6-aQ-Fnn" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-666" y="-2310"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="1656-piano" width="23" height="19"/>
+    </resources>
+</document>
