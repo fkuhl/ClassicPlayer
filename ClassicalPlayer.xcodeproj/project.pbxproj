@@ -17,6 +17,7 @@
 		2721823C21B8927B0099B808 /* LibraryReporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2721823B21B8927B0099B808 /* LibraryReporter.swift */; };
 		27278C7622C10648005BC47F /* Artists.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 27278C7522C10648005BC47F /* Artists.storyboard */; };
 		27278C7A22C10875005BC47F /* Songs.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 27278C7922C10875005BC47F /* Songs.storyboard */; };
+		27278C7D22C109FF005BC47F /* Playlists.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 27278C7B22C109FF005BC47F /* Playlists.storyboard */; };
 		2728D4C221877C2B005DB467 /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2728D4C121877C2B005DB467 /* Player.swift */; };
 		2733A60C1FE5FDE000E1EE77 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2733A60B1FE5FDE000E1EE77 /* AppDelegate.swift */; };
 		2733A60F1FE5FDE000E1EE77 /* ClassicalPlayer.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2733A60D1FE5FDE000E1EE77 /* ClassicalPlayer.xcdatamodeld */; };
@@ -72,6 +73,7 @@
 		2721823B21B8927B0099B808 /* LibraryReporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryReporter.swift; sourceTree = "<group>"; };
 		27278C7522C10648005BC47F /* Artists.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Artists.storyboard; sourceTree = "<group>"; };
 		27278C7922C10875005BC47F /* Songs.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Songs.storyboard; sourceTree = "<group>"; };
+		27278C7C22C109FF005BC47F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = ClassicPlayer/Base.lproj/Playlists.storyboard; sourceTree = "<group>"; };
 		2728D4C121877C2B005DB467 /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
 		2733A6081FE5FDE000E1EE77 /* ClassicalPlayer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClassicalPlayer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2733A60B1FE5FDE000E1EE77 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -151,6 +153,16 @@
 			path = Songs;
 			sourceTree = "<group>";
 		};
+		27278C7E22C10A14005BC47F /* Playlists */ = {
+			isa = PBXGroup;
+			children = (
+				27278C7B22C109FF005BC47F /* Playlists.storyboard */,
+				27CFA1572034D35D00D6F613 /* PlaylistsViewController.swift */,
+				270CA5D1203B7D7100325862 /* PlaylistViewController.swift */,
+			);
+			path = Playlists;
+			sourceTree = "<group>";
+		};
 		2733A5FF1FE5FDE000E1EE77 = {
 			isa = PBXGroup;
 			children = (
@@ -197,8 +209,7 @@
 				27047D0422021B0A0064270B /* MusicPlayer.swift */,
 				275A425021FA123C00212297 /* MusicViewController.swift */,
 				2728D4C121877C2B005DB467 /* Player.swift */,
-				27CFA1572034D35D00D6F613 /* PlaylistsViewController.swift */,
-				270CA5D1203B7D7100325862 /* PlaylistViewController.swift */,
+				27278C7E22C10A14005BC47F /* Playlists */,
 				277CD96721A72ABF00473897 /* RateObserver.swift */,
 				2733A6301FE5FE8600E1EE77 /* README.md */,
 				27BC456221C2BAA900928490 /* ReportingStructures.swift */,
@@ -339,6 +350,7 @@
 				27D1FBB722C1045E0017EA61 /* Albums.storyboard in Resources */,
 				27278C7622C10648005BC47F /* Artists.storyboard in Resources */,
 				2733A61B1FE5FDE000E1EE77 /* LaunchScreen.storyboard in Resources */,
+				27278C7D22C109FF005BC47F /* Playlists.storyboard in Resources */,
 				2733A6181FE5FDE000E1EE77 /* Assets.xcassets in Resources */,
 				2733A6161FE5FDE000E1EE77 /* Main.storyboard in Resources */,
 			);
@@ -411,6 +423,14 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		27278C7B22C109FF005BC47F /* Playlists.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				27278C7C22C109FF005BC47F /* Base */,
+			);
+			name = Playlists.storyboard;
+			sourceTree = "<group>";
+		};
 		2733A6141FE5FDE000E1EE77 /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
