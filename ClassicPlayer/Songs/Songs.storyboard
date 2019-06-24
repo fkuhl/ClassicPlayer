@@ -210,7 +210,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="YnI-68-Com" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-2483" y="-1285"/>
+            <point key="canvasLocation" x="-2484" y="-1308"/>
         </scene>
         <!--AlbumTracks-->
         <scene sceneID="JaU-jf-Fgb">
@@ -218,15 +218,15 @@
                 <viewControllerPlaceholder storyboardIdentifier="AlbumTracks" storyboardName="Albums" referencedIdentifier="AlbumTracks" id="nsi-EQ-Xn7" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="FNy-gx-jLJ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1610" y="-1838"/>
+            <point key="canvasLocation" x="-2549" y="-1074"/>
         </scene>
-        <!--UIViewController-mPp-Cg-Agn-->
+        <!--Music View-->
         <scene sceneID="6Fa-EG-w48">
             <objects>
-                <viewControllerPlaceholder storyboardIdentifier="UIViewController-mPp-Cg-Agn" storyboardName="Main" referencedIdentifier="UIViewController-mPp-Cg-Agn" id="98P-p8-lAP" sceneMemberID="viewController"/>
+                <viewControllerPlaceholder storyboardIdentifier="UIViewController-mPp-Cg-Agn" storyboardName="Music" referencedIdentifier="Music View" id="98P-p8-lAP" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="0N5-aF-qkU" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-666" y="-2310"/>
+            <point key="canvasLocation" x="-3117" y="-675"/>
         </scene>
     </scenes>
     <resources>

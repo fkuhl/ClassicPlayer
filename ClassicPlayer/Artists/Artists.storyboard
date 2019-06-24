@@ -101,15 +101,15 @@
                 <viewControllerPlaceholder storyboardIdentifier="Pieces from Composer" storyboardName="Composers" referencedIdentifier="Pieces from Composer" id="McI-BR-dlN" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Y7t-Sq-WhK" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-2343" y="-2538"/>
+            <point key="canvasLocation" x="-2453" y="-356"/>
         </scene>
-        <!--UIViewController-mPp-Cg-Agn-->
+        <!--Music View-->
         <scene sceneID="Ea0-7A-lVI">
             <objects>
-                <viewControllerPlaceholder storyboardIdentifier="UIViewController-mPp-Cg-Agn" storyboardName="Main" referencedIdentifier="UIViewController-mPp-Cg-Agn" id="pnl-13-AxX" sceneMemberID="viewController"/>
+                <viewControllerPlaceholder storyboardIdentifier="UIViewController-mPp-Cg-Agn" storyboardName="Music" referencedIdentifier="Music View" id="pnl-13-AxX" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="aA6-aQ-Fnn" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-666" y="-2310"/>
+            <point key="canvasLocation" x="-2502" y="-323"/>
         </scene>
     </scenes>
     <resources>

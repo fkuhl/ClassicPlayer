@@ -4,8 +4,6 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14766.15"/>
-        <capability name="Named colors" minToolsVersion="9.0"/>
-        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -29,109 +27,6 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="MfW-X7-4TJ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-5119" y="-1069"/>
-        </scene>
-        <!--Music View Controller-->
-        <scene sceneID="eWr-kn-X2S">
-            <objects>
-                <viewController storyboardIdentifier="UIViewController-mPp-Cg-Agn" id="mPp-Cg-Agn" customClass="MusicViewController" customModule="ClassicalPlayer" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="8wP-p4-6sj">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="TrackLabel" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xNt-16-9R5">
-                                <rect key="frame" x="8" y="8" width="359" height="18"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                                <color key="textColor" name="IconBeige"/>
-                                <color key="highlightedColor" name="IconBeige"/>
-                            </label>
-                            <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="2" translatesAutoresizingMaskIntoConstraints="NO" id="Kj3-P7-Kcr">
-                                <rect key="frame" x="8" y="629" width="359" height="30"/>
-                                <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" horizontalCompressionResistancePriority="751" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nWv-Vd-Bx4">
-                                        <rect key="frame" x="0.0" y="3.5" width="23" height="23"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="23" id="4nE-By-p8v"/>
-                                        </constraints>
-                                        <state key="normal" image="play"/>
-                                        <connections>
-                                            <action selector="playTouched:" destination="mPp-Cg-Agn" eventType="touchUpInside" id="Iah-Ae-g0F"/>
-                                        </connections>
-                                    </button>
-                                    <view contentMode="scaleToFill" horizontalHuggingPriority="500" horizontalCompressionResistancePriority="800" translatesAutoresizingMaskIntoConstraints="NO" id="yrw-at-WiE" userLabel="spacer">
-                                        <rect key="frame" x="25" y="10" width="10" height="10"/>
-                                        <color key="backgroundColor" name="DarkBlue"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="10" id="Rc7-dJ-skn"/>
-                                            <constraint firstAttribute="width" constant="10" id="gB3-VH-Kpg"/>
-                                        </constraints>
-                                    </view>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="252" verticalHuggingPriority="251" horizontalCompressionResistancePriority="751" text="00.00" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fi5-33-Ziw">
-                                        <rect key="frame" x="37" y="6" width="44" height="18"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="44" id="yAj-cI-3TI"/>
-                                        </constraints>
-                                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                                        <color key="textColor" name="IconBeige"/>
-                                        <color key="highlightedColor" name="IconBeige"/>
-                                    </label>
-                                    <slider opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="2Zi-5s-gVz">
-                                        <rect key="frame" x="81" y="0.0" width="197" height="31"/>
-                                        <color key="thumbTintColor" name="IconBeige"/>
-                                        <connections>
-                                            <action selector="sliderValueChanged:" destination="mPp-Cg-Agn" eventType="valueChanged" id="7jZ-Jn-eoQ"/>
-                                        </connections>
-                                    </slider>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="252" verticalHuggingPriority="251" horizontalCompressionResistancePriority="751" text="00.00" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="b5o-sr-v1T">
-                                        <rect key="frame" x="278" y="6" width="44" height="18"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="44" id="ydA-KJ-glB"/>
-                                        </constraints>
-                                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                                        <color key="textColor" name="IconBeige"/>
-                                        <color key="highlightedColor" name="IconBeige"/>
-                                    </label>
-                                    <view contentMode="scaleToFill" horizontalHuggingPriority="500" horizontalCompressionResistancePriority="800" translatesAutoresizingMaskIntoConstraints="NO" id="hOx-Yj-tdf" userLabel="spacer">
-                                        <rect key="frame" x="324" y="10" width="10" height="10"/>
-                                        <color key="backgroundColor" name="DarkBlue"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="10" id="88n-DS-aYD"/>
-                                            <constraint firstAttribute="height" constant="10" id="qnx-yG-zdq"/>
-                                        </constraints>
-                                    </view>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lfh-v2-AYj" customClass="AVRoutePickerView">
-                                        <rect key="frame" x="336" y="3.5" width="23" height="23"/>
-                                        <color key="backgroundColor" name="DarkBlue"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="23" id="5B3-dd-UuX"/>
-                                            <constraint firstAttribute="width" constant="23" id="Icb-8I-9yo"/>
-                                        </constraints>
-                                    </view>
-                                </subviews>
-                            </stackView>
-                        </subviews>
-                        <color key="backgroundColor" name="DarkBlue"/>
-                        <color key="tintColor" name="IconBeige"/>
-                        <constraints>
-                            <constraint firstItem="xNt-16-9R5" firstAttribute="leading" secondItem="gkW-J7-kiB" secondAttribute="leading" constant="8" id="Hx7-wE-8Ka"/>
-                            <constraint firstItem="xNt-16-9R5" firstAttribute="top" secondItem="gkW-J7-kiB" secondAttribute="top" constant="8" id="JpV-P0-kLE"/>
-                            <constraint firstItem="gkW-J7-kiB" firstAttribute="trailing" secondItem="Kj3-P7-Kcr" secondAttribute="trailing" constant="8" id="PyG-PC-jJ1"/>
-                            <constraint firstItem="gkW-J7-kiB" firstAttribute="trailing" secondItem="xNt-16-9R5" secondAttribute="trailing" constant="8" id="RT5-yr-pJ1"/>
-                            <constraint firstItem="Kj3-P7-Kcr" firstAttribute="leading" secondItem="gkW-J7-kiB" secondAttribute="leading" constant="8" id="bt2-ow-ChH"/>
-                            <constraint firstItem="gkW-J7-kiB" firstAttribute="bottom" secondItem="Kj3-P7-Kcr" secondAttribute="bottom" constant="8" id="p7V-v3-Vmi"/>
-                        </constraints>
-                        <viewLayoutGuide key="safeArea" id="gkW-J7-kiB"/>
-                    </view>
-                    <connections>
-                        <outlet property="expendedTimeLabel" destination="fi5-33-Ziw" id="yuc-46-ZYA"/>
-                        <outlet property="playPauseButton" destination="nWv-Vd-Bx4" id="5U7-np-Rjk"/>
-                        <outlet property="remainingTimeLabel" destination="b5o-sr-v1T" id="Xd1-ZU-PHg"/>
-                        <outlet property="timeSlider" destination="2Zi-5s-gVz" id="zuy-VR-4mp"/>
-                        <outlet property="trackLabel" destination="xNt-16-9R5" id="YmG-6T-uKE"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="fZa-hv-AT6" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="-2622" y="-1126"/>
         </scene>
         <!--Composers Nav Controller-->
         <scene sceneID="R6N-ys-nEo">
@@ -233,14 +128,13 @@
             </objects>
             <point key="canvasLocation" x="-4464" y="-817"/>
         </scene>
+        <!--Music View-->
+        <scene sceneID="pNE-gb-wJn">
+            <objects>
+                <viewControllerPlaceholder storyboardIdentifier="UIViewController-mPp-Cg-Agn" storyboardName="Music" referencedIdentifier="Music View" id="eP5-Gf-zqu" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="JLI-Cw-IPs" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-3937" y="-1199"/>
+        </scene>
     </scenes>
-    <resources>
-        <image name="play" width="23" height="23"/>
-        <namedColor name="DarkBlue">
-            <color red="0.074509803921568626" green="0.14509803921568629" blue="0.4823529411764706" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
-        <namedColor name="IconBeige">
-            <color red="0.88235294117647056" green="0.84705882352941175" blue="0.81568627450980391" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
-    </resources>
 </document>

@@ -285,15 +285,15 @@
                 <viewControllerPlaceholder storyboardIdentifier="AlbumTracks" storyboardName="Albums" referencedIdentifier="AlbumTracks" id="nsi-EQ-Xn7" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="FNy-gx-jLJ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1610" y="-1838"/>
+            <point key="canvasLocation" x="-1769" y="417"/>
         </scene>
-        <!--UIViewController-mPp-Cg-Agn-->
+        <!--Music View-->
         <scene sceneID="sqD-nz-x9d">
             <objects>
-                <viewControllerPlaceholder storyboardIdentifier="UIViewController-mPp-Cg-Agn" storyboardName="Main" referencedIdentifier="UIViewController-mPp-Cg-Agn" id="eii-Pc-k0b" sceneMemberID="viewController"/>
+                <viewControllerPlaceholder storyboardIdentifier="UIViewController-mPp-Cg-Agn" storyboardName="Music" referencedIdentifier="Music View" id="eii-Pc-k0b" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="1eb-mh-gIF" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-666" y="-2310"/>
+            <point key="canvasLocation" x="-2684" y="836"/>
         </scene>
     </scenes>
     <resources>
