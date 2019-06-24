@@ -356,7 +356,7 @@
         <!--Composers-->
         <scene sceneID="Tz6-7U-flC">
             <objects>
-                <navigationController storyboardIdentifier="UINavigationController-hLs-Ij-OdU" automaticallyAdjustsScrollViewInsets="NO" id="hLs-Ij-OdU" sceneMemberID="viewController">
+                <navigationController storyboardIdentifier="Composers Nav Controller" automaticallyAdjustsScrollViewInsets="NO" id="hLs-Ij-OdU" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="Composers" image="1587-users" landscapeImage="1587-users" selectedImage="1587-users" id="Yur-X6-Jp7"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" largeTitles="YES" id="Jf8-NR-jO5">

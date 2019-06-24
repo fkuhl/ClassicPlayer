@@ -197,7 +197,7 @@
         <!--Albums-->
         <scene sceneID="RKe-kA-kpH">
             <objects>
-                <navigationController storyboardIdentifier="UINavigationController-Q8w-Uo-PWf" automaticallyAdjustsScrollViewInsets="NO" id="Q8w-Uo-PWf" sceneMemberID="viewController">
+                <navigationController storyboardIdentifier="Albums Nav Controller" automaticallyAdjustsScrollViewInsets="NO" id="Q8w-Uo-PWf" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="Albums" image="1515-albums" landscapeImage="1515-albums" selectedImage="1515-albums" id="X4a-uh-nNN"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" largeTitles="YES" id="kd8-4V-mdX">

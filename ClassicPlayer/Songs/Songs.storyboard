@@ -154,7 +154,7 @@
         <!--Songs-->
         <scene sceneID="05I-dJ-jcN">
             <objects>
-                <navigationController storyboardIdentifier="UINavigationController-MhH-Hw-5cU" automaticallyAdjustsScrollViewInsets="NO" id="MhH-Hw-5cU" sceneMemberID="viewController">
+                <navigationController storyboardIdentifier="Songs Nav Controller" automaticallyAdjustsScrollViewInsets="NO" id="MhH-Hw-5cU" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="Songs" image="1706-music-note" landscapeImage="1706-music-note" selectedImage="1706-music-note" id="gbb-PX-nuK"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" largeTitles="YES" id="1vv-yv-tUB">
