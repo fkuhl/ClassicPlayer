@@ -11,17 +11,6 @@ import CoreData
 import MediaPlayer
 import AVKit
 
-extension Notification.Name {
-    static let dataAvailable       = Notification.Name("com.tyndalesoft.ClassicalPlayer.DataAvailable")
-    static let libraryChanged      = Notification.Name("com.tyndalesoft.ClassicalPlayer.LibraryChanged")
-    static let clearingError       = Notification.Name("com.tyndalesoft.ClassicalPlayer.ClearingError")
-    static let initializingError   = Notification.Name("com.tyndalesoft.ClassicalPlayer.InitializingError")
-    static let loadingError        = Notification.Name("com.tyndalesoft.ClassicalPlayer.LoadingError")
-    static let savingError         = Notification.Name("com.tyndalesoft.ClassicalPlayer.SavingError")
-    static let storeError          = Notification.Name("com.tyndalesoft.ClassicalPlayer.StoreError")
-    static let dataMissing         = Notification.Name("com.tyndalesoft.ClassicalPlayer.DataMissing")
-}
-
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     static let displayArtworkKey = "display_artwork_preference"
@@ -95,7 +84,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
 
-    // MARK: - Audio and library
+    // MARK: - Audio
 
     private func initializeAudio() {
         let audioSession = AVAudioSession.sharedInstance()
@@ -114,7 +103,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         makeAudioBarSet()
     }
-    
+
+    // MARK: - Media library info
+
     func checkLibraryChanged(context: NSManagedObjectContext) {
         initializeAudio()
         let libraryInfos = getMediaLibraryInfo(from: context)
@@ -182,6 +173,36 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             NSLog("error retrieving album count: \(error), \(error.userInfo)")
         }
     }
+    
+    func retrieveMediaLibraryInfo(from context: NSManagedObjectContext) {
+        var mediaInfoObject: MediaLibraryInfo
+        let mediaLibraryInfosInStore = getMediaLibraryInfo(from: context)
+        if mediaLibraryInfosInStore.count >= 1 {
+            mediaInfoObject = mediaLibraryInfosInStore[0]
+            libraryDate = mediaInfoObject.lastModifiedDate
+            libraryAlbumCount = mediaInfoObject.albumCount
+            librarySongCount = mediaInfoObject.songCount
+            libraryPieceCount = mediaInfoObject.pieceCount
+            libraryMovementCount = mediaInfoObject.movementCount
+        }
+    }
+    
+    private func storeMediaLibraryInfo(into context: NSManagedObjectContext) {
+        var mediaInfoObject: MediaLibraryInfo
+        let mediaLibraryInfosInStore = getMediaLibraryInfo(from: context)
+        if mediaLibraryInfosInStore.count >= 1 {
+            mediaInfoObject = mediaLibraryInfosInStore[0]
+        } else {
+            mediaInfoObject = NSEntityDescription.insertNewObject(forEntityName: "MediaLibraryInfo", into: context) as! MediaLibraryInfo
+        }
+        mediaInfoObject.lastModifiedDate = MPMediaLibrary.default().lastModifiedDate
+        mediaInfoObject.albumCount = libraryAlbumCount
+        mediaInfoObject.movementCount = libraryMovementCount
+        mediaInfoObject.pieceCount = libraryPieceCount
+        mediaInfoObject.songCount = librarySongCount
+    }
+
+    // MARK: - Load app from Media library
 
     /**
      Load app from Media Library without clearing old data.
@@ -301,17 +322,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     private func loadAppFromMediaLibrary(context: NSManagedObjectContext) -> LoadReturn {
         var allMediaDataPresent = true
         NSLog("started finding composers")
-        let composerResults = findComposers()
-        let totalAlbumCount = Float(composerResults.0)
-        composersFound = composerResults.1
-        NSLog("finished finding \(composersFound.count) composers")
+        findComposers()
+        NSLog("finished finding \(composersCount()) composers")
         libraryDate = MPMediaLibrary.default().lastModifiedDate
         libraryAlbumCount = 0
         libraryPieceCount = 0
         librarySongCount = 0
         libraryMovementCount = 0
         loadAllSongs(into: context)
-        let progressIncrement = Int32(max(1, composerResults.0 / 20)) //update progress bar 20 times
+        let progressIncrement = Int32(max(1, getAlbumCount() / 20)) //update progress bar 20 times
         let mediaAlbums = MPMediaQuery.albums()
         if let collections = mediaAlbums.collections {
             for mediaAlbum in collections {
@@ -320,7 +339,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 if someItemsMissingMedia(from: mediaAlbumItems) { allMediaDataPresent = false }
                 self.libraryAlbumCount += 1
                 if self.libraryAlbumCount % progressIncrement == 0 {
-                    self.progressDelegate?.setProgress(progress: Float(self.libraryAlbumCount) / totalAlbumCount)
+                    self.progressDelegate?.setProgress(progress: Float(self.libraryAlbumCount) / Float(getAlbumCount()))
                 }
                 if AppDelegate.showPieces && self.isGenreToParse(mediaAlbumItems[0].genre ) {
                     print("Album: \(mediaAlbumItems[0].composer ?? "<anon>"): "
@@ -343,7 +362,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 self.loadParsedPieces(for: appAlbum, from: mediaAlbumItems, into: context)
             }
         }
-        NSLog("found \(composersFound.count) composers, \(libraryAlbumCount) albums, \(libraryPieceCount) pieces, \(libraryMovementCount) movements, \(librarySongCount) tracks")
+        NSLog("found \(composersCount()) composers, \(libraryAlbumCount) albums, \(libraryPieceCount) pieces, \(libraryMovementCount) movements, \(librarySongCount) tracks")
         storeMediaLibraryInfo(into: context)
         return allMediaDataPresent ? .normal : .missingData
     }
@@ -365,34 +384,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         album.albumID = AppDelegate.encodeForCoreData(id: mediaAlbumItems[0].albumPersistentID)
         album.year = mediaAlbumItems[0].value(forProperty: "year") as! Int32  //slightly undocumented!
         return album
-    }
-    
-    func retrieveMediaLibraryInfo(from context: NSManagedObjectContext) {
-        var mediaInfoObject: MediaLibraryInfo
-        let mediaLibraryInfosInStore = getMediaLibraryInfo(from: context)
-        if mediaLibraryInfosInStore.count >= 1 {
-            mediaInfoObject = mediaLibraryInfosInStore[0]
-            libraryDate = mediaInfoObject.lastModifiedDate
-            libraryAlbumCount = mediaInfoObject.albumCount
-            librarySongCount = mediaInfoObject.songCount
-            libraryPieceCount = mediaInfoObject.pieceCount
-            libraryMovementCount = mediaInfoObject.movementCount
-        }
-    }
-    
-    private func storeMediaLibraryInfo(into context: NSManagedObjectContext) {
-        var mediaInfoObject: MediaLibraryInfo
-        let mediaLibraryInfosInStore = getMediaLibraryInfo(from: context)
-        if mediaLibraryInfosInStore.count >= 1 {
-            mediaInfoObject = mediaLibraryInfosInStore[0]
-        } else {
-            mediaInfoObject = NSEntityDescription.insertNewObject(forEntityName: "MediaLibraryInfo", into: context) as! MediaLibraryInfo
-        }
-        mediaInfoObject.lastModifiedDate = MPMediaLibrary.default().lastModifiedDate
-        mediaInfoObject.albumCount = libraryAlbumCount
-        mediaInfoObject.movementCount = libraryMovementCount
-        mediaInfoObject.pieceCount = libraryPieceCount
-        mediaInfoObject.songCount = librarySongCount
     }
     
     /**
@@ -637,105 +628,4 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return persistentContainer.viewContext
     }()
 
-    // MARK: - Core Data Saving support
-
-//    private func save(context: NSManagedObjectContext) throws {
-//        NSLog("Saving changes")
-//        try context.save()
-//    }
-
-}
-
-// MARK: - Composers
-
-
-fileprivate var composersFound = Set<String>()
-
-func composersInLibrary() -> [String] {
-    return Array(composersFound)
-}
-
-/**
- Find and store all the composers that occur in songs.
- 
- */
-func findComposers() -> (Int, Set<String>) {
-    var albumCount = 0
-    var found = Set<String>()
-    let mediaAlbums = MPMediaQuery.albums()
-    if let collections = mediaAlbums.collections {
-        for mediaAlbum in collections {
-            let mediaAlbumItems = mediaAlbum.items
-            for item in mediaAlbumItems {
-                if let composer = item.composer {
-                    found.insert(composer)
-                }
-            }
-            albumCount += 1
-        }
-    }
-    return (albumCount, found)
-}
-
-/**
- Does the set of previously found composers contain this (possibly partial) composer name?
- 
- - Parameter candidate: composer name from song title, e.g., "Brahms"
- 
- - Returns: true if the candidate appears somewhere in one of the stored composers, e.g., "Brahms, Johannes".
- */
-func composersContains(candidate: String) -> Bool {
-    for composer in composersFound {
-        if composer.range(of: candidate, options: String.CompareOptions.caseInsensitive) != nil { return true }
-    }
-    return false
-}
-
-// MARK: - Playability
-
-enum PlayabilityCategory {
-    case playable
-    case protected
-    case cloudItem
-    case missingMedia
-}
-
-extension MPMediaItem {
-
-    /**
-     Determine playability of a track.
-     We can play only .cloudItem or .playable.
-     
-     - Returns: playability category
-     */
-    func playabilityCategory() -> PlayabilityCategory {
-        //If it's protected, we can't play it. Period.
-        if hasProtectedAsset { return .protected }
-        //If  unprotected but it's in the cloud, we can play (iTunes Match)
-        if isCloudItem { return .cloudItem }
-        //If it has a URL, we can play it regardless (we think)
-        if assetURL != nil { return .playable }
-        //If no URL, unprotected, and not cloud item, it's just missing
-        return .missingMedia
-    }
-    
-    func isPlayable() -> Bool {
-        switch self.playabilityCategory() {
-        case .playable:
-            return true
-        case .protected:
-            return false
-        case .cloudItem:
-            return true
-        case .missingMedia:
-            return false
-        }
-    }
-}
-
-// MARK: - Helper function
-
-// Helper function inserted by Swift 4.2 migrator.
-fileprivate func convertFromAVAudioSessionCategory(_ input: AVAudioSession.Category) -> String {
-	return input.rawValue
 }
