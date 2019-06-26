@@ -23,8 +23,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     private static let showPieces = false
 
     var window: UIWindow?
-    var audioBarSet: [UIImage]?
-    var audioPaused: UIImage?
+    private var audioBarSetLight: [UIImage]?
+    private var audioBarSetDark: [UIImage]?
+    private var audioPausedLight: UIImage?
+    private var audioPausedDark: UIImage?
     var audioNotCurrent: UIImage?
     var progressDelegate: ProgressDelegate?
     
@@ -101,7 +103,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                                                          userInfo: error.userInfo))
             NSLog("error setting category to AVAudioSessionCategoryPlayback: \(error), \(error.userInfo)")
         }
-        makeAudioBarSet()
+        makeAudioBarSets()
     }
 
     // MARK: - Media library info
@@ -545,18 +547,48 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     /**
      Make the animation of audio bars for currently playing audio.
     */
-    private func makeAudioBarSet() {
-        audioBarSet = [UIImage]()
+    private func makeAudioBarSets() {
+        audioBarSetLight = [UIImage]()
         for imageFrame in 1...10 {
             let image = UIImage(named:"bars-\(imageFrame)")
             if let frame = image {
-                audioBarSet?.append(frame)
+                audioBarSetLight?.append(frame)
             }
         }
-        audioPaused = UIImage(named:"bars-paused")
+        audioBarSetDark = [UIImage]()
+        for imageFrame in 1...10 {
+            //Yes, the image file names seem backwards
+            let image = UIImage(named:"bars-light-\(imageFrame)")
+            if let frame = image {
+                audioBarSetDark?.append(frame)
+            }
+        }
+        audioPausedLight = UIImage(named:"bars-paused")
+        audioPausedDark = UIImage(named:"bars-light-paused")
+        //no difference for dark mode!
         audioNotCurrent = UIImage(named:"bars-not-current")
     }
     
+    func getAudioBarSet(for traitCollection: UITraitCollection) -> [UIImage]? {
+        if #available(iOS 12, *) {
+            return traitCollection.userInterfaceStyle == .dark
+                ? audioBarSetDark
+                : audioBarSetLight
+        } else {
+            return audioBarSetLight
+        }
+    }
+    
+    func getAudioPaused(for traitCollection: UITraitCollection) -> UIImage? {
+        if #available(iOS 12, *) {
+            return traitCollection.userInterfaceStyle == .dark
+                ? audioPausedDark
+                : audioPausedLight
+        } else {
+            return audioPausedLight
+        }
+    }
+
     /**
      Represesentation of a the duration of a song, suitable for display.
      */

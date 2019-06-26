@@ -168,14 +168,14 @@ class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableV
             if indexPath.row == appDelegate.musicPlayer.currentTableIndex {
                 if musicPlayerPlaybackState() == .playing {
                     cell.indicator.image = nil
-                    cell.indicator.animationImages = appDelegate.audioBarSet
+                    cell.indicator.animationImages = appDelegate.getAudioBarSet(for: view.traitCollection)
                     cell.indicator.animationRepeatCount = 0 //like, forever
                     cell.indicator.animationDuration = 0.6  //sec
                     cell.indicator.startAnimating()
                 } else {
                     cell.indicator.stopAnimating()
                     cell.indicator.animationImages = nil
-                    cell.indicator.image = appDelegate.audioPaused
+                    cell.indicator.image = appDelegate.getAudioPaused(for: view.traitCollection)
                 }
             } else {
                 cell.indicator.stopAnimating()
