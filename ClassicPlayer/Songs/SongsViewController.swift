@@ -46,6 +46,12 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        if !tableWasLoadedBySort {
+            loadSongsSortedBy(currentSort)
+            trackTable.reloadData()
+        } else {
+            tableWasLoadedBySort = false
+        }
         if musicPlayerPlaybackState() == .playing {
             musicViewController?.nowPlayingItemDidChange(to: MPMusicPlayerController.applicationMusicPlayer.nowPlayingItem)
             musicObserver.start(on: self)
@@ -54,12 +60,6 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
             }
         } else {
             installPlayer(forIndex: 0, paused: true)
-        }
-        if !tableWasLoadedBySort {
-            loadSongsSortedBy(currentSort)
-            trackTable.reloadData()
-        } else {
-            tableWasLoadedBySort = false
         }
     }
     
