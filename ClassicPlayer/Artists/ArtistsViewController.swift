@@ -116,7 +116,7 @@ class ArtistsViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     private func presentAsOneSection() -> Bool {
         if artistObjects == nil { return true }
-        return artistObjects!.count < ArtistsViewController.indexedSectionCount * 2
+        return artistObjects!.count < ArtistsViewController.indexedSectionCount * 3
     }
 
     override func didReceiveMemoryWarning() {
@@ -136,7 +136,7 @@ class ArtistsViewController: UIViewController, UITableViewDelegate, UITableViewD
         } else {
             //that pesky last section
             if let unwrappedArtistObjects = artistObjects {
-                return unwrappedArtistObjects.count - ArtistsViewController.indexedSectionCount * sectionSize
+                return unwrappedArtistObjects.count - (sectionCount - 1) * sectionSize
             } else {
                 return 0
             }
@@ -158,6 +158,13 @@ class ArtistsViewController: UIViewController, UITableViewDelegate, UITableViewD
         return sectionTitles
     }
     
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        guard let unwrappedSectionTitles = sectionTitles else {
+            return nil
+        }
+        return section < unwrappedSectionTitles.count ? unwrappedSectionTitles[section] : nil
+    }
+
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "PlayTracks" {
             musicViewController = segue.destination as? MusicViewController

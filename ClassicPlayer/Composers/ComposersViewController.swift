@@ -325,7 +325,7 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
     
     private func presentAsOneSection() -> Bool {
         if composerObjects == nil { return true }
-        return composerObjects!.count < ComposersViewController.indexedSectionCount * 2
+        return composerObjects!.count < ComposersViewController.indexedSectionCount * 3
     }
 
     override func didReceiveMemoryWarning() {
@@ -350,7 +350,7 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
             return sectionSize
         } else {
             //that pesky last section
-            return unwrappedComposerObjects.count - ComposersViewController.indexedSectionCount * sectionSize
+            return unwrappedComposerObjects.count - (sectionCount - 1) * sectionSize
         }
     }
 
@@ -370,6 +370,13 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
         return sectionTitles
     }
     
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        guard let unwrappedSectionTitles = sectionTitles else {
+            return nil
+        }
+        return section < unwrappedSectionTitles.count ? unwrappedSectionTitles[section] : nil
+    }
+
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "PlayTracks" {
             musicViewController = segue.destination as? MusicViewController

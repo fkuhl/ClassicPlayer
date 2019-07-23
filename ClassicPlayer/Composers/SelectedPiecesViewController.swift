@@ -116,7 +116,7 @@ class SelectedPiecesViewController: UIViewController, NSFetchedResultsController
             return
         }
         sectionCount = SelectedPiecesViewController.indexedSectionCount
-        sectionSize = pieces!.count / SelectedPiecesViewController.indexedSectionCount
+        sectionSize = unwrappedPieces.count / SelectedPiecesViewController.indexedSectionCount
         sectionTitles = []
         for i in 0 ..< SelectedPiecesViewController.indexedSectionCount {
             let piece = unwrappedPieces[i * sectionSize]
@@ -155,7 +155,7 @@ class SelectedPiecesViewController: UIViewController, NSFetchedResultsController
             return sectionSize
         } else {
             //that pesky last section
-            return unwrappedPieces.count - SelectedPiecesViewController.indexedSectionCount * sectionSize
+            return unwrappedPieces.count - (sectionCount - 1) * sectionSize
         }
     }
     
@@ -190,6 +190,13 @@ class SelectedPiecesViewController: UIViewController, NSFetchedResultsController
     
     func sectionIndexTitles(for tableView: UITableView) -> [String]? {
         return sectionTitles
+    }
+    
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        guard let unwrappedSectionTitles = sectionTitles else {
+            return nil
+        }
+        return section < unwrappedSectionTitles.count ? unwrappedSectionTitles[section] : nil
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

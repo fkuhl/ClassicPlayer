@@ -222,12 +222,19 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
             return sectionSize
         } else {
             //that pesky last section
-            return unwrappedSongs.count - SongsViewController.indexedSectionCount * sectionSize
+            return unwrappedSongs.count - (sectionCount - 1) * sectionSize
         }
     }
     
     func sectionIndexTitles(for tableView: UITableView) -> [String]? {
         return sectionTitles
+    }
+    
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        guard let unwrappedSectionTitles = sectionTitles else {
+            return nil
+        }
+        return section < unwrappedSectionTitles.count ? unwrappedSectionTitles[section] : nil
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

@@ -197,12 +197,19 @@ class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             return sectionSize
         } else {
             //that pesky last section
-            return albums!.count - AlbumsViewController.indexedSectionCount * sectionSize
+            return albums!.count - (sectionCount - 1) * sectionSize
         }
     }
     
     func sectionIndexTitles(for tableView: UITableView) -> [String]? {
         return sectionTitles
+    }
+    
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        guard let unwrappedSectionTitles = sectionTitles else {
+            return nil
+        }
+        return section < unwrappedSectionTitles.count ? unwrappedSectionTitles[section] : nil
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

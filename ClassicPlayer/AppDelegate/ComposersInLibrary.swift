@@ -32,14 +32,14 @@ func getAlbumCount() -> Int {
  */
 func findComposers() {
     albumCount = 0
-    var found = Set<String>()
+    composersFound = Set<String>()
     let mediaAlbums = MPMediaQuery.albums()
     if let collections = mediaAlbums.collections {
         for mediaAlbum in collections {
             let mediaAlbumItems = mediaAlbum.items
             for item in mediaAlbumItems {
                 if let composer = item.composer {
-                    found.insert(composer)
+                    composersFound.insert(composer)
                 }
             }
             albumCount += 1
