@@ -10,13 +10,10 @@ import UIKit
 import MediaPlayer
 import MessageUI
 
-protocol ProgressDelegate {
-    func setProgress(progress: Float)
-}
-
 class InfoViewController: UIViewController, ProgressDelegate, MFMailComposeViewControllerDelegate, MusicObserverDelegate {
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    private let mediaLibrary = ClassicalMediaLibrary.sharedInstance
     weak var musicViewController: MusicViewController?
     private var musicObserver = MusicObserver()
 
@@ -37,7 +34,7 @@ class InfoViewController: UIViewController, ProgressDelegate, MFMailComposeViewC
         super.viewDidLoad()
         self.activityBackground.isHidden = true
         self.progressBar.isHidden = true
-        appDelegate.progressDelegate = nil
+        mediaLibrary.progressDelegate = nil
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -94,11 +91,11 @@ class InfoViewController: UIViewController, ProgressDelegate, MFMailComposeViewC
     private func updateUI() {
         self.activityBackground.isHidden = true
         self.progressBar.isHidden = true
-        self.appDelegate.progressDelegate = nil
+        self.mediaLibrary.progressDelegate = nil
         self.appName.text = "Classical\u{200B}Player" //zero-width space make name break properly on narrow screens!
         self.buildVersion?.text = "v \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") ?? ""), " +
         "build \(Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") ?? "")"
-        let mediaLibraryInfo = appDelegate.mediaLibraryInfo
+        let mediaLibraryInfo = mediaLibrary.mediaLibraryInfo
         let dateFormatter = DateFormatter()
         dateFormatter.locale = Locale.current
         dateFormatter.dateStyle = .short
@@ -127,10 +124,10 @@ class InfoViewController: UIViewController, ProgressDelegate, MFMailComposeViewC
                 DispatchQueue.main.async {
                     self.activityBackground.isHidden = false
                     self.progressBar.isHidden = false
-                    self.appDelegate.progressDelegate = self
+                    self.mediaLibrary.progressDelegate = self
                     self.progressBar.setProgress(0.0, animated: false)
                     self.view.setNeedsDisplay()
-                    self.appDelegate.replaceAppLibraryWithMedia()
+                    self.mediaLibrary.replaceAppLibraryWithMedia()
                 }
             }))
             alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { _ in
