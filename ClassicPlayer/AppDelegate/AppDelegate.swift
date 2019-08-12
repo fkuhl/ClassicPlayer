@@ -32,6 +32,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // MARK: - App delegate
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        initializeAudio()
         return true
     }
 

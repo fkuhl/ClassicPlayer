@@ -67,7 +67,6 @@ public class ClassicalMediaLibrary {
     // MARK: - Media library info
 
     func checkLibraryChanged(context: NSManagedObjectContext) {
-        initializeAudio()
         let libraryInfos = getMediaLibraryInfo(from: context)
         if libraryInfos.count < 1 {
             NSLog("No app library found: load media lib to app")
