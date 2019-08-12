@@ -19,6 +19,7 @@ class PieceTableViewCell: UITableViewCell {
 
 class SelectedPiecesViewController: UIViewController, NSFetchedResultsControllerDelegate, UITableViewDelegate, UITableViewDataSource, MusicObserverDelegate {
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    private let mediaLibrary = ClassicalMediaLibrary.sharedInstance
     private static let indexedSectionCount = 27  //A magic number; that's how many sections any UITableView index can have.
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var playerViewHeight: NSLayoutConstraint!
@@ -76,13 +77,13 @@ class SelectedPiecesViewController: UIViewController, NSFetchedResultsController
     private func updateUI() {
         self.title = displayTitle
         let request = NSFetchRequest<Piece>()
-        request.entity = NSEntityDescription.entity(forEntityName: "Piece", in: appDelegate.mainThreadContext)
+        request.entity = NSEntityDescription.entity(forEntityName: "Piece", in: mediaLibrary.mainThreadContext)
         request.predicate = NSPredicate(format: "%K == %@", selectionField!, selectionValue!)
         request.resultType = .managedObjectResultType
         request.returnsDistinctResults = true
         //request.sortDescriptors = [ NSSortDescriptor(key: "title", ascending: true) ]
         do {
-            pieces = try appDelegate.mainThreadContext.fetch(request)
+            pieces = try mediaLibrary.mainThreadContext.fetch(request)
             pieces?.sort(by: titlePredicate)
             computeSections()
             tableView.reloadData()

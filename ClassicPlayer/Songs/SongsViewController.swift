@@ -20,6 +20,7 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     var swipedSong: Song?
     private var musicObserver = MusicObserver()
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    private let mediaLibrary = ClassicalMediaLibrary.sharedInstance
 
     private static var indexedSectionCount = 27  //A magic number; that's how many sections any UITableView index can have.
     private var sectionCount = 1
@@ -72,7 +73,7 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     private func loadSongsSortedBy(_ sort: SongSorts) {
         do {
             let request = NSFetchRequest<Song>()
-            request.entity = NSEntityDescription.entity(forEntityName: "Song", in: appDelegate.mainThreadContext)
+            request.entity = NSEntityDescription.entity(forEntityName: "Song", in: mediaLibrary.mainThreadContext)
             request.resultType = .managedObjectResultType
             request.returnsDistinctResults = true
             if isFiltering() {
@@ -83,7 +84,7 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
            request.sortDescriptors = [ NSSortDescriptor(key: sort.sortDescriptor,
                                                          ascending: true,
                                                          selector: #selector(NSString.localizedCaseInsensitiveCompare)) ]
-            songs = try appDelegate.mainThreadContext.fetch(request)
+            songs = try mediaLibrary.mainThreadContext.fetch(request)
             computeSections(forSort: sort)
             title = "Songs|\(sort.dropDownDisplayName)"
             trackTable.reloadData()
@@ -150,7 +151,7 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
                 NSLog("swiped song is \(unwrappedSwipedSong.title ?? "[s.n.]")")
                 NSLog("retrived album is \(album.title ?? "[s.n.]")")
                 NSLog("segue destination is \(secondViewController)")
-                secondViewController.albumID = AppDelegate.decodeIDFrom(coreDataRepresentation: album.albumID!)
+                secondViewController.albumID = ClassicalMediaLibrary.decodeIDFrom(coreDataRepresentation: album.albumID!)
                 secondViewController.title = album.title
             }
         }
@@ -161,13 +162,13 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
             return nil
         }
         let request = NSFetchRequest<Album>()
-        request.entity = NSEntityDescription.entity(forEntityName: "Album", in: appDelegate.mainThreadContext)
+        request.entity = NSEntityDescription.entity(forEntityName: "Album", in: mediaLibrary.mainThreadContext)
         request.predicate = NSPredicate(format: "%K == %@", "albumID", id)
         request.resultType = .managedObjectResultType
         request.returnsDistinctResults = true
         let title = unwrappedSwipedSong.title ?? "<sine nomine>"
         do {
-            let albums = try appDelegate.mainThreadContext.fetch(request)
+            let albums = try mediaLibrary.mainThreadContext.fetch(request)
             if albums.count == 0 {
                 NSLog("No albums for song '\(title)'")
                 return nil
@@ -337,7 +338,7 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
             indexOfPlayingItem = songs.firstIndex(where: {
                 var match = false
                 if let idString = $0.persistentID {
-                    match = AppDelegate.decodeIDFrom(coreDataRepresentation: idString) == item.persistentID
+                    match = ClassicalMediaLibrary.decodeIDFrom(coreDataRepresentation: idString) == item.persistentID
                 }
                 return match
             })
@@ -379,7 +380,7 @@ class SongsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     private func retrieveItem(forIndex index: Int) -> MPMediaItem? {
         var item: MPMediaItem?
         if let unwrappedSongs = songs, unwrappedSongs.count > index {
-            let persistentID = AppDelegate.decodeIDFrom(coreDataRepresentation: unwrappedSongs[index].persistentID!)
+            let persistentID = ClassicalMediaLibrary.decodeIDFrom(coreDataRepresentation: unwrappedSongs[index].persistentID!)
             let songQuery = MPMediaQuery.songs()
             let predicate = MPMediaPropertyPredicate(value: persistentID, forProperty: MPMediaItemPropertyPersistentID)
             songQuery.addFilterPredicate(predicate)

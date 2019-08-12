@@ -177,7 +177,7 @@ class ArtistsViewController: UIViewController, UITableViewDelegate, UITableViewD
                 if let unwrappedArtistObjects = artistObjects, unwrappedArtistObjects.count > cellIndex {
                     let selectedArtist = unwrappedArtistObjects[cellIndex]
                     let artistID = selectedArtist.artistPersistentID
-                    secondViewController.selectionValue = AppDelegate.encodeForCoreData(id: artistID)
+                    secondViewController.selectionValue = ClassicalMediaLibrary.encodeForCoreData(id: artistID)
                     secondViewController.displayTitle = selectedArtist.artist
                 }
             }

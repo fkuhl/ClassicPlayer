@@ -26,6 +26,7 @@ class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     @IBOutlet weak var playerViewHeight: NSLayoutConstraint!
     let searchController = UISearchController(searchResultsController: nil)
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    private let mediaLibrary = ClassicalMediaLibrary.sharedInstance
     private var albums: [Album]?
     
     private static var indexedSectionCount = 27  //A magic number; that's how many sections any UITableView index can have.
@@ -84,7 +85,7 @@ class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     private func loadAlbumsSortedBy(_ sort: AlbumSorts) {
         do {
-            let context:NSManagedObjectContext! = (UIApplication.shared.delegate as! AppDelegate).mainThreadContext
+            let context = mediaLibrary.mainThreadContext
             let request = NSFetchRequest<Album>()
             request.entity = NSEntityDescription.entity(forEntityName: "Album", in:context)
             request.resultType = .managedObjectResultType
@@ -250,7 +251,7 @@ class AlbumsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             let secondViewController = segue.destination as! AlbumTracksViewController
             if let selected = tableView?.indexPathForSelectedRow {
                 let album = albums![selected.section * sectionSize + selected.row]
-                secondViewController.albumID = AppDelegate.decodeIDFrom(coreDataRepresentation: album.albumID!)
+                secondViewController.albumID = ClassicalMediaLibrary.decodeIDFrom(coreDataRepresentation: album.albumID!)
                 secondViewController.title = album.title
             }
         }

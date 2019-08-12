@@ -141,7 +141,7 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
             cell.artwork.image = AppDelegate.artworkFor(album: id)
             cell.title.text = trackEntry.title
             cell.artist.text = trackEntry.artist
-            cell.duration.text = AppDelegate.durationAsString(trackEntry.playbackDuration)
+            cell.duration.text = ClassicalMediaLibrary.durationAsString(trackEntry.playbackDuration)
         }
         //Priority lowered on artwork height to prevent unsatisfiable constraint.
         if UIApplication.shared.preferredContentSizeCategory > .extraExtraLarge {
@@ -165,7 +165,7 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
     
     private func mySetterID() -> String {
         return Bundle.main.bundleIdentifier! + ".PlaylistViewController" +
-            ">" + AppDelegate.encodeForCoreData(id: playlist!.persistentID) 
+            ">" + ClassicalMediaLibrary.encodeForCoreData(id: playlist!.persistentID)
     }
     
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath)

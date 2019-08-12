@@ -18,6 +18,7 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
     @IBOutlet weak var playerViewHeight: NSLayoutConstraint!
     let searchController = UISearchController(searchResultsController: nil)
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    private let mediaLibrary = ClassicalMediaLibrary.sharedInstance
     private var musicObserver = MusicObserver()
     private var tableIsLoaded = false
     private var libraryAccessChecked = false
@@ -38,7 +39,7 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
         self.tableView.dataSource = self
         self.activityBackground.isHidden = true
         self.progressBar.isHidden = true
-        appDelegate.progressDelegate = nil
+        mediaLibrary.progressDelegate = nil
         searchController.searchResultsUpdater = self
         searchController.obscuresBackgroundDuringPresentation = false
         searchController.searchBar.placeholder = "Search Composers"
@@ -48,7 +49,7 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        //print("ComposersVC.viewWillAppear: \(self) player: \(appDelegate.player)")
+        //print("ComposersVC.viewWillAppear: \(self) player: \(mediaLibrary.player)")
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(handleDataIsAvailable),
                                                name: .dataAvailable,
@@ -133,7 +134,7 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
             case .authorized:
                 //Avoid the assumption that we know what thread requestAuthorization returns on
                 DispatchQueue.main.async {
-                    self.appDelegate.checkLibraryChanged(context: self.appDelegate.mainThreadContext)
+                    self.mediaLibrary.checkLibraryChanged(context: self.mediaLibrary.mainThreadContext)
                 }
             case .restricted:
                 self.alertAndGoToSettings(message: "Media library access restricted by corporate or parental controls")
@@ -170,7 +171,7 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
      */
     private func updateUI() {
         let request = NSFetchRequest<NSDictionary>()
-        request.entity = NSEntityDescription.entity(forEntityName: "Piece", in: appDelegate.mainThreadContext)
+        request.entity = NSEntityDescription.entity(forEntityName: "Piece", in: mediaLibrary.mainThreadContext)
         request.resultType = .dictionaryResultType
         request.returnsDistinctResults = true
         request.propertiesToFetch = [ "composer" ]
@@ -183,7 +184,7 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
                                                      ascending: true,
                                                      selector: #selector(NSString.localizedCaseInsensitiveCompare)) ]
         do {
-            self.composerObjects = try appDelegate.mainThreadContext.fetch(request)
+            self.composerObjects = try mediaLibrary.mainThreadContext.fetch(request)
             NSLog("ComposersVC: fetch returned \(self.composerObjects!.count) composer things")
             self.computeSections()
             self.tableView.reloadData()
@@ -209,16 +210,16 @@ class ComposersViewController: UIViewController, NSFetchedResultsControllerDeleg
                 DispatchQueue.main.async {
                     self.activityBackground.isHidden = false
                     self.progressBar.isHidden = false
-                    self.appDelegate.progressDelegate = self
+                    self.mediaLibrary.progressDelegate = self
                     self.progressBar.setProgress(0.0, animated: false)
                     self.view.setNeedsDisplay()
                     NSLog("started animation")
-                    self.appDelegate.replaceAppLibraryWithMedia()
+                    self.mediaLibrary.replaceAppLibraryWithMedia()
                 }
             }))
             alert.addAction(UIAlertAction(title: "Skip the load for now", style: .cancel, handler: { _ in
                 DispatchQueue.main.async {
-                    self.appDelegate.retrieveMediaLibraryInfo(from: self.appDelegate.mainThreadContext)
+                    self.mediaLibrary.retrieveMediaLibraryInfo(from: self.mediaLibrary.mainThreadContext)
                     self.updateUI()
                 }
             }))

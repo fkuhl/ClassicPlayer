@@ -208,7 +208,7 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
     private func retrieveItem(forMovement movementAny: Any) -> MPMediaItem? {
         var item: MPMediaItem?
         if let movement = movementAny as? Movement {
-            let persistentID = AppDelegate.decodeIDFrom(coreDataRepresentation: movement.trackID!)
+            let persistentID = ClassicalMediaLibrary.decodeIDFrom(coreDataRepresentation: movement.trackID!)
             let songQuery = MPMediaQuery.songs()
             let predicate = MPMediaPropertyPredicate(value: persistentID, forProperty: MPMediaItemPropertyPersistentID)
             songQuery.addFilterPredicate(predicate)
@@ -222,7 +222,7 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
     private func retrieveItem(from: Piece?) -> MPMediaItem? {
         var item: MPMediaItem?
         if let piece = from {
-            let persistentID = AppDelegate.decodeIDFrom(coreDataRepresentation: piece.trackID!)
+            let persistentID = ClassicalMediaLibrary.decodeIDFrom(coreDataRepresentation: piece.trackID!)
             let songQuery = MPMediaQuery.songs()
             let predicate = MPMediaPropertyPredicate(value: persistentID, forProperty: MPMediaItemPropertyPersistentID)
             songQuery.addFilterPredicate(predicate)
@@ -242,7 +242,7 @@ class PieceViewController: UIViewController, UITableViewDelegate, UITableViewDat
         if segue.identifier == "ShowAlbum" {
             let secondViewController = segue.destination as! AlbumTracksViewController
             if let album = selectedPiece?.album {
-                secondViewController.albumID = AppDelegate.decodeIDFrom(coreDataRepresentation: album.albumID!)
+                secondViewController.albumID = ClassicalMediaLibrary.decodeIDFrom(coreDataRepresentation: album.albumID!)
                 secondViewController.title = album.title
             }
         }

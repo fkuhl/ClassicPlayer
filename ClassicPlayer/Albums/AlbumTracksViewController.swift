@@ -190,7 +190,7 @@ class AlbumTracksViewController: UIViewController, UITableViewDelegate, UITableV
         }
         let trackEntry = trackData![indexPath.row]
         cell.title.text = trackEntry.title
-        cell.duration.text = AppDelegate.durationAsString(trackEntry.playbackDuration)
+        cell.duration.text = ClassicalMediaLibrary.durationAsString(trackEntry.playbackDuration)
         return cell
     }
 
