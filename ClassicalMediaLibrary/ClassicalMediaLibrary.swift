@@ -25,6 +25,10 @@ public class ClassicalMediaLibrary {
     private static let parsedGenres = ["Classical", "Opera", "Church", "British", "Christmas"]
     private static let showParses = false
     private static let showPieces = false
+    //For app screenshots, set this to true to load only "fake" genre
+    static let loadOnlyFake = false
+    
+    static let fakeGenre = "fake"
     
     public var progressDelegate: ProgressDelegate?
 
@@ -311,12 +315,8 @@ public class ClassicalMediaLibrary {
                     NSLog("empty album, title: '\(mediaAlbum.representativeItem?.albumTitle ?? "")'")
                     continue
                 }
+                if Self.loadOnlyFake && mediaAlbumItems[0].genre != Self.fakeGenre { continue }
                 let appAlbum = self.makeAndFillAlbum(from: mediaAlbumItems, into: context)
-                //            if self.isGenreToParse(appAlbum.genre) {
-                //                self.loadParsedPieces(for: appAlbum, from: mediaAlbumItems, into: context)
-                //            } else {
-                //                self.loadSongsAsPieces(for: appAlbum, from: mediaAlbumItems, into: context)
-                //            }
                 //For now, just parse everything irrespective of genre. One less thing to explain.
                 self.loadParsedPieces(for: appAlbum, from: mediaAlbumItems, into: context)
             }
@@ -355,6 +355,7 @@ public class ClassicalMediaLibrary {
             librarySongCount = Int32(0)
             for item in items {
                 if !item.isPlayable() { continue }
+                if Self.loadOnlyFake && item.genre != Self.fakeGenre { continue }
                 librarySongCount += 1
                 let song = NSEntityDescription.insertNewObject(forEntityName: "Song", into: context) as! Song
                 song.persistentID = ClassicalMediaLibrary.encodeForCoreData(id: item.persistentID)

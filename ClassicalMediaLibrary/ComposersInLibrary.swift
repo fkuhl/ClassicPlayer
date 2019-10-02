@@ -36,7 +36,9 @@ func findComposers() {
     let mediaAlbums = MPMediaQuery.albums()
     if let collections = mediaAlbums.collections {
         for mediaAlbum in collections {
-            let mediaAlbumItems = mediaAlbum.items
+             let mediaAlbumItems = mediaAlbum.items
+            if ClassicalMediaLibrary.loadOnlyFake
+                && mediaAlbumItems[0].genre != ClassicalMediaLibrary.fakeGenre { continue }
             for item in mediaAlbumItems {
                 if let composer = item.composer {
                     composersFound.insert(composer)

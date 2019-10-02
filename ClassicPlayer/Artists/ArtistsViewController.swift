@@ -62,6 +62,8 @@ class ArtistsViewController: UIViewController, UITableViewDelegate, UITableViewD
         if let collections = query.collections {
             for collection in collections {
                 if let firstItem = collection.items.first  {
+                    if ClassicalMediaLibrary.loadOnlyFake
+                        && firstItem.genre != ClassicalMediaLibrary.fakeGenre { continue }
                     if isFiltering(), let artist = firstItem.artist, let searchText = searchController.searchBar.text {
                         if artist.localizedCaseInsensitiveContains(searchText) {
                             artistObjects!.append(firstItem)
