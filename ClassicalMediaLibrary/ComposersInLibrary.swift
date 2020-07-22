@@ -57,8 +57,10 @@ func findComposers() {
  - Returns: true if the candidate appears somewhere in one of the stored composers, e.g., "Brahms, Johannes".
  */
 func composersContains(candidate: String) -> Bool {
+    //Deal with the "Strauss (R)" problem
+    let parenComponents = candidate.components(separatedBy: "(")
     for composer in composersFound {
-        if composer.range(of: candidate, options: String.CompareOptions.caseInsensitive) != nil { return true }
+        if composer.range(of: parenComponents[0].trimmingCharacters(in: .whitespaces), options: String.CompareOptions.caseInsensitive) != nil { return true }
     }
     return false
 }
