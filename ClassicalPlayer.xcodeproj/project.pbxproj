@@ -33,8 +33,6 @@
 		2755D7331FE9629C006F49AE /* Movement+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2755D72D1FE9629C006F49AE /* Movement+CoreDataClass.swift */; };
 		2755D7341FE9629C006F49AE /* Movement+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2755D72E1FE9629C006F49AE /* Movement+CoreDataProperties.swift */; };
 		275A425121FA123C00212297 /* MusicViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 275A425021FA123C00212297 /* MusicViewController.swift */; };
-		275D8F341FFFFDDA00F403A8 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 275D8F331FFFFDDA00F403A8 /* AVFoundation.framework */; };
-		2776973720013BCF002B2963 /* AVKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2776973620013BCF002B2963 /* AVKit.framework */; };
 		277B21E1202258F20052DF42 /* AlbumSortViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 277B21E0202258F20052DF42 /* AlbumSortViewController.swift */; };
 		277CD96821A72ABF00473897 /* RateObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 277CD96721A72ABF00473897 /* RateObserver.swift */; };
 		277CD96A21A730DE00473897 /* IndexObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 277CD96921A730DE00473897 /* IndexObserver.swift */; };
@@ -54,6 +52,8 @@
 		27D61043203E1EF6001075BF /* SongTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27D61042203E1EF6001075BF /* SongTableViewCell.swift */; };
 		27DAEBA020264B3B00F8D5DA /* SongSortViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27DAEB9F20264B3B00F8D5DA /* SongSortViewController.swift */; };
 		27DAEBA220264BE700F8D5DA /* SongsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27DAEBA120264BE700F8D5DA /* SongsViewController.swift */; };
+		27E4441924F06A4800B3F26F /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 275D8F331FFFFDDA00F403A8 /* AVFoundation.framework */; };
+		27E4441C24F06A4A00B3F26F /* AVKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2776973620013BCF002B2963 /* AVKit.framework */; };
 		27FCDED81FF2B0BB001D81CE /* SelectedPiecesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27FCDED71FF2B0BB001D81CE /* SelectedPiecesViewController.swift */; };
 		27FCDEDC1FF2D220001D81CE /* ComposersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27FCDEDB1FF2D220001D81CE /* ComposersViewController.swift */; };
 		27FCDEDE1FF2D8D6001D81CE /* PieceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27FCDEDD1FF2D8D6001D81CE /* PieceViewController.swift */; };
@@ -132,8 +132,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2776973720013BCF002B2963 /* AVKit.framework in Frameworks */,
-				275D8F341FFFFDDA00F403A8 /* AVFoundation.framework in Frameworks */,
+				27E4441C24F06A4A00B3F26F /* AVKit.framework in Frameworks */,
+				27E4441924F06A4800B3F26F /* AVFoundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -626,7 +626,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 26;
+				CURRENT_PROJECT_VERSION = 29;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = KRGB7TX9DU;
 				INFOPLIST_FILE = ClassicPlayer/Info.plist;
@@ -645,7 +645,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 26;
+				CURRENT_PROJECT_VERSION = 29;
 				DEVELOPMENT_TEAM = KRGB7TX9DU;
 				INFOPLIST_FILE = ClassicPlayer/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;

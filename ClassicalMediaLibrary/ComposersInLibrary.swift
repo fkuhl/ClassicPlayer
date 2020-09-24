@@ -59,8 +59,9 @@ func findComposers() {
 func composersContains(candidate: String) -> Bool {
     //Deal with the "Strauss (R)" problem
     let parenComponents = candidate.components(separatedBy: "(")
+    let refinedCandidate = parenComponents[0].trimmingCharacters(in: .whitespaces)
     for composer in composersFound {
-        if composer.range(of: parenComponents[0].trimmingCharacters(in: .whitespaces), options: String.CompareOptions.caseInsensitive) != nil { return true }
+        if composer.range(of: refinedCandidate, options: String.CompareOptions.caseInsensitive) != nil { return true }
     }
     return false
 }

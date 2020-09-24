@@ -58,7 +58,7 @@ class MusicViewController: UIViewController {
         switch (musicPlayerPlaybackState()) {
         case .playing:
             MPMusicPlayerController.applicationMusicPlayer.pause()
-        case .paused:
+        case .paused, .stopped:
             MPMusicPlayerController.applicationMusicPlayer.play()
         default:
             NSLog("MusicVC funny state")
