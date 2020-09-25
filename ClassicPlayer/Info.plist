@@ -23,7 +23,7 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppleMusicUsageDescription</key>
-	<string>Enabling access only allows app to play music.</string>
+	<string>The app will play your music, cataloged by composer &amp; composition, without changing your library.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>audio</string>
